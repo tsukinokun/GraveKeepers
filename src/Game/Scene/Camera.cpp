@@ -2,49 +2,51 @@
 //!	@file	GameMain.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
-#include "ScenePlay.h"
 #include "Camera.h"
+#include <System/Component/ComponentCamera.h>
+#include <System/Component/ComponentSpringArm.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
 //---------------------------------------------------------------------------------
-bool ScenePlay::Init()
+bool Camera::Init()
 {
     __super::Init();
-    auto camera = Scene::Object::Create<Camera>();
+    auto com_comp = AddComponent<ComponentCamera>();
+    com_comp->SetPositionAndTarget({0, 5, -50}, {0, 0, 0});
+    // カメラオブジェクトを移動(カメラの位置、注視点も一緒に移動します)
+    SetTranslate({30, 0, 0});
+    auto arm = AddComponent<ComponentSpringArm>();    // スプリングアームを追加
+    SetName(u8"カメラ");
     return true;
 }
 
 //---------------------------------------------------------------------------------
 //!	更新
 //---------------------------------------------------------------------------------
-void ScenePlay::Update()
+void Camera::Update()
 {
     __super::Update();
-    // ここにゲームの更新処理を追加
 }
 
 //---------------------------------------------------------------------------------
 //!	描画
 //---------------------------------------------------------------------------------
-void ScenePlay::Draw()
+void Camera::Draw()
 {
     __super::Draw();
-    // ここにゲームの描画処理を追加
 }
 
 //---------------------------------------------------------------------------------
 //!	終了
 //---------------------------------------------------------------------------------
-void ScenePlay::Exit()
+void Camera::Exit()
 {
     __super::Exit();
-    // ここにゲームの終了処理を追加
 }
 
 //!GUI表示
-void ScenePlay::GUI()
+void Camera::GUI()
 {
     __super::GUI();
-    // ここにGUIの表示処理を追加
 }
