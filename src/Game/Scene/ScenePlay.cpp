@@ -3,6 +3,7 @@
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
 #include "ScenePlay.h"
+#include "Player.h"
 #include "Camera.h"
 
 //---------------------------------------------------------------------------------
@@ -11,6 +12,7 @@
 bool ScenePlay::Init()
 {
     __super::Init();
+    auto player = Scene::Object::Create<Player>();
     auto camera = Scene::Object::Create<Camera>();
     return true;
 }
