@@ -1,58 +1,54 @@
+﻿//---------------------------------------------------------------------------
+//!	@file	Field.cpp
+//! @brief	フィールド
 //---------------------------------------------------------------------------
-//!	@file	GameMain.cpp
-//! @brief	ゲームメイン
-//---------------------------------------------------------------------------
-#include "ScenePlay.h"
-#include "Player.h"
-#include "Camera.h"
 #include "Field.h"
+#include <System/Component/ComponentModel.h>
+#include <System/Component/ComponentCollisionModel.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
 //---------------------------------------------------------------------------------
-bool ScenePlay::Init()
+bool Field::Init()
 {
     __super::Init();
-
-    auto field  = Scene::Object::Create<Field>();
-
-    auto player = Scene::Object::Create<Player>();
-
-    auto camera = Scene::Object::Create<Camera>();
+    SetName(u8"フィールド");
+    //フィールドの読み込み（仮で山口先生の素材を入れている）
+    auto com_comp = AddComponent<ComponentModel>("data/Sample/PoyPoy/Field/field.mv1");
+    AddComponent<ComponentCollisionModel>()->AttachToModel();    //< GUIでの 「モデルにコリジョンを張り付ける」動作
+    //座標の設定
+    SetTranslate({0, 0, 0});
+    //モデルを１０倍している
+    SetScaleAxisXYZ(10.0f);
     return true;
 }
 
 //---------------------------------------------------------------------------------
 //!	更新
 //---------------------------------------------------------------------------------
-void ScenePlay::Update()
+void Field::Update()
 {
     __super::Update();
-    // ここにゲームの更新処理を追加
 }
 
 //---------------------------------------------------------------------------------
 //!	描画
 //---------------------------------------------------------------------------------
-void ScenePlay::Draw()
+void Field::Draw()
 {
     __super::Draw();
-
-    // ここにゲームの描画処理を追加
 }
 
 //---------------------------------------------------------------------------------
 //!	終了
 //---------------------------------------------------------------------------------
-void ScenePlay::Exit()
+void Field::Exit()
 {
     __super::Exit();
-    // ここにゲームの終了処理を追加
 }
 
 //!GUI表示
-void ScenePlay::GUI()
+void Field::GUI()
 {
     __super::GUI();
-    // ここにGUIの表示処理を追加
 }
