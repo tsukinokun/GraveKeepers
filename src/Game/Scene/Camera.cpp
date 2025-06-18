@@ -1,9 +1,9 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	GameMain.cpp
-//! @brief	ゲームメイン
+//!	@file	Camera.cpp
+//! @brief	ゲームカメラ
 //---------------------------------------------------------------------------
 #include "Camera.h"
-#include <System/Component/ComponentCamera.h>
+#include <System/Component/ComponentCollisionModel.h>
 #include <System/Component/ComponentSpringArm.h>
 
 //---------------------------------------------------------------------------------
@@ -12,11 +12,11 @@
 bool Camera::Init()
 {
     __super::Init();
-    auto com_comp = AddComponent<ComponentCamera>();
-    com_comp->SetPositionAndTarget({0, 5, -50}, {0, 0, 0});
     // カメラオブジェクトを移動(カメラの位置、注視点も一緒に移動します)
-    SetTranslate({30, 0, 0});
-    auto arm = AddComponent<ComponentSpringArm>();    // スプリングアームを追加
+    //auto arm = AddComponent<ComponentSpringArm>();	  // スプリングアームを追加
+    auto com_comp = AddComponent<ComponentCamera>();
+    com_comp->SetPositionAndTarget({0.0f, 20.0f, -50.0f}, {0.0f, 10.0f, 0.0f});
+
     SetName(u8"カメラ");
     return true;
 }
