@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //!	@file	Camera.cpp
 //! @brief	ゲームカメラ
 //---------------------------------------------------------------------------
@@ -14,12 +14,7 @@ bool Camera::Init()
     __super::Init();
 
     auto com_comp = AddComponent<ComponentCamera>();
-    com_comp->SetPositionAndTarget({0, 50, -50}, {0, 0, 0});
-
-    // カメラオブジェクトを移動(カメラの位置、注視点も一緒に移動します)
-    //auto arm = AddComponent<ComponentSpringArm>();	  // スプリングアームを追加
-    auto com_comp = AddComponent<ComponentCamera>();
-    com_comp->SetPositionAndTarget({0.0f, 20.0f, -50.0f}, {0.0f, 10.0f, 0.0f});
+    com_comp->SetPositionAndTarget({0, 50, -100}, {0, 0, 0});
 
     SetName(u8"カメラ");
     return true;

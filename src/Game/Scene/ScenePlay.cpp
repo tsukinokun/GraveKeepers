@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //!	@file	GameMain.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
@@ -14,7 +14,7 @@ bool ScenePlay::Init()
 {
     __super::Init();
 
-    auto field  = Scene::Object::Create<Field>();
+    auto field = Scene::Object::Create<Field>();
 
     auto player = Scene::Object::Create<Player>();
 
