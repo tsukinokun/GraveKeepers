@@ -2,62 +2,56 @@
 //!	@file	GameMain.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
-#include "ScenePlay.h"
-#include "Player.h"
 #include "Enemy.h"
-#include "Camera.h"
-#include "Field.h"
+#include <System/Component/ComponentObjectController.h>
+#include <System/Component/ComponentCollisionSphere.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
 //---------------------------------------------------------------------------------
-bool ScenePlay::Init()
+bool Enemy::Init()
 {
     __super::Init();
-
-    auto field = Scene::Object::Create<Field>();
-
-    auto player = Scene::Object::Create<Player>();
-
-    for(int i = 0; i < ENEMY_MAX_; i++) {
-        auto enemy = Scene::Object::Create<Enemy>();
-    }
-
-    auto camera = Scene::Object::Create<Camera>();
+    SetTranslate({GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2, 2, GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2});
+    auto col_comp = AddComponent<ComponentCollisionSphere>();
+    col_comp->UseGravity();
+    col_comp->SetRadius(RADIUS_);    // 球コリジョンの半径を3.0 にする
+    SetName(u8"エネミー");
     return true;
 }
 
 //---------------------------------------------------------------------------------
 //!	更新
 //---------------------------------------------------------------------------------
-void ScenePlay::Update()
+void Enemy::Update()
 {
     __super::Update();
-    // ここにゲームの更新処理を追加
 }
 
 //---------------------------------------------------------------------------------
 //!	描画
 //---------------------------------------------------------------------------------
-void ScenePlay::Draw()
+void Enemy::Draw()
 {
+    float3 sphire_pos = float3(GetTranslate());
+    DrawSphere3D(cast(sphire_pos), RADIUS_, 16, WHITE, WHITE, TRUE);
+    float3 cone_top    = float3(sphire_pos.xyz);
+    float3 rot         = GetRotationAxisXYZ();
+    float3 cone_bottom = float3(sphire_pos.x + (-5 * sinf(D2R(rot.y))), sphire_pos.y, sphire_pos.z + (-5 * cosf(D2R(rot.y))));
+    DrawCone3D(cast(cone_bottom), cast(cone_top), RADIUS_, 16, WHITE, WHITE, TRUE);
     __super::Draw();
-
-    // ここにゲームの描画処理を追加
 }
 
 //---------------------------------------------------------------------------------
 //!	終了
 //---------------------------------------------------------------------------------
-void ScenePlay::Exit()
+void Enemy::Exit()
 {
     __super::Exit();
-    // ここにゲームの終了処理を追加
 }
 
 //!GUI表示
-void ScenePlay::GUI()
+void Enemy::GUI()
 {
     __super::GUI();
-    // ここにGUIの表示処理を追加
 }

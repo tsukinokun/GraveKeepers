@@ -1,17 +1,19 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	ScenePlay.h
+//!	@file	Enemy.h
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
 #pragma once
-#include <System/Scene.h>
-
 //===========================================================================
 //! アニメーションサンプルシーン
 //===========================================================================
-class ScenePlay : public Scene::Base
+#include <System/Scene.h>
+
+USING_PTR(Enemy);
+
+class Enemy : public Object
 {
 public:
-    BP_CLASS_DECL(ScenePlay, u8"インゲームのシーン")
+    BP_OBJECT_DECL(Enemy, u8"プレイシーンのエネミー")
 
     //@}
     bool Init() override;      //!< 初期化
@@ -21,5 +23,6 @@ public:
     void GUI() override;       //!< GUI表示
 
 private:
-    const int ENEMY_MAX_ = 3;
+    const float RADIUS_         = 2.0f;    //半径
+    const int   PUT_RADIUS_MAX_ = 50;
 };
