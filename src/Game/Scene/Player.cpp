@@ -5,6 +5,7 @@
 #include "Player.h"
 #include <System/Component/ComponentObjectController.h>
 #include <System/Component/ComponentCollisionSphere.h>
+#include <System/Component/ComponentJump.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -19,6 +20,7 @@ bool Player::Init()
     auto col_comp = AddComponent<ComponentCollisionSphere>();
     col_comp->UseGravity();
     col_comp->SetRadius(RADIUS_);    // 球コリジョンの半径を3.0 にする
+    auto jump_comp = AddComponent<ComponentJump>();
     SetName(u8"プレイヤー");
     return true;
 }
