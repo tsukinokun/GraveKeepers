@@ -23,5 +23,5 @@ public:
     void GUI() override;       //!< GUI表示
 
 private:
-    const float RADIUS_ = 5.0f;    //半径
+    const float RADIUS_ = 2.0f;    //半径
 };
