@@ -36,19 +36,22 @@ void ComponentObjectController::Update()
         // その方向の移動スピードを1とし、スピードを掛け合わせる
         dir = normalize(dir);
 
-        // キャラのローカル方向で移動をさせる
-        owner->AddTranslate(dir * move_speed_, true);
-
-        // モデルを移動の方向に向けます
-        if(auto mdl = owner->GetComponent<ComponentModel>()) {
-            mdl->SetRotationToVectorWithLimit(dir, rot_speed_);
-            mdl->PlayAnimationNoSame("walk", true);
-        }
+        //owner->AddTranslate(dir * move_speed_, true);
+        // キャラのワールド方向で移動をさせる
+        owner->SetMatrix(mul(owner->GetMatrix(), matrix::translate(dir * move_speed_)));
+        //キャラの向きを変更
+        owner->SetRotationToVectorWithLimit(dir, rot_speed_);
+        //// モデルを移動の方向に向けます
+        //if(auto mdl = owner->GetComponent<ComponentModel>())
+        //{
+        //	mdl->SetRotationToVectorWithLimit(dir, rot_speed_);
+        //	mdl->PlayAnimationNoSame("walk", true);
+        //}
     }
     else {
         // モデルを移動の方向に向けます
-        if(auto mdl = owner->GetComponent<ComponentModel>())
-            mdl->PlayAnimationNoSame("idle", true);
+        /*if(auto mdl = owner->GetComponent<ComponentModel>())
+			mdl->PlayAnimationNoSame("idle", true);*/
     }
 
     // カメラが存在している場合
