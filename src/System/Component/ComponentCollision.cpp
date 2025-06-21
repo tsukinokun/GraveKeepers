@@ -63,6 +63,10 @@ void ComponentCollision::Construct(ObjectPtr owner)
 //! @details 当たった回数分ここに来ます
 void ComponentCollision::OnHit(const HitInfo& hitInfo)
 {
+    //有効でないならリターン
+    if(!enable_flag_) {
+        return;
+    }
     auto obj = GetOwner();
 
     // Staticな物質にぶつかった場合、gravity_を下げる
@@ -163,6 +167,11 @@ void ComponentCollision::AttachToModel(int node)
     if(GetRigidBody())
         GetRigidBody()->setGravityFactor(0.0f);
 #endif USE_JOLT_PHYSICS
+}
+
+void ComponentCollision::SetEnableFlag(bool enable_flag)
+{
+    enable_flag_ = enable_flag;
 }
 
 void ComponentCollision::AttachToModel(const std::string_view name)

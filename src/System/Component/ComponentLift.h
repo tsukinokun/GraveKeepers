@@ -17,6 +17,7 @@ public:
 
     void SetConditionsForLifting(std::function<bool()> conditions);    //ラムダ式で持ち上げ条件を記述
     void SetConditionsForThrow(std::function<bool()> conditions);      //ラムダ式で投げ条件を記述
+    bool CheckLiftObjName(const std::string& name);                    //名前から、監視対象になるオブジェクトかどうかを返す
 
 private:
     std::function<bool()> conditions_for_lifting_;    //持ち上げ条件を記述する関数を入れる
@@ -24,6 +25,8 @@ private:
     std::function<bool()> conditions_for_throw_;    //投げる条件を記述する
 
     std::weak_ptr<Object> lift_object_;    //持ち上げているオブジェクト
+
+    const std::vector<std::string> IGNORE_NAMES_ = {"Camera", "Field"};
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

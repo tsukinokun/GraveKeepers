@@ -16,7 +16,7 @@ bool Camera::Init()
     auto com_comp = AddComponent<ComponentCamera>();
     com_comp->SetPositionAndTarget({0, 50, 100}, {0, 0, 0});
 
-    SetName(u8"カメラ");
+    SetName(u8"Camera");
     return true;
 }
 

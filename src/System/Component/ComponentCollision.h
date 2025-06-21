@@ -323,6 +323,8 @@ public:
 
     bool IsShowInGame() { return collision_status_.is(CollisionBit::ShowInGame); }
 
+    void SetEnableFlag(bool enable_flag);
+
 protected:
     //----------------------------------------------------------------------------
     //! GUI情報
@@ -450,7 +452,8 @@ protected:
 
     float difficult_to_climb_ = 1.0f;
 
-    //bool is_overlap_ = false;
+    bool enable_flag_ = true;    //コリジョンが有効か
+                                 //bool is_overlap_ = false;
 
 #if 0    // 通常コンポーネントへ
 	std::string name_ = "None";

@@ -4,7 +4,7 @@
 //---------------------------------------------------------------------------
 #include "Player.h"
 #include <System/Component/ComponentObjectController.h>
-#include <System/Component/ComponentCollisionSphere.h>
+#include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentJump.h>
 #include <System/Component/ComponentLift.h>
 
@@ -18,12 +18,12 @@ bool Player::Init()
     object_controller_comp->SetMoveSpeed(0.2f);
     object_controller_comp->SetRotateSpeed(20.0f);
     SetTranslate({0, 2, 0});
-    auto col_comp = AddComponent<ComponentCollisionSphere>();
+    auto col_comp = AddComponent<ComponentCollisionCapsule>();
     col_comp->UseGravity();
     col_comp->SetRadius(RADIUS_);    // 球コリジョンの半径を3.0 にする
     auto jump_comp = AddComponent<ComponentJump>();
-    col_comp->SetCollisionGroup(ComponentCollision::CollisionGroup::ENEMY);    // 所属するグループを「PLAYER」とします
-    auto lift_comp = AddComponent<ComponentLift>();                            //持ち上げコンポーネント
+    col_comp->SetCollisionGroup(ComponentCollision::CollisionGroup::PLAYER);    // 所属するグループを「PLAYER」とします
+    auto lift_comp = AddComponent<ComponentLift>();                             //持ち上げコンポーネント
     lift_comp->SetConditionsForLifting(
         //ラムダ式を代入
         []() {
