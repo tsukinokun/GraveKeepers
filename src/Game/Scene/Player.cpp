@@ -4,7 +4,7 @@
 //---------------------------------------------------------------------------
 #include "Player.h"
 #include <System/Component/ComponentObjectController.h>
-#include <System/Component/ComponentCollisionSphere.h>
+#include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentJump.h>
 
 //---------------------------------------------------------------------------------
@@ -17,9 +17,10 @@ bool Player::Init()
     object_controller_comp->SetMoveSpeed(0.2f);
     object_controller_comp->SetRotateSpeed(20.0f);
     SetTranslate({0, 2, 0});
-    auto col_comp = AddComponent<ComponentCollisionSphere>();
+    auto col_comp = AddComponent<ComponentCollisionCapsule>();
     col_comp->UseGravity();
-    col_comp->SetRadius(RADIUS_);    // 球コリジョンの半径を3.0 にする
+    col_comp->SetHeight(RADIUS_ + head_pos_y_);
+    col_comp->SetRadius(RADIUS_);    // 球コリジョンの半径を2.0 にする
     auto jump_comp = AddComponent<ComponentJump>();
     SetName(u8"プレイヤー");
     return true;
@@ -32,6 +33,16 @@ void Player::Update()
 {
     __super::Update();
     matrix mat = GetMatrix();    //!<マトリックスを取得
+    //下キーを押していてかつジャンプをしていない状態だったら
+    if(CheckHitKey(KEY_INPUT_DOWN) && GetComponent<ComponentJump>()->Is_Jump() == false) {
+        //ジャンプをできない状態にする
+        GetComponent<ComponentJump>()->Not_Jump();
+        head_pos_y_ = RADIUS_;
+    }
+    else {
+        head_pos_y_ = RADIUS_ * 3;
+    }
+    GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + head_pos_y_);
 }
 
 //---------------------------------------------------------------------------------
@@ -39,7 +50,7 @@ void Player::Update()
 //---------------------------------------------------------------------------------
 void Player::Draw()
 {
-    float3 sphire_pos = float3(GetTranslate());
+    float3 sphire_pos = float3(GetTranslate()) + float3(0, head_pos_y_, 0);
     DrawSphere3D(cast(sphire_pos), RADIUS_, 16, WHITE, WHITE, TRUE);
     float3 cone_top    = float3(sphire_pos.xyz);
     float3 rot         = GetRotationAxisXYZ();
