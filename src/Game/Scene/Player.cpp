@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	GameMain.cpp
-//! @brief	ゲームメイン
+//!	@file	Player.cpp
+//! @brief	プレイヤー
 //---------------------------------------------------------------------------
 #include "Player.h"
 #include <System/Component/ComponentObjectController.h>
@@ -19,9 +19,15 @@ bool Player::Init()
     SetTranslate({0, 2, 0});
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
     col_comp->UseGravity();
-    col_comp->SetRadius(RADIUS_);             // 球コリジョンの半径を2.0 にする
-    col_comp->SetHeight(RADIUS_ + hight_);    // 球コリジョンの高さを半径の４倍 にする
+    col_comp->SetRadius(RADIUS_);                  // 球コリジョンの半径を2.0 にする
+    col_comp->SetHeight(RADIUS_ + neutralpos_);    // 球コリジョンの高さを半径の４倍 にする
+
     auto jump_comp = AddComponent<ComponentJump>();
+    jump_comp->SetConditionsJump([]() {
+        if(IsKeyOn(KEY_INPUT_SPACE))
+            return true;
+        return false;
+    });
     SetName(u8"プレイヤー");
     return true;
 }
@@ -33,18 +39,18 @@ void Player::Update()
 {
     __super::Update();
     //下キーを押しているかつジャンプをしていないなら
-    if(CheckHitKey(KEY_INPUT_DOWN) && GetComponent<ComponentJump>()->IsJump() == false) {
+    if(CheckHitKey(KEY_INPUT_DOWN) && GetComponent<ComponentJump>()->IsJumping() == false) {
         //ジャンプをできない状態にする
-        GetComponent<ComponentJump>()->NotJump();
+        GetComponent<ComponentJump>()->SetEnable();
         //高さを半径にする
-        hight_ = RADIUS_;
+        neutralpos_ = RADIUS_;
     }
     else {
         //高さを半径の3倍にする
-        hight_ = RADIUS_ * 3;
+        neutralpos_ = TOP_POINT_;
     }
     //コリジョンの高さの設定
-    GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + hight_);
+    GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + neutralpos_);
 }
 
 //---------------------------------------------------------------------------------
@@ -52,7 +58,7 @@ void Player::Update()
 //---------------------------------------------------------------------------------
 void Player::Draw()
 {
-    float3 sphire_pos = float3(GetTranslate() + float3(0.0f, hight_, 0.0f));
+    float3 sphire_pos = float3(GetTranslate() + float3(0.0f, neutralpos_, 0.0f));
     DrawSphere3D(cast(sphire_pos), RADIUS_, 16, WHITE, WHITE, TRUE);
     float3 cone_top    = float3(sphire_pos.xyz);
     float3 rot         = GetRotationAxisXYZ();
