@@ -151,6 +151,8 @@ void Object::Update()
 //! @param delta 更新秒数
 void Object::LateUpdate()
 {
+    float delta_time   = GetDeltaTime();
+    update_delta_time_ = delta_time;
 }
 
 //! @brief 描画

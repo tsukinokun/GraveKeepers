@@ -465,6 +465,8 @@ protected:
 
     void toFormalComponent();
 
+    float update_delta_time_ = 0.0f;    //!< update以外で使用できるように
+
 private:
     //--------------------------------------------------------------------
     //! @name Cereal処理
