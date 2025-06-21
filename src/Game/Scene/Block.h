@@ -1,5 +1,5 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	Player.h
+//!	@file	Block.h
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
 #pragma once
@@ -8,14 +8,14 @@
 //===========================================================================
 #include <System/Scene.h>
 
-USING_PTR(Player);
+USING_PTR(Block);
 
-class Player : public Object
+class Block : public Object
 {
 public:
-    BP_OBJECT_DECL(Player, u8"プレイシーンのプレイヤー")
+    BP_OBJECT_DECL(Block, u8"プレイシーンのカメラ")
 
-    //@}
+    //@
     bool Init() override;      //!< 初期化
     void Update() override;    //!< 更新
     void Draw() override;      //!< 描画
@@ -23,7 +23,5 @@ public:
     void GUI() override;       //!< GUI表示
 
 private:
-    const float RADIUS_ = 2.0f;    //半径
-
-    float hight_ = RADIUS_ * 3;    //円の位置の高さ
+    const float RADUIS_ = 2.0f;
 };

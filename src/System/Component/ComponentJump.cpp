@@ -12,14 +12,17 @@ void ComponentJump::Update()
     jump_frame_count_--;
     auto owner = GetOwner();
     //スペースキー押下でジャンプ
-    if(IsKeyOn(KEY_INPUT_SPACE) && (jump_frame_count_ < 0)) {
+    if(IsKeyOn(KEY_INPUT_SPACE) && (jump_frame_count_ < 0) && not_jump_ == false) {
         jump_frame_count_ = jump_frame_max_;
         matrix mat        = owner->GetMatrix();
         float3 translate  = mat.translate();
         translate_hight_  = translate.y + jump_hight_;
+        is_jump_          = true;
     }
     //ジャンプのカウントが0以下ならリターン(この後の処理を行わない)
     if(jump_frame_count_ < 0) {
+        not_jump_ = false;
+        is_jump_  = false;
         return;
     }
     // オーナー(自分がAddComponentされたObject)を取得します
@@ -59,6 +62,16 @@ void ComponentJump::SetJumpFrame(int value)
 void ComponentJump::SetJumpHight(float value)
 {
     jump_hight_ = value;
+}
+
+void ComponentJump::NotJump()
+{
+    not_jump_ = true;
+}
+
+bool ComponentJump::IsJump()
+{
+    return is_jump_;
 }
 CEREAL_REGISTER_TYPE(ComponentJump)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentJump)
