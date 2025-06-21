@@ -15,7 +15,8 @@ bool Enemy::Init()
     SetTranslate({GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2, 2, GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2});
     auto col_comp = AddComponent<ComponentCollisionSphere>();
     col_comp->UseGravity();
-    col_comp->SetRadius(RADIUS_);    // 球コリジョンの半径を3.0 にする
+    col_comp->SetRadius(RADIUS_);                                              // 球コリジョンの半径を3.0 にする
+    col_comp->SetCollisionGroup(ComponentCollision::CollisionGroup::ENEMY);    // 所属するグループを「PLAYER」とします
     SetName(u8"エネミー");
     return true;
 }
