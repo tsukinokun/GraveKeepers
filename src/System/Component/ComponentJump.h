@@ -19,11 +19,19 @@ public:
 
     void SetJumpHight(float value);    //ジャンプでどのくらい飛び上がるか
 
+    void NotJump();    //ジャンプをできないようにするための関数
+
+    bool IsJump();    //ジャンプをしているかを返す関数
+
 private:
     int   jump_frame_max_   = 60;    //何フレームジャンプするか
     int   jump_frame_count_ = 0;     //ジャンプ中のフレーム
     float jump_hight_       = 5;     //ジャンプで飛び上がる高さ
     float translate_hight_  = 0;     //実際にmatrixに入れる値
+
+    bool not_jump_ = false;    //ジャンプをできるかどうかの変数
+
+    bool is_jump_ = false;    //ジャンプをしているかの変数
 
     //--------------------------------------------------------------------
     //! @name Cereal処理
