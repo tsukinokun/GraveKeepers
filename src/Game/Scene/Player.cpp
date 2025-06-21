@@ -6,6 +6,7 @@
 #include <System/Component/ComponentObjectController.h>
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentJump.h>
+#include <System/Component/ComponentLift.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -22,6 +23,23 @@ bool Player::Init()
     col_comp->SetRadius(RADIUS_);             // 球コリジョンの半径を2.0 にする
     col_comp->SetHeight(RADIUS_ + hight_);    // 球コリジョンの高さを半径の４倍 にする
     auto jump_comp = AddComponent<ComponentJump>();
+    col_comp->SetCollisionGroup(ComponentCollision::CollisionGroup::PLAYER);    // 所属するグループを「PLAYER」とします
+    auto lift_comp = AddComponent<ComponentLift>();                             //持ち上げコンポーネント
+    lift_comp->SetConditionsForLifting(
+        //ラムダ式を代入
+        []() {
+            if(IsKeyOn(KEY_INPUT_Z)) {
+                return true;
+            }
+            return false;
+        });
+    lift_comp->SetConditionsForThrow(    //ラムダ式を代入
+        []() {
+            if(IsKeyOn(KEY_INPUT_Z)) {
+                return true;
+            }
+            return false;
+        });
     SetName(u8"プレイヤー");
     return true;
 }

@@ -35,3 +35,15 @@ DXライブラリを使用して3Dゲーム開発をするためのプロジェ�
 「src/.clang-format-reference」を「.clang-format」にリネームすることで自分好みのソースコードに整形が可能です。<br />
 また「＠open.cmd」を使用することで自動的にこのファイルを読み込み、コードを自分好みに整形してくれます。<br />
 <b>注意事項: 「＠code_format.cmd」を使うと元のコード整形に戻ります</b>
+
+###命名規則
+グローバル変数：スネークケース(snake_case)
+ローカル変数：スネークケース(snake_case)
+グローバル関数：パスカルケース(PascalCase)
+グローバル定数：アッパースネークケース(UPPER_SNAKE_CASE)
+列挙体(enum)：アッパースネークケース(UPPER_SNAKE_CASE)
+クラス名/構造体名：パスカルケース(PascalCase)
+メンバ変数名：末尾にアンダースコア付きのスネークケース(snake_case_)
+メンバ定数名：末尾にアンダースコア付きのアッパースネークケース(UPPER_SNAKE_CASE_)
+メンバ関数名：パスカルケース(PascalCase)
+ 
