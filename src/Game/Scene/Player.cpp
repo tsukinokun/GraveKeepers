@@ -32,8 +32,6 @@ bool Player::Init()
 void Player::Update()
 {
     __super::Update();
-    matrix mat = GetMatrix();    //!<マトリックスを取得
-
     //下キーを押しているかつジャンプをしていないなら
     if(CheckHitKey(KEY_INPUT_DOWN) && GetComponent<ComponentJump>()->IsJump() == false) {
         //ジャンプをできない状態にする

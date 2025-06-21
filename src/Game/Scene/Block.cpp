@@ -1,67 +1,53 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	GameMain.cpp
-//! @brief	ゲームメイン
+//!	@file	Block.cpp
+//! @brief	ゲームカメラ
 //---------------------------------------------------------------------------
-#include "ScenePlay.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "Camera.h"
-#include "Field.h"
 #include "Block.h"
+#include <System/Component/ComponentCollisionCapsule.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
 //---------------------------------------------------------------------------------
-bool ScenePlay::Init()
+bool Block::Init()
 {
     __super::Init();
 
-    auto field = Scene::Object::Create<Field>();
-
-    auto player = Scene::Object::Create<Player>();
-
-    for(int i = 0; i < ENEMY_MAX_; i++) {
-        auto enemy = Scene::Object::Create<Enemy>();
-    }
-
-    auto camera = Scene::Object::Create<Camera>();
-
-    auto block = Scene::Object::Create<Block>();
-
+    SetName(u8"ブロック");
+    auto block_com = AddComponent<ComponentCollisionCapsule>();
+    block_com->UseGravity();
+    block_com->SetRadius(RADUIS_);
+    SetTranslate(float3(0.0f, 0.0f, 10.0f));
     return true;
 }
 
 //---------------------------------------------------------------------------------
 //!	更新
 //---------------------------------------------------------------------------------
-void ScenePlay::Update()
+void Block::Update()
 {
     __super::Update();
-    // ここにゲームの更新処理を追加
 }
 
 //---------------------------------------------------------------------------------
 //!	描画
 //---------------------------------------------------------------------------------
-void ScenePlay::Draw()
+void Block::Draw()
 {
     __super::Draw();
-
-    // ここにゲームの描画処理を追加
+    float3 sphir_pos = float3(GetTranslate() + float3(0.0f, RADUIS_, 0.0f));
+    DrawSphere3D(cast(sphir_pos), RADUIS_, 16, GREEN, GREEN, TRUE);
 }
 
 //---------------------------------------------------------------------------------
 //!	終了
 //---------------------------------------------------------------------------------
-void ScenePlay::Exit()
+void Block::Exit()
 {
     __super::Exit();
-    // ここにゲームの終了処理を追加
 }
 
 //!GUI表示
-void ScenePlay::GUI()
+void Block::GUI()
 {
     __super::GUI();
-    // ここにGUIの表示処理を追加
 }
