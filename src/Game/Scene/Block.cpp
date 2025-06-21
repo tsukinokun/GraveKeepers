@@ -1,29 +1,29 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	Camera.cpp
+//!	@file	Block.cpp
 //! @brief	ゲームカメラ
 //---------------------------------------------------------------------------
-#include "Camera.h"
-#include <System/Component/ComponentCollisionModel.h>
-#include <System/Component/ComponentSpringArm.h>
+#include "Block.h"
+#include <System/Component/ComponentCollisionCapsule.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
 //---------------------------------------------------------------------------------
-bool Camera::Init()
+bool Block::Init()
 {
     __super::Init();
 
-    auto com_comp = AddComponent<ComponentCamera>();
-    com_comp->SetPositionAndTarget({0, 50, 100}, {0, 0, 0});
-
-    SetName(u8"Camera");
+    SetName(u8"ブロック");
+    auto block_com = AddComponent<ComponentCollisionCapsule>();
+    block_com->UseGravity();
+    block_com->SetRadius(RADUIS_);
+    SetTranslate(float3(0.0f, 0.0f, 10.0f));
     return true;
 }
 
 //---------------------------------------------------------------------------------
 //!	更新
 //---------------------------------------------------------------------------------
-void Camera::Update()
+void Block::Update()
 {
     __super::Update();
 }
@@ -31,21 +31,23 @@ void Camera::Update()
 //---------------------------------------------------------------------------------
 //!	描画
 //---------------------------------------------------------------------------------
-void Camera::Draw()
+void Block::Draw()
 {
     __super::Draw();
+    float3 sphir_pos = float3(GetTranslate() + float3(0.0f, RADUIS_, 0.0f));
+    DrawSphere3D(cast(sphir_pos), RADUIS_, 16, GREEN, GREEN, TRUE);
 }
 
 //---------------------------------------------------------------------------------
 //!	終了
 //---------------------------------------------------------------------------------
-void Camera::Exit()
+void Block::Exit()
 {
     __super::Exit();
 }
 
 //!GUI表示
-void Camera::GUI()
+void Block::GUI()
 {
     __super::GUI();
 }

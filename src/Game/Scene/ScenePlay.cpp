@@ -7,6 +7,7 @@
 #include "Enemy.h"
 #include "Camera.h"
 #include "Field.h"
+#include "Block.h"
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -24,6 +25,9 @@ bool ScenePlay::Init()
     }
 
     auto camera = Scene::Object::Create<Camera>();
+
+    auto block = Scene::Object::Create<Block>();
+
     return true;
 }
 
