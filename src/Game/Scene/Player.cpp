@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //!	@file	Player.cpp
 //! @brief	プレイヤー
 //---------------------------------------------------------------------------
@@ -30,7 +30,7 @@ bool Player::Init()
             return true;
         return false;
     });
-  
+
     col_comp->SetCollisionGroup(ComponentCollision::CollisionGroup::PLAYER);    // 所属するグループを「PLAYER」とします
     auto lift_comp = AddComponent<ComponentLift>();                             //持ち上げコンポーネント
     lift_comp->SetConditionsForLifting(
@@ -48,7 +48,7 @@ bool Player::Init()
             }
             return false;
         });
-  
+
     SetName(u8"プレイヤー");
     return true;
 }
@@ -64,11 +64,23 @@ void Player::Update()
         //ジャンプをできない状態にする
         GetComponent<ComponentJump>()->SetEnable();
         //高さを半径にする
-        neutralpos_ = RADIUS_;
+        neutralpos_ = SQUAT_TOP_POINT_;
     }
+    //右のシフトキーを押しているかつジャンプをしていないなら
+    else if(CheckHitKey(KEY_INPUT_RSHIFT) && GetComponent<ComponentJump>()->IsJumping() == false) {
+        //ジャンプをできない状態にする
+        GetComponent<ComponentJump>()->SetEnable();
+        //高さを半径にする
+        neutralpos_ = FACE_DOWN_TOP_POINT_;
+        //しゃがんでいると返す
+        is_face_down_ = true;
+    }
+    //上の状態でなかったら
     else {
         //高さを半径の3倍にする
         neutralpos_ = TOP_POINT_;
+        //しゃがんでいないと返す
+        is_face_down_ = false;
     }
     //コリジョンの高さの設定
     GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + neutralpos_);
@@ -85,6 +97,12 @@ void Player::Draw()
     float3 rot         = GetRotationAxisXYZ();
     float3 cone_bottom = float3(sphire_pos.x + (-5 * sinf(D2R(rot.y))), sphire_pos.y, sphire_pos.z + (-5 * cosf(D2R(rot.y))));
     DrawCone3D(cast(cone_bottom), cast(cone_top), RADIUS_, 16, WHITE, WHITE, TRUE);
+
+    //うつ伏せの状態ではなかったら
+    if(!is_face_down_) {
+        //身体を表示する
+        DrawCone3D(cast(sphire_pos), cast(GetTranslate()), RADIUS_, 16, WHITE, WHITE, TRUE);
+    }
     __super::Draw();
 }
 
