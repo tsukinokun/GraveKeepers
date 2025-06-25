@@ -20,8 +20,9 @@ bool Enemy::Init()
     col_comp->SetHeight(RADIUS_ + neutral_pos_);    // 球コリジョンの高さを半径の４倍 にする
     auto jump_comp = AddComponent<ComponentJump>();
 
-    squat_timer_ = GetRand(SQUAT_TIME_MAX_) + SQUAT_TIME_MIN_;    //AIができたら消してください
-    jump_timer_  = GetRand(SQUAT_TIME_MAX_) + SQUAT_TIME_MIN_;    //AIができたら消してください
+    squat_timer_     = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+    jump_timer_      = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+    face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
 
     jump_comp->SetConditionsJump([this]() {
         if(jump_timer_ < 0) {
@@ -42,22 +43,39 @@ void Enemy::Update()
     __super::Update();
     squat_timer_--;
     jump_timer_--;
+    face_down_timer_--;
     //下キーを押しているかつジャンプをしていないなら
     if(squat_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
         //ジャンプをできない状態にする
         GetComponent<ComponentJump>()->SetEnable();
         //高さを半径にする
-        neutral_pos_ = RADIUS_;
-        if(squat_timer_ < -SQUAT_TIME_MIN_) {
-            squat_timer_ = GetRand(SQUAT_TIME_MAX_) + SQUAT_TIME_MIN_;
+        neutral_pos_ = SQUAT_TOP_POINT_;
+        if(squat_timer_ < -RANDOM_TIME_MIN_) {
+            squat_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+        }
+    }
+    else if(face_down_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
+        //ジャンプをできない状態にする
+        GetComponent<ComponentJump>()->SetEnable();
+        //高さを半径にする
+        neutral_pos_ = FACE_DOWN_TOP_POINT_;
+        //しゃがんでいると返す
+        is_face_down_ = true;
+        if(face_down_timer_ < -RANDOM_TIME_MIN_) {
+            face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
         }
     }
     else {
         //高さを半径の3倍にする
-        neutral_pos_ = RADIUS_ * 3;
+        neutral_pos_ = TOP_POINT_;
+        //しゃがんでいないと返す
+        is_face_down_ = false;
     }
-    if(jump_timer_ < -SQUAT_TIME_MIN_) {
-        jump_timer_ = GetRand(SQUAT_TIME_MAX_) + SQUAT_TIME_MIN_;    //AIができたら消してください
+    if(jump_timer_ < -RANDOM_TIME_MIN_) {
+        jump_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+    }
+    if(face_down_timer_ < -RANDOM_TIME_MIN_) {
+        face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
     }
     //コリジョンの高さの設定
     GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + neutral_pos_);
@@ -74,6 +92,13 @@ void Enemy::Draw()
     float3 rot         = GetRotationAxisXYZ();
     float3 cone_bottom = float3(sphire_pos.x + (-5 * sinf(D2R(rot.y))), sphire_pos.y, sphire_pos.z + (-5 * cosf(D2R(rot.y))));
     DrawCone3D(cast(cone_bottom), cast(cone_top), RADIUS_, 16, WHITE, WHITE, TRUE);
+
+    //うつ伏せの状態ではなかったら
+    if(!is_face_down_) {
+        //身体を表示する
+        DrawCone3D(cast(sphire_pos), cast(GetTranslate()), RADIUS_, 16, WHITE, WHITE, TRUE);
+    }
+
     __super::Draw();
 }
 
