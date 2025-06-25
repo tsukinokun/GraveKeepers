@@ -6,6 +6,7 @@
 #include <System/Component/ComponentObjectController.h>
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentJump.h>
+#include <System/Component/ComponentLift.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -23,6 +24,7 @@ bool Enemy::Init()
     squat_timer_     = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
     jump_timer_      = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
     face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+    lift_timer_      = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
 
     jump_comp->SetConditionsJump([this]() {
         if(jump_timer_ < 0) {
@@ -30,6 +32,24 @@ bool Enemy::Init()
         }
         return false;
     });
+
+    auto lift_comp = AddComponent<ComponentLift>();    //持ち上げコンポーネント
+    lift_comp->SetConditionsForLifting(
+        //ラムダ式を代入
+        [this]() {
+            if(lift_timer_ < 0) {
+                return true;
+            }
+            return false;
+        });
+    lift_comp->SetConditionsForThrow(    //ラムダ式を代入
+        [this]() {
+            if(lift_timer_ < 0) {
+                return true;
+            }
+            return false;
+        });
+
     SetName(u8"エネミー");
 
     return true;
@@ -44,6 +64,7 @@ void Enemy::Update()
     squat_timer_--;
     jump_timer_--;
     face_down_timer_--;
+    lift_timer_--;
     //下キーを押しているかつジャンプをしていないなら
     if(squat_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
         //ジャンプをできない状態にする
@@ -76,6 +97,9 @@ void Enemy::Update()
     }
     if(face_down_timer_ < -RANDOM_TIME_MIN_) {
         face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+    }
+    if(lift_timer_ < -RANDOM_TIME_MIN_) {
+        lift_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
     }
     //コリジョンの高さの設定
     GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + neutral_pos_);

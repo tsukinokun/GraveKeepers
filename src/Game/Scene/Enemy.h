@@ -36,7 +36,8 @@ private:
     const int RANDOM_TIME_MIN_ = 60;                       //しゃがむ時間の最小時間
     const int RANDOM_TIME_MAX_ = RANDOM_TIME_MIN_ * 10;    //しゃがむ時間の最大時間
 
-    int squat_timer_;        //しゃがむ時間
-    int jump_timer_;         //ジャンプする時間
-    int face_down_timer_;    //ジャンプする時間
+    int squat_timer_;        //しゃがむまでの時間
+    int jump_timer_;         //ジャンプするまでの時間
+    int face_down_timer_;    //うつ伏せするまでの時間
+    int lift_timer_;         //ブロックを持ち上げるまでの時間
 };
