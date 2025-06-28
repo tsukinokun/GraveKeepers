@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 //!	@file	ScenePlay.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Field.h"
 #include "Block.h"
+#include "UFO.h"
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -24,14 +25,17 @@ bool ScenePlay::Init()
     for(int i = 0; i < ENEMY_MAX_; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
     }
-
-    auto camera = Scene::Object::Create<Camera>();
   
     previousTime_ = std::chrono::high_resolution_clock::now();
 
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
         auto block = Scene::Object::Create<Block>();
     }
+
+    auto ufo = Scene::Object::Create<UFO>();
+
+    auto camera = Scene::Object::Create<Camera>();
+
     return true;
 }
 
