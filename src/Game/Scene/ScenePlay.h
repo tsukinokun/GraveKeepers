@@ -21,5 +21,6 @@ public:
     void GUI() override;       //!< GUI表示
 
 private:
-    const int ENEMY_MAX_ = 3;
+    const int ENEMY_MAX_     = 3;
+    const int BLOCK_NUM_MAX_ = 10;
 };
