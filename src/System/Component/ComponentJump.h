@@ -4,34 +4,49 @@
 
 USING_PTR(ComponentJump);
 
+//! @brief ジャンプ機能コンポーネント
 class ComponentJump : public Component
 {
 public:
     BP_COMPONENT_DECL(ComponentJump, u8"ジャンプコンポーネント");
-
+    //! @{
+    // 初期化処理
     void Init() override;
 
+    // 更新処理
     void Update() override;
 
+    // ImGui
     void GUI() override;
 
-    void SetJumpFrame(int value);    //何フレームジャンプを行うかをセット
+    // ジャンプフレームをセット
+    //! @param value [in] フレーム
+    void SetJumpFrame(int value);
 
-    void SetJumpHight(float value);    //ジャンプでどのくらい飛び上がるか
+    // ジャンプ時の衝撃をセット
+    //! @param value [in] y座標に飛び上がる高さ
+    void SetJumpImpulse(float value);
 
-    void SetEnable();    //ジャンプをできないようにするための関数
+    //ジャンプをできないようにするための関数
+    void SetEnable();
 
-    bool IsJumping();    //ジャンプをしているかを返す関数
+    //ジャンプをしているかを返す関数
+    bool IsJumping();
 
-    void SetConditionsJump(std::function<bool()> condition);    //外部からジャンプ条件を入れるための関数
+    //外部からジャンプ条件を入れるための関数
+    //! @param condition [in] 条件
+    //! @attention これを設定しないと絶対にジャンプしないので注意
+    void SetConditionsJump(std::function<bool()> condition);
+
+    //! @}
 
 private:
     std::function<bool()> conditions_jump_;    //ジャンプ条件
 
-    int   jump_frame_max_   = 60;    //何フレームジャンプするか
-    int   jump_frame_count_ = 0;     //ジャンプ中のフレーム
-    float jump_hight_       = 5;     //ジャンプで飛び上がる高さ
-    float translate_hight_  = 0;     //実際にmatrixに入れる値
+    int   jump_frame_max_   = 60;     //何フレームジャンプするか
+    int   jump_frame_count_ = 0;      //ジャンプ中のフレーム
+    float jump_force_       = 3.0;    //ジャンプで足す値
+    float translate_hight_  = 0;      //実際にmatrixに入れる値
 
     bool set_enable_ = false;    //ジャンプをできるかどうかの変数
 

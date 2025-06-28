@@ -1,11 +1,23 @@
-﻿#pragma once
+﻿//---------------------------------------------------------------------------
+//!	@file	ComponentJump.cpp
+//! @brief	ジャンプ機能コンポーネント
+//! @auther 山﨑愛
+//---------------------------------------------------------------------------
+#pragma once
 #include <System/Component/ComponentJump.h>
+#include <System/Component/ComponentRigidbody.h>
 
+//---------------------------------------------------------------------------
+//! @brief	初期化処理
+//---------------------------------------------------------------------------
 void ComponentJump::Init()
 {
     __super::Init();
 }
 
+//---------------------------------------------------------------------------
+//! @brief	更新処理
+//---------------------------------------------------------------------------
 void ComponentJump::Update()
 {
     __super::Update();
@@ -15,10 +27,8 @@ void ComponentJump::Update()
     //スペースキー押下でジャンプ
     if(conditions_jump_() && (jump_frame_count_ < 0) && set_enable_ == false) {
         jump_frame_count_ = jump_frame_max_;
-        matrix mat        = owner->GetMatrix();
-        float3 translate  = mat.translate();
-        translate_hight_  = translate.y + jump_hight_;
-        is_jumping_       = true;
+        owner->GetComponent<ComponentRigidbody>()->AddImpulse(float3(0.0f, jump_force_, 0.0f));
+        is_jumping_ = true;
     }
     //ジャンプのカウントが0以下ならリターン(この後の処理を行わない)
     if(jump_frame_count_ < 0) {
@@ -26,14 +36,11 @@ void ComponentJump::Update()
         is_jumping_ = false;
         return;
     }
-    // オーナー(自分がAddComponentされたObject)を取得します
-    // 処理されるときは必ずOwnerは存在しますので基本的にnullptrチェックは必要ありません
-    matrix mat       = owner->GetMatrix();
-    float3 translate = mat.translate();
-    translate        = float3(translate.x, translate_hight_, translate.z);
-    owner->SetTranslate(translate);
 }
 
+//---------------------------------------------------------------------------
+//! @brief	ImGui
+//---------------------------------------------------------------------------
 void ComponentJump::GUI()
 {
     __super::GUI();
@@ -53,28 +60,41 @@ void ComponentJump::GUI()
     ImGui::End();
 }
 
-//何フレームジャンプを行うかをセット
+//---------------------------------------------------------------------------
+//! @brief	何フレームジャンプを行うかをセット
+//---------------------------------------------------------------------------
 void ComponentJump::SetJumpFrame(int value)
 {
     jump_frame_max_ = value;
 }
 
-//ジャンプでどのくらい飛び上がるか
-void ComponentJump::SetJumpHight(float value)
+//---------------------------------------------------------------------------
+//! @brief	ジャンプでどのくらい飛び上がるか
+//---------------------------------------------------------------------------
+void ComponentJump::SetJumpImpulse(float value)
 {
-    jump_hight_ = value;
+    jump_force_ = value;
 }
 
+//---------------------------------------------------------------------------
+//! @brief	有効無効をセット
+//---------------------------------------------------------------------------
 void ComponentJump::SetEnable()
 {
     set_enable_ = true;
 }
 
+//---------------------------------------------------------------------------
+//! @brief	ジャンプ中か否かを変換
+//---------------------------------------------------------------------------
 bool ComponentJump::IsJumping()
 {
     return is_jumping_;
 }
 
+//---------------------------------------------------------------------------
+//! @brief	ジャンプ条件を代入
+//---------------------------------------------------------------------------
 void ComponentJump::SetConditionsJump(std::function<bool()> condition)
 {
     conditions_jump_ = condition;

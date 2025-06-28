@@ -6,6 +6,7 @@
 #include <System/Component/ComponentObjectController.h>
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentJump.h>
+#include <System/Component/ComponentRigidbody.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -13,6 +14,7 @@
 bool Enemy::Init()
 {
     __super::Init();
+    AddComponent<ComponentRigidbody>();
     SetTranslate({GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2, 2, GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2});
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
     col_comp->UseGravity();
