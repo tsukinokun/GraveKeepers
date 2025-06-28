@@ -39,5 +39,8 @@ private:
     int squat_timer_;        //しゃがむまでの時間
     int jump_timer_;         //ジャンプするまでの時間
     int face_down_timer_;    //うつ伏せするまでの時間
-    int lift_timer_;         //ブロックを持ち上げるまでの時間
+
+    bool lifting_block_ = false;
+    int  lift_timer_;     //ブロックを持ち上げるまでの時間
+    int  throw_timer_;    //ブロックを投げるまでの時間
 };
