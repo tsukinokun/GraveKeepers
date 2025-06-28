@@ -4,6 +4,7 @@
 //---------------------------------------------------------------------------
 #include "Block.h"
 #include <System/Component/ComponentCollisionCapsule.h>
+#include <System/Component/ComponentRigidbody.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -13,6 +14,7 @@ bool Block::Init()
     __super::Init();
 
     SetName(u8"ブロック");
+    AddComponent<ComponentRigidbody>();
     auto block_com = AddComponent<ComponentCollisionCapsule>();
     block_com->UseGravity();
     block_com->SetRadius(RADUIS_);

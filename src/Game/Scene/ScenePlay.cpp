@@ -26,11 +26,12 @@ bool ScenePlay::Init()
     }
 
     auto camera = Scene::Object::Create<Camera>();
-
-    auto block = Scene::Object::Create<Block>();
-
+  
     previousTime_ = std::chrono::high_resolution_clock::now();
 
+    for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
+        auto block = Scene::Object::Create<Block>();
+    }
     return true;
 }
 

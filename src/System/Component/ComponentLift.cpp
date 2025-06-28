@@ -1,16 +1,29 @@
-﻿#pragma once
+﻿//---------------------------------------------------------------------------
+//!	@file	ComponentLift.cpp
+//! @brief	持ち上げ機能コンポーネント
+//! @auther 山﨑愛
+//---------------------------------------------------------------------------
+#pragma once
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentCollisionCapsule.h>
+#include <System/Component/ComponentRigidbody.h>
 
+//---------------------------------------------------------------------------
+//! @brief	初期化
+//---------------------------------------------------------------------------
 void ComponentLift::Init()
 {
     __super::Init();
 }
 
+//---------------------------------------------------------------------------
+//! @brief	更新処理
+//---------------------------------------------------------------------------
 void ComponentLift::Update()
 {
     __super::Update();
     auto owner = GetOwner();
+
     //持ち上げる処理
     if(auto lift_obj = lift_object_.lock()) {
         auto   owner_col  = owner->GetComponent<ComponentCollisionCapsule>();    //オーナーのコリジョンを取得
@@ -21,7 +34,15 @@ void ComponentLift::Update()
 
         //投げる
         if(conditions_for_throw_()) {
-            if(auto lift_col = lift_object_.lock()->GetComponent<ComponentCollision>()) {
+            if(auto lift_obj = lift_object_.lock()) {
+                auto   lift_rb        = lift_obj->GetComponent<ComponentRigidbody>();
+                float3 throw_impulse_ = float3(0.0f, throw_virtical_power_, 0.0f);
+                float3 owner_rot      = owner->GetRotationAxisXYZ();    //オーナーの向きを取得
+                //オーナーのy軸回転から、throw_impulse_のxとzを設定
+                throw_impulse_.x = -throw_horizontal_power_ * sinf(D2R(owner_rot.y));
+                throw_impulse_.z = -throw_horizontal_power_ * cosf(D2R(owner_rot.y));
+                lift_rb->AddImpulse(throw_impulse_);
+                auto lift_col = lift_obj->GetComponent<ComponentCollision>();
                 lift_col->SetEnableFlag(true);
                 lift_col->UseGravity();
             }
@@ -53,8 +74,8 @@ void ComponentLift::Update()
                 //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
                 if(length(vec_owner_to_obj) < most_near_distance) {
                     most_near_distance = length(vec_owner_to_obj);
+                    lift_object_       = obj;    //持ち上げオブジェクトを代入
                 }
-                lift_object_ = obj;    //持ち上げオブジェクトを代入
             }
             if(auto lift_col = lift_object_.lock()->GetComponent<ComponentCollision>()) {
                 lift_col->SetEnableFlag(false);
@@ -64,6 +85,10 @@ void ComponentLift::Update()
         }
     }
 }
+
+//---------------------------------------------------------------------------
+//! @brief	ImGui
+//---------------------------------------------------------------------------
 
 void ComponentLift::GUI()
 {
@@ -84,18 +109,27 @@ void ComponentLift::GUI()
     ImGui::End();
 }
 
-//ラムダ式で持ち上げ条件を記述
+//---------------------------------------------------------------------------
+//! @brief	持ち上げ条件を記述
+//---------------------------------------------------------------------------
+
 void ComponentLift::SetConditionsForLifting(std::function<bool()> conditions)
 {
     conditions_for_lifting_ = conditions;
 }
+
+//---------------------------------------------------------------------------
+//! @brief	投げる条件記述
+//---------------------------------------------------------------------------
 
 void ComponentLift::SetConditionsForThrow(std::function<bool()> conditions)
 {
     conditions_for_throw_ = conditions;
 }
 
-//名前から、監視対象になるオブジェクトかどうかを返す
+//---------------------------------------------------------------------------
+//! @brief	名前から、監視対象になるオブジェクトかどうかを返す
+//---------------------------------------------------------------------------
 bool ComponentLift::CheckLiftObjName(const std::string& name)
 {
     for(int i = 0; i < IGNORE_NAMES_.size(); i++) {
