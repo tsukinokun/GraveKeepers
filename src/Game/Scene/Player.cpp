@@ -7,6 +7,7 @@
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentJump.h>
 #include <System/Component/ComponentLift.h>
+#include <System/Component/ComponentRigidbody.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -14,6 +15,7 @@
 bool Player::Init()
 {
     __super::Init();
+    AddComponent<ComponentRigidbody>();
     auto object_controller_comp = AddComponent<ComponentObjectController>();
     object_controller_comp->SetMoveSpeed(0.2f);
     object_controller_comp->SetRotateSpeed(20.0f);
