@@ -1,5 +1,5 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	Player.h
+//!	@file	UFO.h
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
 #pragma once
@@ -13,7 +13,7 @@ USING_PTR(UFO);
 class UFO : public Object
 {
 public:
-    BP_OBJECT_DECL(UFO, u8"プレイシーンのＵＦＯ")
+    BP_OBJECT_DECL(UFO, u8"プレイシーンのUFO")
 
     //@}
     bool Init() override;      //!< 初期化

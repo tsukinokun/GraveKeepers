@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Field.h"
 #include "Block.h"
+#include "UFO.h"
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -24,11 +25,14 @@ bool ScenePlay::Init()
         auto enemy = Scene::Object::Create<Enemy>();
     }
 
-    auto camera = Scene::Object::Create<Camera>();
-
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
         auto block = Scene::Object::Create<Block>();
     }
+
+    auto ufo = Scene::Object::Create<UFO>();
+
+    auto camera = Scene::Object::Create<Camera>();
+
     return true;
 }
 
