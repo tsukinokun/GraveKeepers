@@ -11,6 +11,7 @@ void ComponentLift::Update()
 {
     __super::Update();
     auto owner = GetOwner();
+
     //持ち上げる処理
     if(auto lift_obj = lift_object_.lock()) {
         auto   owner_col  = owner->GetComponent<ComponentCollisionCapsule>();    //オーナーのコリジョンを取得
@@ -53,8 +54,8 @@ void ComponentLift::Update()
                 //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
                 if(length(vec_owner_to_obj) < most_near_distance) {
                     most_near_distance = length(vec_owner_to_obj);
+                    lift_object_       = obj;    //持ち上げオブジェクトを代入
                 }
-                lift_object_ = obj;    //持ち上げオブジェクトを代入
             }
             if(auto lift_col = lift_object_.lock()->GetComponent<ComponentCollision>()) {
                 lift_col->SetEnableFlag(false);
