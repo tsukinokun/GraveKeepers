@@ -3,6 +3,7 @@
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
 #include "ScenePlay.h"
+#include <chrono>
 #include "Player.h"
 #include "Enemy.h"
 #include "Camera.h"
@@ -25,6 +26,8 @@ bool ScenePlay::Init()
     }
 
     auto camera = Scene::Object::Create<Camera>();
+  
+    previousTime_ = std::chrono::high_resolution_clock::now();
 
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
         auto block = Scene::Object::Create<Block>();
@@ -49,6 +52,24 @@ void ScenePlay::Draw()
     __super::Draw();
 
     // ここにゲームの描画処理を追加
+
+    // 時間差分を計算
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    auto deltaTime   = currentTime - previousTime_;
+    previousTime_    = currentTime;
+
+    // タイマーを減算（カウントダウン）
+    TIMER_COUNT_ -= std::chrono::duration<float>(deltaTime).count();
+    if(TIMER_COUNT_ < 0.0f) {
+        TIMER_COUNT_ = 0.0f;
+    }
+
+    // 分と秒に変換（ゼロ埋め付き表示）
+    int minutes = static_cast<int>(TIMER_COUNT_) / 60;
+    int seconds = static_cast<int>(TIMER_COUNT_) % 60;
+
+    // タイマーを画面に描画（DxLib関数）
+    DrawFormatString(100, 50, GetColor(255, 255, 0), "%02d:%02d", minutes, seconds);
 }
 
 //---------------------------------------------------------------------------------

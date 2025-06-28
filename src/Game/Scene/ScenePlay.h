@@ -21,6 +21,8 @@ public:
     void GUI() override;       //!< GUI表示
 
 private:
-    const int ENEMY_MAX_     = 3;
+    float                                          TIMER_COUNT_ = 120.0f;
+    const int                                      ENEMY_MAX_   = 3;
+    std::chrono::high_resolution_clock::time_point previousTime_;
     const int BLOCK_NUM_MAX_ = 10;
 };
