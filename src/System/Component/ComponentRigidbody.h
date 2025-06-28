@@ -27,7 +27,7 @@ public:
 
 private:
     float3 velocity_      = float3(0.0f, 0.0f, 0.0f);    //速度
-    float  damping_ratio_ = 0.9;                         //減衰率、この値で毎フレームvelocity_にスケールをすることで速度を減衰させる。
+    float  damping_ratio_ = 0.9f;                        //減衰率、この値で毎フレームvelocity_にスケールをすることで速度を減衰させる。
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

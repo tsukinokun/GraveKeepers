@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //!	@file	ScenePlay.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
+#include "Player.h"
 #include "ScenePlay.h"
 #include <chrono>
-#include "Player.h"
 #include "Enemy.h"
 #include "Camera.h"
 #include "Field.h"
@@ -20,12 +20,12 @@ bool ScenePlay::Init()
 
     auto field = Scene::Object::Create<Field>();
 
-    auto player = Scene::Object::Create<Player>();
+    player_ = Scene::Object::Create<Player>();
 
     for(int i = 0; i < ENEMY_MAX_; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
     }
-  
+
     previousTime_ = std::chrono::high_resolution_clock::now();
 
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
@@ -74,6 +74,9 @@ void ScenePlay::Draw()
 
     // タイマーを画面に描画（DxLib関数）
     DrawFormatString(100, 50, GetColor(255, 255, 0), "%02d:%02d", minutes, seconds);
+
+    int player_hp = player_->GetHP();
+    DrawFormatString(50, WINDOW_H - 50, GetColor(255, 255, 255), "%d", player_hp);
 }
 
 //---------------------------------------------------------------------------------

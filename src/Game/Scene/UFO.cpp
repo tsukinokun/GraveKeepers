@@ -33,9 +33,12 @@ void UFO::Draw()
     auto pos   = GetTranslate();
     auto scale = GetScaleAxisXYZ();
 
-    auto size  = 5;
+    //四角のサイズ
+    auto size = 5;
+    //四角の高さ
     auto hight = 0.5f;
 
+    //四角を描画する用の変数
     float3 p1 = pos + float3(size, 0, 0) * scale;
     float3 p2 = pos + float3(-size, 0, 0) * scale;
     float3 p3 = pos + float3(0, 0, size) * scale;

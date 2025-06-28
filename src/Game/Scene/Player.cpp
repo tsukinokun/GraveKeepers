@@ -52,6 +52,7 @@ bool Player::Init()
         });
 
     SetName(u8"プレイヤー");
+    hp_ = HP_MAX_;
     return true;
 }
 
@@ -120,4 +121,9 @@ void Player::Exit()
 void Player::GUI()
 {
     __super::GUI();
+}
+
+int Player::GetHP()
+{
+    return hp_;
 }
