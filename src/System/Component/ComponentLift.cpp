@@ -75,6 +75,12 @@ void ComponentLift::Update()
                 if(obj->GetComponent<ComponentLiftable>()->IsLifted()) {
                     continue;
                 }
+                //オブジェクトが持ち上げ中ならコンテニュー
+                if(auto obj_lif_comp = obj->GetComponent<ComponentLift>()) {
+                    if(obj_lif_comp->IsLifting()) {
+                        continue;
+                    }
+                }
                 //オブジェクトとオーナーのベクトルを取得
                 float3 vec_owner_to_obj = owner->GetMatrix().translate() - obj->GetMatrix().translate();
                 //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
@@ -146,6 +152,17 @@ bool ComponentLift::CheckLiftObjName(const std::string& name)
         }
     }
     return true;
+}
+
+//---------------------------------------------------------------------------
+//! @brief	持ち上げ中か否かを返す関数
+//---------------------------------------------------------------------------
+bool ComponentLift::IsLifting()
+{
+    if(lift_object_.lock() != nullptr) {
+        return true;
+    }
+    return false;
 }
 
 CEREAL_REGISTER_TYPE(ComponentLift)

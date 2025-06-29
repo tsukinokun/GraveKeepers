@@ -29,8 +29,12 @@ public:
 
     //名前から、監視対象になるオブジェクトかどうかを返す
     //! @param name [in] チェックしたい名前
+    //! @retval true 監視対象になる
     bool CheckLiftObjName(const std::string& name);
 
+    //持ち上げ中か否かを返す関数
+    //! @return 持ち上げ中か否か
+    bool IsLifting();
     //! @}
 
 private:
