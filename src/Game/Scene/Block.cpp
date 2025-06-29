@@ -5,6 +5,7 @@
 #include "Block.h"
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentRigidbody.h>
+#include <System/Component/ComponentLiftable.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -15,6 +16,7 @@ bool Block::Init()
 
     SetName(u8"ブロック");
     AddComponent<ComponentRigidbody>();
+    AddComponent<ComponentLiftable>();    //持ち上げられ機能コンポーネント
     auto block_com = AddComponent<ComponentCollisionCapsule>();
     block_com->UseGravity();
     block_com->SetRadius(RADUIS_);

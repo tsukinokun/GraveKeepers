@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 #include <System/Component/ComponentLift.h>
+#include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentRigidbody.h>
 
@@ -35,6 +36,7 @@ void ComponentLift::Update()
         //投げる
         if(conditions_for_throw_()) {
             if(auto lift_obj = lift_object_.lock()) {
+                lift_obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(false);
                 auto   lift_rb        = lift_obj->GetComponent<ComponentRigidbody>();
                 float3 throw_impulse_ = float3(0.0f, throw_virtical_power_, 0.0f);
                 float3 owner_rot      = owner->GetRotationAxisXYZ();    //オーナーの向きを取得
@@ -69,6 +71,16 @@ void ComponentLift::Update()
                 if(!CheckLiftObjName(def_name.data())) {
                     continue;
                 }
+                //オブジェクトが持ち上げられ中ならコンティニュー
+                if(obj->GetComponent<ComponentLiftable>()->IsLifted()) {
+                    continue;
+                }
+                //オブジェクトが持ち上げ中ならコンテニュー
+                if(auto obj_lif_comp = obj->GetComponent<ComponentLift>()) {
+                    if(obj_lif_comp->IsLifting()) {
+                        continue;
+                    }
+                }
                 //オブジェクトとオーナーのベクトルを取得
                 float3 vec_owner_to_obj = owner->GetMatrix().translate() - obj->GetMatrix().translate();
                 //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
@@ -77,7 +89,9 @@ void ComponentLift::Update()
                     lift_object_       = obj;    //持ち上げオブジェクトを代入
                 }
             }
-            if(auto lift_col = lift_object_.lock()->GetComponent<ComponentCollision>()) {
+            if(auto obj = lift_object_.lock()) {
+                obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(true);
+                auto lift_col = obj->GetComponent<ComponentCollision>();
                 lift_col->SetEnableFlag(false);
                 lift_col->UseGravity(false);
             }
@@ -138,6 +152,17 @@ bool ComponentLift::CheckLiftObjName(const std::string& name)
         }
     }
     return true;
+}
+
+//---------------------------------------------------------------------------
+//! @brief	持ち上げ中か否かを返す関数
+//---------------------------------------------------------------------------
+bool ComponentLift::IsLifting()
+{
+    if(lift_object_.lock() != nullptr) {
+        return true;
+    }
+    return false;
 }
 
 CEREAL_REGISTER_TYPE(ComponentLift)
