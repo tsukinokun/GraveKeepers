@@ -75,6 +75,10 @@ void ComponentLift::Update()
                 if(obj->GetComponent<ComponentLiftable>()->IsLifted()) {
                     continue;
                 }
+                //オーナーが持ち上げられ中なら持ち上げない
+                if(owner->GetComponent<ComponentLiftable>()->IsLifted()) {
+                    continue;
+                }
                 //オブジェクトが持ち上げ中ならコンテニュー
                 if(auto obj_lif_comp = obj->GetComponent<ComponentLift>()) {
                     if(obj_lif_comp->IsLifting()) {

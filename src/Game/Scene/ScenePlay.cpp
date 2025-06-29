@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //!	@file	ScenePlay.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
@@ -25,7 +25,7 @@ bool ScenePlay::Init()
     for(int i = 0; i < ENEMY_MAX_; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
     }
-  
+
     previousTime_ = std::chrono::high_resolution_clock::now();
 
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
