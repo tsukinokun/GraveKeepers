@@ -76,7 +76,10 @@ void ScenePlay::Draw()
     DrawFormatString(100, 50, GetColor(255, 255, 0), "%02d:%02d", minutes, seconds);
 
     int player_hp = player_->GetHP();
-    DrawFormatString(50, WINDOW_H - 50, GetColor(255, 255, 255), "%d", player_hp);
+    SetFontSize(50);
+    ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
+    DrawFormatString(100, WINDOW_H / 2 + 50, GetColor(0, 255, 255), "%d", player_hp);
+    SetFontSize(20);
 }
 
 //---------------------------------------------------------------------------------
