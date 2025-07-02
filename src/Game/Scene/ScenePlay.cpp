@@ -75,10 +75,13 @@ void ScenePlay::Draw()
     // タイマーを画面に描画（DxLib関数）
     DrawFormatString(100, 50, GetColor(255, 255, 0), "%02d:%02d", minutes, seconds);
 
+    //プレイヤーのHPを取得
     int player_hp = player_->GetHP();
     SetFontSize(50);
     ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
+    //HPの表示
     DrawFormatString(100, WINDOW_H / 2 + 50, GetColor(0, 255, 255), "%d", player_hp);
+    DrawBox(100, WINDOW_H / 2 + 25, 100 + 50 * 3, WINDOW_H / 2 + 75, GetColor(0, 0, 255), false);
     SetFontSize(20);
 }
 
