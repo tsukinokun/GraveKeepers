@@ -5,6 +5,7 @@
 #include "Field.h"
 #include <System/Component/ComponentModel.h>
 #include <System/Component/ComponentCollisionModel.h>
+#include <System/Component/ComponentLiftable.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -47,8 +48,22 @@ void Field::Exit()
     __super::Exit();
 }
 
-//!GUI表示
+//---------------------------------------------------------------------------------
+////! GUI表示
+//---------------------------------------------------------------------------------
 void Field::GUI()
 {
     __super::GUI();
+}
+
+//---------------------------------------------------------------------------------
+//! ヒット時処理
+//---------------------------------------------------------------------------------
+void Field::OnHit(const ComponentCollision::HitInfo& hit_info)
+{
+    __super::OnHit(hit_info);
+    auto hit_owner = hit_info.hit_collision_->GetOwner();
+    if(auto hit_comp_liftable = hit_owner->GetComponent<ComponentLiftable>()) {
+        hit_comp_liftable->SetLiftedFlag(false);
+    }
 }
