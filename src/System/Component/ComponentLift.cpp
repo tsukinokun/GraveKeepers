@@ -36,7 +36,6 @@ void ComponentLift::Update()
         //投げる
         if(conditions_for_throw_()) {
             if(auto lift_obj = lift_object_.lock()) {
-                lift_obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(false);
                 auto   lift_rb        = lift_obj->GetComponent<ComponentRigidbody>();
                 float3 throw_impulse_ = float3(0.0f, throw_virtical_power_, 0.0f);
                 float3 owner_rot      = owner->GetRotationAxisXYZ();    //オーナーの向きを取得

@@ -16,11 +16,12 @@ public:
     BP_OBJECT_DECL(Field, u8"プレイシーンのフィールド")
 
     //@}
-    bool Init() override;      //!< 初期化
-    void Update() override;    //!< 更新
-    void Draw() override;      //!< 描画
-    void Exit() override;      //!< 終了
-    void GUI() override;       //!< GUI表示
+    bool Init() override;                                                //!< 初期化
+    void Update() override;                                              //!< 更新
+    void Draw() override;                                                //!< 描画
+    void Exit() override;                                                //!< 終了
+    void GUI() override;                                                 //!< GUI表示
+    void OnHit(const ComponentCollision::HitInfo& hit_info) override;    //!< ヒット時処理
 
 private:
 };
