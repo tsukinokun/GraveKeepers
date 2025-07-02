@@ -67,33 +67,56 @@ void Enemy::Update()
 {
     __super::Update();
     //-------ここに区切られているものはAI出来たら消してください-------------
-    squat_timer_--;
-    jump_timer_--;
-    face_down_timer_--;
-    if(lifting_block_ == false)
-        lift_timer_--;
-    else
-        throw_timer_--;
-    //------------------------------------------------------------------
-    //ジャンプをしていないなら
-    if(squat_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
-        //ジャンプをできない状態にする
-        GetComponent<ComponentJump>()->SetEnable();
-        //高さを半径にする
-        neutral_pos_ = SQUAT_TOP_POINT_;
-        if(squat_timer_ < -RANDOM_TIME_MIN_) {
-            squat_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+    if(!GetComponent<ComponentLiftable>()->IsLifted()) {
+        squat_timer_--;
+        jump_timer_--;
+        face_down_timer_--;
+        if(lifting_block_ == false)
+            lift_timer_--;
+        else
+            throw_timer_--;
+        //------------------------------------------------------------------
+        //ジャンプをしていないなら
+        if(squat_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
+            //ジャンプをできない状態にする
+            GetComponent<ComponentJump>()->SetEnable();
+            //高さを半径にする
+            neutral_pos_ = SQUAT_TOP_POINT_;
+            if(squat_timer_ < -RANDOM_TIME_MIN_) {
+                squat_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+            }
         }
-    }
-    else if(face_down_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
-        //ジャンプをできない状態にする
-        GetComponent<ComponentJump>()->SetEnable();
-        //高さを半径にする
-        neutral_pos_ = FACE_DOWN_TOP_POINT_;
-        //しゃがんでいると返す
-        is_face_down_ = true;
+        else if(face_down_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
+            //ジャンプをできない状態にする
+            GetComponent<ComponentJump>()->SetEnable();
+            //高さを半径にする
+            neutral_pos_ = FACE_DOWN_TOP_POINT_;
+            //しゃがんでいると返す
+            is_face_down_ = true;
+            if(face_down_timer_ < -RANDOM_TIME_MIN_) {
+                face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+            }
+        }
+        else {
+            //高さを半径の3倍にする
+            neutral_pos_ = TOP_POINT_;
+            //しゃがんでいないと返す
+            is_face_down_ = false;
+        }
+
+        if(jump_timer_ < -RANDOM_TIME_MIN_) {
+            jump_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+        }
         if(face_down_timer_ < -RANDOM_TIME_MIN_) {
-            face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+            face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+        }
+        if(lift_timer_ < -RANDOM_TIME_MIN_) {
+            lift_timer_    = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+            lifting_block_ = true;
+        }
+        if(throw_timer_ < -RANDOM_TIME_MIN_) {
+            throw_timer_   = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+            lifting_block_ = false;
         }
     }
     else {
@@ -101,21 +124,6 @@ void Enemy::Update()
         neutral_pos_ = TOP_POINT_;
         //しゃがんでいないと返す
         is_face_down_ = false;
-    }
-
-    if(jump_timer_ < -RANDOM_TIME_MIN_) {
-        jump_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-    }
-    if(face_down_timer_ < -RANDOM_TIME_MIN_) {
-        face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-    }
-    if(lift_timer_ < -RANDOM_TIME_MIN_) {
-        lift_timer_    = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-        lifting_block_ = true;
-    }
-    if(throw_timer_ < -RANDOM_TIME_MIN_) {
-        throw_timer_   = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-        lifting_block_ = false;
     }
     //コリジョンの高さの設定
     GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + neutral_pos_);
