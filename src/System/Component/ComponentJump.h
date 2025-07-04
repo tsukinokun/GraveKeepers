@@ -27,8 +27,9 @@ public:
     //! @param value [in] y座標に飛び上がる高さ
     void SetJumpImpulse(float value);
 
-    //ジャンプをできないようにするための関数
-    void SetEnable();
+    //有効無効をセット
+    //! @param enable_flag [in] ジャンプが有効か無効か
+    void SetEnable(bool enable_flag = true);
 
     //ジャンプをしているかを返す関数
     bool IsJumping();

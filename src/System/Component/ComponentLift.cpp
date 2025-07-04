@@ -104,6 +104,10 @@ void ComponentLift::Update()
                 if(rad > D2R(lift_angle_)) {
                     continue;    //コンティニュー
                 }
+                //ベクトルの長さが持ち上げられる範囲を超えていたら
+                if(length(vec_owner_to_obj) > float1(lift_distance_)) {
+                    continue;    //コンティニュー
+                }
                 //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
                 if(length(vec_owner_to_obj) < most_near_distance) {
                     most_near_distance = length(vec_owner_to_obj);

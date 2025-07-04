@@ -49,7 +49,8 @@ private:
     float throw_virtical_power_   = 3.0f;    //垂直方向に投げる力
     float throw_horizontal_power_ = 4.0f;    //水平方向に投げる力
 
-    float lift_angle_ = 25.0f;    //オブジェクトを持ち上げられる角度
+    float lift_angle_    = 40.0f;    //オブジェクトを持ち上げられる角度
+    float lift_distance_ = 7.0f;     //オブジェクトを持ち上げることが可能な距離
 
     //--------------------------------------------------------------------
     //! @name Cereal処理
