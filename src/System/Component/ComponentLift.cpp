@@ -85,8 +85,25 @@ void ComponentLift::Update()
                         continue;
                     }
                 }
+                //オーナーの正面ベクトルを取得
+                float3 owner_front = float3(0.0f, 0.0f, 0.0f);
+                float3 owner_rot   = owner->GetRotationAxisXYZ();
+                owner_front.x      = -1.0f * sinf(D2R(owner_rot.y));
+                owner_front.z      = -1.0f * cosf(D2R(owner_rot.y));
+                //一応正規化
+                owner_front = normalize(owner_front);
                 //オブジェクトとオーナーのベクトルを取得
-                float3 vec_owner_to_obj = owner->GetMatrix().translate() - obj->GetMatrix().translate();
+                float3 vec_owner_to_obj = obj->GetMatrix().translate() - owner->GetMatrix().translate();
+                //単位ベクトルを求める
+                float3 normalize_vec = normalize(vec_owner_to_obj);
+                //オブジェクトと持ち上げオーナーの内積を求める
+                float obj_to_owner_dot = dot(owner_front, normalize_vec);
+                //内積から角度を求める
+                float rad = acosf(obj_to_owner_dot);
+                //角度が持ち上げ可能角度におさまっていなければ
+                if(rad > D2R(lift_angle_)) {
+                    continue;    //コンティニュー
+                }
                 //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
                 if(length(vec_owner_to_obj) < most_near_distance) {
                     most_near_distance = length(vec_owner_to_obj);
