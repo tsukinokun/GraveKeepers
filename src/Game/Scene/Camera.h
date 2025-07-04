@@ -22,5 +22,12 @@ public:
     void Exit() override;      //!< 終了
     void GUI() override;       //!< GUI表示
 
+    void GetPlayerHP(int set_hp);
+
 private:
+    const int FONT_SIZE        = 50;
+    const int SET_FONT_SIZE    = 50;
+    const int WINDOW_W_QUARTER = WINDOW_W / 4;
+
+    int player_hp_ = 0;
 };

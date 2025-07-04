@@ -20,7 +20,7 @@ bool ScenePlay::Init()
 
     auto field = Scene::Object::Create<Field>();
 
-    player_ = Scene::Object::Create<Player>();
+    auto player = Scene::Object::Create<Player>();
 
     for(int i = 0; i < ENEMY_MAX_; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
@@ -46,6 +46,10 @@ void ScenePlay::Update()
 {
     __super::Update();
     // ここにゲームの更新処理を追加
+    //プレイヤーのHPをカメラに与える
+    auto player = Scene::Object::Get<Player>(u8"プレイヤー");
+    auto camera = Scene::Object::Get<Camera>("Camera");
+    camera->GetPlayerHP(player->GetHP());
 }
 
 //---------------------------------------------------------------------------------
@@ -56,6 +60,8 @@ void ScenePlay::Draw()
     __super::Draw();
 
     // ここにゲームの描画処理を追加
+    //文字の回りに黒い縁を追加
+    ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
 
     // 時間差分を計算
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -74,15 +80,6 @@ void ScenePlay::Draw()
 
     // タイマーを画面に描画（DxLib関数）
     DrawFormatString(100, 50, GetColor(255, 255, 0), "%02d:%02d", minutes, seconds);
-
-    //プレイヤーのHPを取得
-    int player_hp = player_->GetHP();
-    SetFontSize(50);
-    ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
-    //HPの表示
-    DrawFormatString(100, WINDOW_H / 2 + 50, GetColor(0, 255, 255), "%d", player_hp);
-    DrawBox(100, WINDOW_H / 2 + 25, 100 + 50 * 3, WINDOW_H / 2 + 75, GetColor(0, 0, 255), false);
-    SetFontSize(20);
 }
 
 //---------------------------------------------------------------------------------

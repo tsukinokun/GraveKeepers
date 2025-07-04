@@ -25,6 +25,4 @@ private:
     const int                                      ENEMY_MAX_   = 3;
     std::chrono::high_resolution_clock::time_point previousTime_;
     const int                                      BLOCK_NUM_MAX_ = 10;
-
-    std::shared_ptr<Player> player_;
 };
