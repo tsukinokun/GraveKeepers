@@ -82,9 +82,9 @@ void ComponentJump::SetJumpImpulse(float value)
 //---------------------------------------------------------------------------
 //! @brief	有効無効をセット
 //---------------------------------------------------------------------------
-void ComponentJump::SetEnable()
+void ComponentJump::SetEnable(bool enable_flag)
 {
-    set_enable_ = true;
+    set_enable_ = enable_flag;
 }
 
 //---------------------------------------------------------------------------
