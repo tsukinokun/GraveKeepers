@@ -18,7 +18,7 @@ bool Field::Init()
     auto model_comp = AddComponent<ComponentModel>("data/Sample/PoyPoy/Field/field.mv1");
     AddComponent<ComponentCollisionModel>()->AttachToModel();    //< GUIでの 「モデルにコリジョンを張り付ける」動作
     //座標の設定
-    SetTranslate({0, 0, 0});
+    SetTranslate({0, -1, 0});
     //モデルを１０倍している
     SetScaleAxisXYZ(10.0f);
     return true;

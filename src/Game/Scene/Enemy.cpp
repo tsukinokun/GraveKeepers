@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 //!	@file	Enemy.cpp
 //! @brief	エネミー
 //---------------------------------------------------------------------------
@@ -54,6 +54,8 @@ bool Enemy::Init()
             }
             return false;
         });
+    //HPの初期化
+    hp_ = HP_MAX_;
 
     SetName(u8"エネミー");
 
@@ -164,6 +166,11 @@ void Enemy::GUI()
     __super::GUI();
 }
 
+
+int Enemy::GetHP()
+{
+    return hp_;
+}
 //---------------------------------------------------------------------------------
 //!	ヒット時処理
 //---------------------------------------------------------------------------------
@@ -171,15 +178,19 @@ void Enemy::OnHit(const ComponentCollision::HitInfo& hit_info)
 {
     __super::OnHit(hit_info);
     auto hit_owner = hit_info.hit_collision_->GetOwner();
-    if(auto hit_liftable = hit_owner->GetComponent<ComponentLiftable>()) {
+    if(auto hit_liftable = hit_owner->GetComponent<ComponentLiftable>())
+    {
         //持ち上げられ中(空中)でなければ
-        if(!hit_liftable->IsLifted()) {
+        if(!hit_liftable->IsLifted()) 
+        {
             return;    //早期リターン
         }
         //剛体を取得
-        if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>()) {
+        if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>())
+        {
             //触ったオブジェクトの速度が少しでもあれば
-            if(length(hit_rb->GetVelocity()) > float1(1.0f)) {
+            if(length(hit_rb->GetVelocity()) > float1(1.0f)) 
+            {
                 GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
             }
         }

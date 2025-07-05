@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 //!	@file	Enemy.h
 //! @brief	エネミーヘッダー
 //---------------------------------------------------------------------------
@@ -22,6 +22,9 @@ public:
     void Exit() override;      //!< 終了
     void GUI() override;       //!< GUI表示
 
+
+    int GetHP();    //!<HPの値を渡す関数
+
     void OnHit(const ComponentCollision::HitInfo& hit_info);
 
 private:
@@ -30,19 +33,21 @@ private:
     const float SQUAT_TOP_POINT_     = RADIUS_ * 2;    //しゃがんでいるときの頭の位置
     const float FACE_DOWN_TOP_POINT_ = RADIUS_;        //うつ伏せの時の頭の位置
     const int   PUT_RADIUS_MAX_      = 50;             //出現する範囲の最大
+    const int   HP_MAX_              = 200;            //HPの最大値
 
     float neutral_pos_  = TOP_POINT_;    //円の位置の高さ
     bool  is_face_down_ = false;         //うつ伏せの状態かを確認する用の変数
+    int   hp_           = 0;             //HP用の変数
 
     //以下のものはAIができたら消してください
     const int RANDOM_TIME_MIN_ = 60;                       //しゃがむ時間の最小時間
     const int RANDOM_TIME_MAX_ = RANDOM_TIME_MIN_ * 10;    //しゃがむ時間の最大時間
 
-    int squat_timer_;        //しゃがむまでの時間
-    int jump_timer_;         //ジャンプするまでの時間
-    int face_down_timer_;    //うつ伏せするまでの時間
+    int squat_timer_     = 0;    //しゃがむまでの時間
+    int jump_timer_      = 0;    //ジャンプするまでの時間
+    int face_down_timer_ = 0;    //うつ伏せするまでの時間
 
     bool lifting_block_ = false;
-    int  lift_timer_;     //ブロックを持ち上げるまでの時間
-    int  throw_timer_;    //ブロックを投げるまでの時間
+    int  lift_timer_    = 0;    //ブロックを持ち上げるまでの時間
+    int  throw_timer_   = 0;    //ブロックを投げるまでの時間
 };

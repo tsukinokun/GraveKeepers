@@ -2,9 +2,9 @@
 //!	@file	ScenePlay.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
+#include "Player.h"
 #include "ScenePlay.h"
 #include <chrono>
-#include "Player.h"
 #include "Enemy.h"
 #include "Camera.h"
 #include "Field.h"
@@ -55,6 +55,18 @@ void ScenePlay::Update()
 {
     __super::Update();
     // ここにゲームの更新処理を追加
+    //プレイヤーのHPをカメラに与える
+    auto player = Scene::Object::Get<Player>(u8"プレイヤー");
+    auto camera = Scene::Object::Get<Camera>("Camera");
+
+    camera->GetPlayerHP(player->GetHP());
+    camera->GetPlayerHP(player->GetHP());
+    int enemy_num = 0;
+    for(auto enemy : Scene::Object::GetArray<Enemy>()) {
+        //エネミーのHPをカメラに与える
+        camera->GetEnemyHP(enemy->GetHP(), enemy_num);
+        enemy_num++;
+    }
 }
 
 //---------------------------------------------------------------------------------
@@ -65,6 +77,8 @@ void ScenePlay::Draw()
     __super::Draw();
 
     // ここにゲームの描画処理を追加
+    //文字の回りに黒い縁を追加
+    ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
 
     // 時間差分を計算
     auto currentTime = std::chrono::high_resolution_clock::now();

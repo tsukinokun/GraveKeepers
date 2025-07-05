@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <System/Scene.h>
 #include <System/Component/Component.h>
 
@@ -44,7 +44,7 @@ private:
 
     std::weak_ptr<Object> lift_object_;    //持ち上げているオブジェクト
 
-    const std::vector<std::string> IGNORE_NAMES_ = {"Camera", "Field", "UFO", "Wall"};    //チェックする名前
+    const std::vector<std::string> IGNORE_NAMES_ = {"Camera", "Field", "UFO", "DebugCamera"};    //チェックする名前
 
     float throw_virtical_power_   = 0.0f;      //垂直方向に投げる力
     float throw_horizontal_power_ = 300.0f;    //水平方向に投げる力
