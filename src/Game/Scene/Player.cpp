@@ -51,8 +51,11 @@ bool Player::Init()
             return false;
         });
 
-    SetName(u8"プレイヤー");
+    //HPの初期化
     hp_ = HP_MAX_;
+
+    SetName(u8"プレイヤー");
+
     return true;
 }
 

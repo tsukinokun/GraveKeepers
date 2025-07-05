@@ -52,6 +52,8 @@ bool Enemy::Init()
             }
             return false;
         });
+    //HPの初期化
+    hp_ = HP_MAX_;
 
     SetName(u8"エネミー");
 
@@ -152,4 +154,9 @@ void Enemy::Exit()
 void Enemy::GUI()
 {
     __super::GUI();
+}
+
+int Enemy::GetHP()
+{
+    return hp_;
 }

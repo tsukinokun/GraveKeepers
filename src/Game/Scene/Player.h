@@ -22,7 +22,7 @@ public:
     void Exit() override;      //!< 終了
     void GUI() override;       //!< GUI表示
 
-    int GetHP();
+    int GetHP();    //!<HPの値を渡す関数
 
 private:
     const float RADIUS_              = 2.0f;           //半径
@@ -33,5 +33,5 @@ private:
 
     float neutralpos_   = TOP_POINT_;    //円の位置の高さ
     bool  is_face_down_ = false;         //うつ伏せの状態かを確認する用の変数
-    int   hp_;
+    int   hp_           = 0;             //HP用の変数
 };

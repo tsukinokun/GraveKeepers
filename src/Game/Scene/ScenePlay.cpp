@@ -49,7 +49,15 @@ void ScenePlay::Update()
     //プレイヤーのHPをカメラに与える
     auto player = Scene::Object::Get<Player>(u8"プレイヤー");
     auto camera = Scene::Object::Get<Camera>("Camera");
+
     camera->GetPlayerHP(player->GetHP());
+    camera->GetPlayerHP(player->GetHP());
+    int enemy_num = 0;
+    for(auto enemy : Scene::Object::GetArray<Enemy>()) {
+        //エネミーのHPをカメラに与える
+        camera->GetEnemyHP(enemy->GetHP(), enemy_num);
+        enemy_num++;
+    }
 }
 
 //---------------------------------------------------------------------------------
