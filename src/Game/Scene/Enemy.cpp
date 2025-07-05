@@ -20,7 +20,7 @@ bool Enemy::Init()
     AddComponent<ComponentLiftable>();    //持ち上げられ機能コンポーネント
     SetTranslate({GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2, 2, GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2});
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
-    col_comp->UseGravity();
+    //col_comp->UseGravity();
     col_comp->SetRadius(RADIUS_);                   // 球コリジョンの半径を2.0 にする
     col_comp->SetHeight(RADIUS_ + neutral_pos_);    // 球コリジョンの高さを半径の４倍 にする
     auto jump_comp = AddComponent<ComponentJump>();

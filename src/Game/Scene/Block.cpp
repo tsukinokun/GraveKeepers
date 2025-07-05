@@ -18,7 +18,7 @@ bool Block::Init()
     AddComponent<ComponentRigidbody>();
     AddComponent<ComponentLiftable>();    //持ち上げられ機能コンポーネント
     auto block_com = AddComponent<ComponentCollisionCapsule>();
-    block_com->UseGravity();
+    //block_com->UseGravity();
     block_com->SetRadius(RADUIS_);
     SetTranslate(float3(0.0f, 0.0f, 10.0f));
     return true;
