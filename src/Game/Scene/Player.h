@@ -22,6 +22,8 @@ public:
     void Exit() override;      //!< 終了
     void GUI() override;       //!< GUI表示
 
+    void OnHit(const ComponentCollision::HitInfo& hit_info) override;
+
 private:
     const float RADIUS_              = 2.0f;           //半径
     const float TOP_POINT_           = RADIUS_ * 3;    //しゃがんでいない頭の位置
