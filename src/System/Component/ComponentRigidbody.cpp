@@ -84,5 +84,13 @@ void ComponentRigidbody::SetUseGravity(bool use_gravity_flag)
 {
     use_gravity_ = use_gravity_flag;
 }
+
+//---------------------------------------------------------------------------
+//! @brief  速度を取得
+//---------------------------------------------------------------------------
+float3 ComponentRigidbody::GetVelocity() const
+{
+    return velocity_;
+}
 CEREAL_REGISTER_TYPE(ComponentRigidbody)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentRigidbody)

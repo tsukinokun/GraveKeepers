@@ -30,6 +30,10 @@ public:
     //重力を使用するかを変更
     //! @param use_gravity_flag [in] 重力を使用するかフラグ
     void SetUseGravity(bool use_gravity_flag);
+
+    //速度を取得する
+    //! @retval [in] 速度
+    float3 GetVelocity() const;
     //! @}
 
 private:

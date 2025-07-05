@@ -30,7 +30,7 @@ void ComponentLift::Update()
         lift_obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(true);
         auto   owner_col  = owner->GetComponent<ComponentCollisionCapsule>();    //オーナーのコリジョンを取得
         float3 end        = owner->GetTranslate();                               //高さ
-        end.y            += (owner_col->GetHeight() + 4);                        //終点座標は頭なので、高さの半分を足す。
+        end.y            += (owner_col->GetHeight() + 2.0f);                     //終点座標は頭なので、高さの半分を足す。
         //持ち上げ対象を持ち上げる
         lift_obj->SetTranslate(end);
 
