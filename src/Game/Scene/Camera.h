@@ -22,12 +22,16 @@ public:
     void Exit() override;      //!< 終了
     void GUI() override;       //!< GUI表示
 
-    void GetPlayerHP(int set_hp);
+    void GetPlayerHP(int set_hp);    //!< プレイヤーのHPを取得
 
 private:
-    const int FONT_SIZE        = 50;
-    const int SET_FONT_SIZE    = 50;
-    const int WINDOW_W_QUARTER = WINDOW_W / 4;
+    void DrawHP(float pos_x, float str);    //!< HPの描画
 
-    int player_hp_ = 0;
+    const int   SET_FONT_SIZE    = 50;              // フォントサイズ
+    const float WINDOW_W_QUARTER = WINDOW_W / 4;    // WINDOW_Wの1/4の位置
+
+    const float HP_POS_Y = WINDOW_H - SET_FONT_SIZE * 2;
+    const float HP_BOX_H = HP_POS_Y + SET_FONT_SIZE;
+
+    int player_hp_ = 0;    //プレイヤーのHP
 };

@@ -35,28 +35,18 @@ void Camera::Draw()
 {
     __super::Draw();
 
-    //文字の数を取得（HPが200を超えることがないため一番幅が大きいであろう8の3つでサイズ取得を代用）
-    int hp_string_w = GetStringLength("888");
-    //文字を半分ずらす
-    int hp_string_w_half = hp_string_w / 2;
-    int hp_string_h_half = SET_FONT_SIZE / 2;
-
-    //HPの描画座標
-    int player_hp_pos_x = WINDOW_W_QUARTER - SET_FONT_SIZE * hp_string_w_half;
-    int player_hp_pos_y = WINDOW_H - SET_FONT_SIZE;
-
-    //HPの回りのボックスの幅
-    int player_hp_box_pos_w = WINDOW_W_QUARTER + SET_FONT_SIZE * hp_string_w_half;
-    int player_hp_box_pos_h = player_hp_pos_y + SET_FONT_SIZE;
-
     //フォントサイズの変更
     SetFontSize(SET_FONT_SIZE);
+    ////文字の幅を取得
+    auto player_str_nam = GetDrawFormatStringWidth("%3d", player_hp_, -1);
+    ////文字数の真ん中
+    float player_hp_str_half = player_str_nam / 2.0f;
+
+    ////HPの描画座標
+    float player_hp_pos_x = WINDOW_W_QUARTER - player_hp_str_half;
+
     //HPの表示
-    DrawFormatString(player_hp_pos_x, player_hp_pos_y, GetColor(0, 255, 255), "%3d", player_hp_);
-
-    DrawBox(player_hp_pos_x, player_hp_pos_y, player_hp_box_pos_w, player_hp_box_pos_h, GetColor(0, 0, 255), false);
-
-    //DrawLine(WINDOW_W_QUARTER, 0, WINDOW_W_QUARTER, WINDOW_H, GetColor(255, 0, 255));
+    DrawHP(player_hp_pos_x, player_hp_str_half);
 
     //フォントサイズを元に戻す
     SetFontSize(DEFAULT_FONT_SIZE);
@@ -80,4 +70,16 @@ void Camera::GUI()
 void Camera::GetPlayerHP(int set_hp)
 {
     player_hp_ = set_hp;
+}
+
+void Camera::DrawHP(float pos_x, float str)
+{
+    //HPの回りのボックスの幅
+    float hp_box_pos_w = WINDOW_W_QUARTER + str;
+
+    //HPの表示
+    DrawFormatStringF(pos_x, HP_POS_Y, GetColor(0, 255, 255), "%3d", player_hp_);
+
+    //HPの周りの四角(HPの左側に顔があるためボックスのスタートを左にずらす)
+    DrawBoxAA(pos_x - str, HP_POS_Y, hp_box_pos_w, HP_BOX_H, GetColor(0, 0, 255), false);
 }
