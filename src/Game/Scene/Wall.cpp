@@ -1,33 +1,37 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	Block.cpp
-//! @brief	ゲームシーンのブロックオブジェクト
+//!	@file	Wall.cpp
+//! @brief	壁
+//! @author 山崎愛
 //---------------------------------------------------------------------------
-#include "Block.h"
-#include <System/Component/ComponentCollisionCapsule.h>
-#include <System/Component/ComponentRigidbody.h>
+#include "Wall.h"
+#include <System/Component/ComponentModel.h>
+#include <System/Component/ComponentCollisionModel.h>
 #include <System/Component/ComponentLiftable.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
 //---------------------------------------------------------------------------------
-bool Block::Init()
+bool Wall::Init()
 {
     __super::Init();
 
-    SetName(u8"ブロック");
-    AddComponent<ComponentRigidbody>();
-    AddComponent<ComponentLiftable>();    //持ち上げられ機能コンポーネント
-    auto block_com = AddComponent<ComponentCollisionCapsule>();
-    //block_com->UseGravity();
-    block_com->SetRadius(RADUIS_);
-    SetTranslate(float3(0.0f, 0.0f, 10.0f));
+    SetName(u8"Wall");
+    AddRotationAxisXYZ(float3(0.0f, 0.0f, 90.0f));
+    //フィールドの読み込み（仮で山口先生の素材を入れている）
+    auto model_comp = AddComponent<ComponentModel>("data/Sample/PoyPoy/Field/field.mv1");
+    model_comp->SetStatus(Component::StatusBit::NoDraw, true);    //描画をオフにする
+    AddComponent<ComponentCollisionModel>()->AttachToModel();     //< GUIでの 「モデルにコリジョンを張り付ける」動作
+    //座標の設定
+    SetTranslate({0, 0, 0});
+    //モデルを１０倍している
+    SetScaleAxisXYZ(10.0f);
     return true;
 }
 
 //---------------------------------------------------------------------------------
 //!	更新
 //---------------------------------------------------------------------------------
-void Block::Update()
+void Wall::Update()
 {
     __super::Update();
 }
@@ -35,23 +39,21 @@ void Block::Update()
 //---------------------------------------------------------------------------------
 //!	描画
 //---------------------------------------------------------------------------------
-void Block::Draw()
+void Wall::Draw()
 {
     __super::Draw();
-    float3 sphir_pos = float3(GetTranslate() + float3(0.0f, RADUIS_, 0.0f));
-    DrawSphere3D(cast(sphir_pos), RADUIS_, 16, GREEN, GREEN, TRUE);
 }
 
 //---------------------------------------------------------------------------------
 //!	終了
 //---------------------------------------------------------------------------------
-void Block::Exit()
+void Wall::Exit()
 {
     __super::Exit();
 }
 
 //!GUI表示
-void Block::GUI()
+void Wall::GUI()
 {
     __super::GUI();
 }

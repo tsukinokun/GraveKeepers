@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <System/Scene.h>
 #include <System/Component/Component.h>
 
@@ -29,8 +29,12 @@ public:
 
     //名前から、監視対象になるオブジェクトかどうかを返す
     //! @param name [in] チェックしたい名前
+    //! @retval true 監視対象になる
     bool CheckLiftObjName(const std::string& name);
 
+    //持ち上げ中か否かを返す関数
+    //! @return 持ち上げ中か否か
+    bool IsLifting();
     //! @}
 
 private:
@@ -42,8 +46,11 @@ private:
 
     const std::vector<std::string> IGNORE_NAMES_ = {"Camera", "Field", "UFO", "DebugCamera"};    //チェックする名前
 
-    float throw_virtical_power_   = 3.0f;    //垂直方向に投げる力
-    float throw_horizontal_power_ = 4.0f;    //水平方向に投げる力
+    float throw_virtical_power_   = 0.0f;      //垂直方向に投げる力
+    float throw_horizontal_power_ = 300.0f;    //水平方向に投げる力
+
+    float lift_angle_    = 40.0f;    //オブジェクトを持ち上げられる角度
+    float lift_distance_ = 7.0f;     //オブジェクトを持ち上げることが可能な距離
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

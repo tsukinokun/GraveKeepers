@@ -6,6 +6,7 @@
 #pragma once
 #include <System/Component/ComponentJump.h>
 #include <System/Component/ComponentRigidbody.h>
+#include <System/Component/ComponentLiftable.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化処理
@@ -23,7 +24,9 @@ void ComponentJump::Update()
     __super::Update();
     jump_frame_count_--;
     auto owner = GetOwner();
-
+    //オーナーが持ち上げられ状態なら、後の処理は行わない。
+    if(owner->GetComponent<ComponentLiftable>()->IsLifted())
+        return;
     //スペースキー押下でジャンプ
     if(conditions_jump_() && (jump_frame_count_ < 0) && set_enable_ == false) {
         jump_frame_count_ = jump_frame_max_;
@@ -79,9 +82,9 @@ void ComponentJump::SetJumpImpulse(float value)
 //---------------------------------------------------------------------------
 //! @brief	有効無効をセット
 //---------------------------------------------------------------------------
-void ComponentJump::SetEnable()
+void ComponentJump::SetEnable(bool enable_flag)
 {
-    set_enable_ = true;
+    set_enable_ = enable_flag;
 }
 
 //---------------------------------------------------------------------------

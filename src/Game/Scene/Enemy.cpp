@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 //!	@file	Enemy.cpp
 //! @brief	エネミー
 //---------------------------------------------------------------------------
@@ -8,6 +8,7 @@
 #include <System/Component/ComponentJump.h>
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLift.h>
+#include <System/Component/ComponentLiftable.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -16,9 +17,10 @@ bool Enemy::Init()
 {
     __super::Init();
     AddComponent<ComponentRigidbody>();
+    AddComponent<ComponentLiftable>();    //持ち上げられ機能コンポーネント
     SetTranslate({GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2, 2, GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2});
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
-    col_comp->UseGravity();
+    //col_comp->UseGravity();
     col_comp->SetRadius(RADIUS_);                   // 球コリジョンの半径を2.0 にする
     col_comp->SetHeight(RADIUS_ + neutral_pos_);    // 球コリジョンの高さを半径の４倍 にする
     auto jump_comp = AddComponent<ComponentJump>();
@@ -67,33 +69,56 @@ void Enemy::Update()
 {
     __super::Update();
     //-------ここに区切られているものはAI出来たら消してください-------------
-    squat_timer_--;
-    jump_timer_--;
-    face_down_timer_--;
-    if(lifting_block_ == false)
-        lift_timer_--;
-    else
-        throw_timer_--;
-    //------------------------------------------------------------------
-    //ジャンプをしていないなら
-    if(squat_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
-        //ジャンプをできない状態にする
-        GetComponent<ComponentJump>()->SetEnable();
-        //高さを半径にする
-        neutral_pos_ = SQUAT_TOP_POINT_;
-        if(squat_timer_ < -RANDOM_TIME_MIN_) {
-            squat_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+    if(!GetComponent<ComponentLiftable>()->IsLifted()) {
+        squat_timer_--;
+        jump_timer_--;
+        face_down_timer_--;
+        if(lifting_block_ == false)
+            lift_timer_--;
+        else
+            throw_timer_--;
+        //------------------------------------------------------------------
+        //ジャンプをしていないなら
+        if(squat_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
+            //ジャンプをできない状態にする
+            GetComponent<ComponentJump>()->SetEnable();
+            //高さを半径にする
+            neutral_pos_ = SQUAT_TOP_POINT_;
+            if(squat_timer_ < -RANDOM_TIME_MIN_) {
+                squat_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+            }
         }
-    }
-    else if(face_down_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
-        //ジャンプをできない状態にする
-        GetComponent<ComponentJump>()->SetEnable();
-        //高さを半径にする
-        neutral_pos_ = FACE_DOWN_TOP_POINT_;
-        //しゃがんでいると返す
-        is_face_down_ = true;
+        else if(face_down_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
+            //ジャンプをできない状態にする
+            GetComponent<ComponentJump>()->SetEnable();
+            //高さを半径にする
+            neutral_pos_ = FACE_DOWN_TOP_POINT_;
+            //しゃがんでいると返す
+            is_face_down_ = true;
+            if(face_down_timer_ < -RANDOM_TIME_MIN_) {
+                face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+            }
+        }
+        else {
+            //高さを半径の3倍にする
+            neutral_pos_ = TOP_POINT_;
+            //しゃがんでいないと返す
+            is_face_down_ = false;
+        }
+
+        if(jump_timer_ < -RANDOM_TIME_MIN_) {
+            jump_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+        }
         if(face_down_timer_ < -RANDOM_TIME_MIN_) {
-            face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+            face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+        }
+        if(lift_timer_ < -RANDOM_TIME_MIN_) {
+            lift_timer_    = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+            lifting_block_ = true;
+        }
+        if(throw_timer_ < -RANDOM_TIME_MIN_) {
+            throw_timer_   = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+            lifting_block_ = false;
         }
     }
     else {
@@ -101,21 +126,6 @@ void Enemy::Update()
         neutral_pos_ = TOP_POINT_;
         //しゃがんでいないと返す
         is_face_down_ = false;
-    }
-
-    if(jump_timer_ < -RANDOM_TIME_MIN_) {
-        jump_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-    }
-    if(face_down_timer_ < -RANDOM_TIME_MIN_) {
-        face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-    }
-    if(lift_timer_ < -RANDOM_TIME_MIN_) {
-        lift_timer_    = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-        lifting_block_ = true;
-    }
-    if(throw_timer_ < -RANDOM_TIME_MIN_) {
-        throw_timer_   = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-        lifting_block_ = false;
     }
     //コリジョンの高さの設定
     GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + neutral_pos_);
@@ -156,7 +166,33 @@ void Enemy::GUI()
     __super::GUI();
 }
 
+
 int Enemy::GetHP()
 {
     return hp_;
+}
+//---------------------------------------------------------------------------------
+//!	ヒット時処理
+//---------------------------------------------------------------------------------
+void Enemy::OnHit(const ComponentCollision::HitInfo& hit_info)
+{
+    __super::OnHit(hit_info);
+    auto hit_owner = hit_info.hit_collision_->GetOwner();
+    if(auto hit_liftable = hit_owner->GetComponent<ComponentLiftable>())
+    {
+        //持ち上げられ中(空中)でなければ
+        if(!hit_liftable->IsLifted()) 
+        {
+            return;    //早期リターン
+        }
+        //剛体を取得
+        if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>())
+        {
+            //触ったオブジェクトの速度が少しでもあれば
+            if(length(hit_rb->GetVelocity()) > float1(1.0f)) 
+            {
+                GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
+            }
+        }
+    }
 }

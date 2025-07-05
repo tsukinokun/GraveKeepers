@@ -8,6 +8,7 @@
 #include <System/Component/ComponentJump.h>
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentRigidbody.h>
+#include <System/Component/ComponentLiftable.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -15,13 +16,14 @@
 bool Player::Init()
 {
     __super::Init();
-    AddComponent<ComponentRigidbody>();
+    AddComponent<ComponentRigidbody>();    //剛体コンポーネントを追加
+    AddComponent<ComponentLiftable>();     //持ち上げられ機能コンポーネント
     auto object_controller_comp = AddComponent<ComponentObjectController>();
     object_controller_comp->SetMoveSpeed(0.2f);
     object_controller_comp->SetRotateSpeed(20.0f);
     SetTranslate({0, 2, 0});
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
-    col_comp->UseGravity();
+    //col_comp->UseGravity();
     col_comp->SetRadius(RADIUS_);                  // 球コリジョンの半径を2.0 にする
     col_comp->SetHeight(RADIUS_ + neutralpos_);    // 球コリジョンの高さを半径の４倍 にする
 
@@ -66,22 +68,30 @@ void Player::Update()
 {
     __super::Update();
     //下キーを押しているかつジャンプをしていないなら
-    if(CheckHitKey(KEY_INPUT_DOWN) && GetComponent<ComponentJump>()->IsJumping() == false) {
-        //ジャンプをできない状態にする
-        GetComponent<ComponentJump>()->SetEnable();
-        //高さを半径にする
-        neutralpos_ = SQUAT_TOP_POINT_;
+    if(!GetComponent<ComponentLiftable>()->IsLifted()) {
+        if(CheckHitKey(KEY_INPUT_DOWN) && GetComponent<ComponentJump>()->IsJumping() == false) {
+            //ジャンプをできない状態にする
+            GetComponent<ComponentJump>()->SetEnable();
+            //高さを半径にする
+            neutralpos_ = SQUAT_TOP_POINT_;
+        }
+        //右のシフトキーを押しているかつジャンプをしていないなら
+        else if(CheckHitKey(KEY_INPUT_RSHIFT) && GetComponent<ComponentJump>()->IsJumping() == false) {
+            //ジャンプをできない状態にする
+            GetComponent<ComponentJump>()->SetEnable();
+            //高さを半径にする
+            neutralpos_ = FACE_DOWN_TOP_POINT_;
+            //しゃがんでいると返す
+            is_face_down_ = true;
+        }
+        //上の状態でなかったら
+        else {
+            //高さを半径の3倍にする
+            neutralpos_ = TOP_POINT_;
+            //しゃがんでいないと返す
+            is_face_down_ = false;
+        }
     }
-    //右のシフトキーを押しているかつジャンプをしていないなら
-    else if(CheckHitKey(KEY_INPUT_RSHIFT) && GetComponent<ComponentJump>()->IsJumping() == false) {
-        //ジャンプをできない状態にする
-        GetComponent<ComponentJump>()->SetEnable();
-        //高さを半径にする
-        neutralpos_ = FACE_DOWN_TOP_POINT_;
-        //しゃがんでいると返す
-        is_face_down_ = true;
-    }
-    //上の状態でなかったら
     else {
         //高さを半径の3倍にする
         neutralpos_ = TOP_POINT_;
@@ -126,7 +136,30 @@ void Player::GUI()
     __super::GUI();
 }
 
+
 int Player::GetHP()
 {
     return hp_;
+}
+void Player::OnHit(const ComponentCollision::HitInfo& hit_info)
+{
+    __super::OnHit(hit_info);
+    auto hit_owner = hit_info.hit_collision_->GetOwner();
+    if(auto hit_liftable = hit_owner->GetComponent<ComponentLiftable>())
+    {
+        //持ち上げられ中(空中)でなければ
+        if(!hit_liftable->IsLifted()) 
+        {
+            return;    //早期リターン
+        }
+        //剛体を取得
+        if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>())
+        {
+            //触ったオブジェクトの速度が少しでもあれば
+            if(length(hit_rb->GetVelocity()) > float1(1.0f))
+            {
+                GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
+            }
+        }
+    }
 }

@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 #include <System/Component/ComponentLift.h>
+#include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentRigidbody.h>
 
@@ -26,9 +27,10 @@ void ComponentLift::Update()
 
     //持ち上げる処理
     if(auto lift_obj = lift_object_.lock()) {
+        lift_obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(true);
         auto   owner_col  = owner->GetComponent<ComponentCollisionCapsule>();    //オーナーのコリジョンを取得
         float3 end        = owner->GetTranslate();                               //高さ
-        end.y            += (owner_col->GetHeight() + 4);                        //終点座標は頭なので、高さの半分を足す。
+        end.y            += (owner_col->GetHeight() + 2.0f);                     //終点座標は頭なので、高さの半分を足す。
         //持ち上げ対象を持ち上げる
         lift_obj->SetTranslate(end);
 
@@ -69,15 +71,52 @@ void ComponentLift::Update()
                 if(!CheckLiftObjName(def_name.data())) {
                     continue;
                 }
+                //オブジェクトが持ち上げられ中ならコンティニュー
+                if(obj->GetComponent<ComponentLiftable>()->IsLifted()) {
+                    continue;
+                }
+                //オーナーが持ち上げられ中なら持ち上げない
+                if(owner->GetComponent<ComponentLiftable>()->IsLifted()) {
+                    continue;
+                }
+                //オブジェクトが持ち上げ中ならコンテニュー
+                if(auto obj_lif_comp = obj->GetComponent<ComponentLift>()) {
+                    if(obj_lif_comp->IsLifting()) {
+                        continue;
+                    }
+                }
+                //オーナーの正面ベクトルを取得
+                float3 owner_front = float3(0.0f, 0.0f, 0.0f);
+                float3 owner_rot   = owner->GetRotationAxisXYZ();
+                owner_front.x      = -1.0f * sinf(D2R(owner_rot.y));
+                owner_front.z      = -1.0f * cosf(D2R(owner_rot.y));
+                //一応正規化
+                owner_front = normalize(owner_front);
                 //オブジェクトとオーナーのベクトルを取得
-                float3 vec_owner_to_obj = owner->GetMatrix().translate() - obj->GetMatrix().translate();
+                float3 vec_owner_to_obj = obj->GetMatrix().translate() - owner->GetMatrix().translate();
+                //単位ベクトルを求める
+                float3 normalize_vec = normalize(vec_owner_to_obj);
+                //オブジェクトと持ち上げオーナーの内積を求める
+                float obj_to_owner_dot = dot(owner_front, normalize_vec);
+                //内積から角度を求める
+                float rad = acosf(obj_to_owner_dot);
+                //角度が持ち上げ可能角度におさまっていなければ
+                if(rad > D2R(lift_angle_)) {
+                    continue;    //コンティニュー
+                }
+                //ベクトルの長さが持ち上げられる範囲を超えていたら
+                if(length(vec_owner_to_obj) > float1(lift_distance_)) {
+                    continue;    //コンティニュー
+                }
                 //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
                 if(length(vec_owner_to_obj) < most_near_distance) {
                     most_near_distance = length(vec_owner_to_obj);
                     lift_object_       = obj;    //持ち上げオブジェクトを代入
                 }
             }
-            if(auto lift_col = lift_object_.lock()->GetComponent<ComponentCollision>()) {
+            if(auto obj = lift_object_.lock()) {
+                obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(true);
+                auto lift_col = obj->GetComponent<ComponentCollision>();
                 lift_col->SetEnableFlag(false);
                 lift_col->UseGravity(false);
             }
@@ -138,6 +177,17 @@ bool ComponentLift::CheckLiftObjName(const std::string& name)
         }
     }
     return true;
+}
+
+//---------------------------------------------------------------------------
+//! @brief	持ち上げ中か否かを返す関数
+//---------------------------------------------------------------------------
+bool ComponentLift::IsLifting()
+{
+    if(lift_object_.lock() != nullptr) {
+        return true;
+    }
+    return false;
 }
 
 CEREAL_REGISTER_TYPE(ComponentLift)

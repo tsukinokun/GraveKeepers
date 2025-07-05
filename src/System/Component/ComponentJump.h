@@ -27,8 +27,9 @@ public:
     //! @param value [in] y座標に飛び上がる高さ
     void SetJumpImpulse(float value);
 
-    //ジャンプをできないようにするための関数
-    void SetEnable();
+    //有効無効をセット
+    //! @param enable_flag [in] ジャンプが有効か無効か
+    void SetEnable(bool enable_flag = true);
 
     //ジャンプをしているかを返す関数
     bool IsJumping();
@@ -43,10 +44,10 @@ public:
 private:
     std::function<bool()> conditions_jump_;    //ジャンプ条件
 
-    int   jump_frame_max_   = 60;     //何フレームジャンプするか
-    int   jump_frame_count_ = 0;      //ジャンプ中のフレーム
-    float jump_force_       = 3.0;    //ジャンプで足す値
-    float translate_hight_  = 0;      //実際にmatrixに入れる値
+    int   jump_frame_max_   = 60;       //何フレームジャンプするか
+    int   jump_frame_count_ = 0;        //ジャンプ中のフレーム
+    float jump_force_       = 100.0;    //ジャンプで足す値
+    float translate_hight_  = 0;        //実際にmatrixに入れる値
 
     bool set_enable_ = false;    //ジャンプをできるかどうかの変数
 
