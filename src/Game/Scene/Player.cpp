@@ -23,7 +23,7 @@ bool Player::Init()
     object_controller_comp->SetRotateSpeed(20.0f);
     SetTranslate({0, 2, 0});
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
-    col_comp->UseGravity();
+    //col_comp->UseGravity();
     col_comp->SetRadius(RADIUS_);                  // 球コリジョンの半径を2.0 にする
     col_comp->SetHeight(RADIUS_ + neutralpos_);    // 球コリジョンの高さを半径の４倍 にする
 
