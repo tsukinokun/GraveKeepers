@@ -25,4 +25,5 @@ private:
     const int                                      ENEMY_MAX_   = 3;
     std::chrono::high_resolution_clock::time_point previousTime_;
     const int                                      BLOCK_NUM_MAX_ = 10;
+    const std::array<float3, 4> WALL_POS_ = {float3(50.0f, 0.0f, 0.0f), float3(-50.0f, 0.0f, 0.0f), float3(0.0f, 0.0f, 50.0f), float3(0.0f, 0.0f, -50.0f)};
 };

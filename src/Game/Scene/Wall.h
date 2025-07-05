@@ -1,16 +1,16 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	Block.h
+//!	@file	Wall.h
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
 #pragma once
 #include <System/Scene.h>
 
-USING_PTR(Block);
+USING_PTR(Wall);
 
-class Block : public Object
+class Wall : public Object
 {
 public:
-    BP_OBJECT_DECL(Block, u8"プレイシーンのブロックオブジェクト")
+    BP_OBJECT_DECL(Wall, u8"プレイシーンの壁")
 
     //@
     bool Init() override;      //!< 初期化

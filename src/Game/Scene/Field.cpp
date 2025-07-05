@@ -15,7 +15,7 @@ bool Field::Init()
     __super::Init();
     SetName(u8"Field");
     //フィールドの読み込み（仮で山口先生の素材を入れている）
-    auto com_comp = AddComponent<ComponentModel>("data/Sample/PoyPoy/Field/field.mv1");
+    auto model_comp = AddComponent<ComponentModel>("data/Sample/PoyPoy/Field/field.mv1");
     AddComponent<ComponentCollisionModel>()->AttachToModel();    //< GUIでの 「モデルにコリジョンを張り付ける」動作
     //座標の設定
     SetTranslate({0, 0, 0});
