@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "ScenePlay.h"
 #include <chrono>
+#include <System/Component/ComponentHp.h>
 #include "Enemy.h"
 #include "Camera.h"
 #include "Field.h"
@@ -59,12 +60,11 @@ void ScenePlay::Update()
     auto player = Scene::Object::Get<Player>(u8"プレイヤー");
     auto camera = Scene::Object::Get<Camera>("Camera");
 
-    camera->GetPlayerHP(player->GetHP());
-    camera->GetPlayerHP(player->GetHP());
+    camera->GetPlayerHP(player->GetComponent<ComponentHp>()->GetHitPoints());
     int enemy_num = 0;
     for(auto enemy : Scene::Object::GetArray<Enemy>()) {
         //エネミーのHPをカメラに与える
-        camera->GetEnemyHP(enemy->GetHP(), enemy_num);
+        camera->GetEnemyHP(enemy->GetComponent<ComponentHp>()->GetHitPoints(), enemy_num);
         enemy_num++;
     }
 }

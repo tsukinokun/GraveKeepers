@@ -22,8 +22,6 @@ public:
     void Exit() override;      //!< 終了
     void GUI() override;       //!< GUI表示
 
-    int GetHP();    //!<HPの値を渡す関数
-
     void OnHit(const ComponentCollision::HitInfo& hit_info);
 
 private:
@@ -36,7 +34,6 @@ private:
 
     float neutral_pos_  = TOP_POINT_;    //円の位置の高さ
     bool  is_face_down_ = false;         //うつ伏せの状態かを確認する用の変数
-    int   hp_           = 0;             //HP用の変数
 
     //以下のものはAIができたら消してください
     const int RANDOM_TIME_MIN_ = 60;                       //しゃがむ時間の最小時間

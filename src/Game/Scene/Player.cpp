@@ -9,6 +9,7 @@
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
+#include <System/Component/ComponentHp.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -16,14 +17,15 @@
 bool Player::Init()
 {
     __super::Init();
-    AddComponent<ComponentRigidbody>();    //剛体コンポーネントを追加
-    AddComponent<ComponentLiftable>();     //持ち上げられ機能コンポーネント
+    AddComponent<ComponentRigidbody>();            //剛体コンポーネントを追加
+    AddComponent<ComponentLiftable>();             //持ち上げられ機能コンポーネント
+    auto hp_comp = AddComponent<ComponentHp>();    //HP機能コンポーネント
+    hp_comp->SetHitPoints(HP_MAX_);
     auto object_controller_comp = AddComponent<ComponentObjectController>();
     object_controller_comp->SetMoveSpeed(0.2f);
     object_controller_comp->SetRotateSpeed(20.0f);
     SetTranslate({0, 2, 0});
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
-    //col_comp->UseGravity();
     col_comp->SetRadius(RADIUS_);                  // 球コリジョンの半径を2.0 にする
     col_comp->SetHeight(RADIUS_ + neutralpos_);    // 球コリジョンの高さを半径の４倍 にする
 
@@ -52,9 +54,6 @@ bool Player::Init()
             }
             return false;
         });
-
-    //HPの初期化
-    hp_ = HP_MAX_;
 
     SetName(u8"プレイヤー");
 
@@ -134,11 +133,6 @@ void Player::Exit()
 void Player::GUI()
 {
     __super::GUI();
-}
-
-int Player::GetHP()
-{
-    return hp_;
 }
 
 void Player::OnHit(const ComponentCollision::HitInfo& hit_info)
