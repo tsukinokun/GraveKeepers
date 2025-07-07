@@ -9,6 +9,7 @@
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentLiftable.h>
+#include <System/Component/ComponentHp.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -17,7 +18,9 @@ bool Enemy::Init()
 {
     __super::Init();
     AddComponent<ComponentRigidbody>();
-    AddComponent<ComponentLiftable>();    //持ち上げられ機能コンポーネント
+    AddComponent<ComponentLiftable>();             //持ち上げられ機能コンポーネント
+    auto hp_comp = AddComponent<ComponentHp>();    //HP機能コンポーネント
+    hp_comp->SetHitPoints(HP_MAX_);
     SetTranslate({GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2, 2, GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2});
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
     //col_comp->UseGravity();
@@ -54,8 +57,6 @@ bool Enemy::Init()
             }
             return false;
         });
-    //HPの初期化
-    hp_ = HP_MAX_;
 
     SetName(u8"エネミー");
 
@@ -165,12 +166,6 @@ void Enemy::GUI()
 {
     __super::GUI();
 }
-
-int Enemy::GetHP()
-{
-    return hp_;
-}
-
 //---------------------------------------------------------------------------------
 //!	ヒット時処理
 //---------------------------------------------------------------------------------
