@@ -29,11 +29,16 @@ public:
 
     //ダメージを受ける関数
     //! @param damage [in] ダメージ量
+    //! @attention 無敵時間中の場合は自動的にダメージを受けないようになっています。
     void TakeDamage(int damage);
     //! @}
 
 private:
-    int hp_ = 0;    //ヒットポイント
+    std::chrono::time_point<std::chrono::steady_clock> prev_time_           = std::chrono::high_resolution_clock::now();    //前フレームの時間
+    std::chrono::time_point<std::chrono::steady_clock> current_time_        = std::chrono::high_resolution_clock::now();    //現在の時間
+    int                                                hp_                  = 0;                                            //ヒットポイント
+    const float                                        INVINCIBILITY_TIME_  = 2.0f;                                         //無敵時間
+    float                                              invincibility_timer_ = 0.0f;                                         //無敵時間タイマー
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

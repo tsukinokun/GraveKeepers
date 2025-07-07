@@ -92,5 +92,13 @@ float3 ComponentRigidbody::GetVelocity() const
 {
     return velocity_;
 }
+
+//---------------------------------------------------------------------------
+//! @brief  質量を取得
+//---------------------------------------------------------------------------
+float ComponentRigidbody::GetMass() const
+{
+    return mass_;
+}
 CEREAL_REGISTER_TYPE(ComponentRigidbody)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentRigidbody)
