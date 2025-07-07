@@ -35,6 +35,9 @@ private:
     float neutral_pos_  = TOP_POINT_;    //円の位置の高さ
     bool  is_face_down_ = false;         //うつ伏せの状態かを確認する用の変数
 
+    float1 angle_range_ = 40.0f;    //視野角
+    float1 lift_range_  = 7.0f;     //持ち上げることができる距離
+
     //以下のものはAIができたら消してください
     const int RANDOM_TIME_MIN_ = 60;                       //しゃがむ時間の最小時間
     const int RANDOM_TIME_MAX_ = RANDOM_TIME_MIN_ * 10;    //しゃがむ時間の最大時間

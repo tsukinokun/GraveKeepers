@@ -69,18 +69,51 @@ bool Enemy::Init()
 void Enemy::Update()
 {
     __super::Update();
-    //-------ここに区切られているものはAI出来たら消してください-------------
+    float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
+    for(auto obj : Scene::Object::GetArray<Object>()) {
+        //オーナーが持ち上げられ中なら持ち上げない
+        if(GetComponent<ComponentLiftable>()->IsLifted()) {
+            continue;
+        }
+        //オブジェクトが持ち上げ中ならコンテニュー
+        if(auto obj_lif_comp = obj->GetComponent<ComponentLift>()) {
+            if(obj_lif_comp->IsLifting()) {
+                continue;
+            }
+        }
+        //オーナーの正面ベクトルを取得
+        float3 owner_front = float3(0.0f, 0.0f, 0.0f);
+        float3 owner_rot   = GetRotationAxisXYZ();
+        owner_front.x      = -1.0f * sinf(D2R(owner_rot.y));
+        owner_front.z      = -1.0f * cosf(D2R(owner_rot.y));
+        //一応正規化
+        owner_front = normalize(owner_front);
+        //オブジェクトとオーナーのベクトルを取得
+        float3 vec_owner_to_obj = obj->GetMatrix().translate() - GetMatrix().translate();
+        //単位ベクトルを求める
+        float3 normalize_vec = normalize(vec_owner_to_obj);
+        //オブジェクトと持ち上げオーナーの内積を求める
+        float obj_to_owner_dot = dot(owner_front, normalize_vec);
+        //内積から角度を求める
+        float rad = acosf(obj_to_owner_dot);
+        //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
+        if(length(vec_owner_to_obj) < most_near_distance) {
+            most_near_distance = length(vec_owner_to_obj);
+        }
+    }
+
     if(!GetComponent<ComponentLiftable>()->IsLifted()) {
-        squat_timer_--;
-        jump_timer_--;
-        face_down_timer_--;
-        if(lifting_block_ == false)
-            lift_timer_--;
-        else
-            throw_timer_--;
+        //-------ここに区切られているものはAI出来たら消してください-------------
+        //squat_timer_--;
+        //jump_timer_--;
+        //face_down_timer_--;
+        //if(lifting_block_ == false)
+        //	lift_timer_--;
+        //else
+        //	throw_timer_--;
         //------------------------------------------------------------------
         //ジャンプをしていないなら
-        if(squat_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
+        if(most_near_distance < lift_range_ && GetComponent<ComponentJump>()->IsJumping() == false) {
             //ジャンプをできない状態にする
             GetComponent<ComponentJump>()->SetEnable();
             //高さを半径にする
