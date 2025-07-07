@@ -32,8 +32,12 @@ public:
     void SetUseGravity(bool use_gravity_flag);
 
     //速度を取得する
-    //! @retval [in] 速度
+    //! @retval 速度
     float3 GetVelocity() const;
+
+    //質量を取得する
+    //! @retval 質量
+    float GetMass() const;
     //! @}
 
 private:

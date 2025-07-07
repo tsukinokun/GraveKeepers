@@ -19,6 +19,12 @@ void ComponentHp::Init()
 //---------------------------------------------------------------------------
 void ComponentHp::Update()
 {
+    //時間の更新
+    current_time_    = std::chrono::high_resolution_clock::now();
+    auto delta_time_ = std::chrono::duration<float>(current_time_ - prev_time_).count();
+    prev_time_       = current_time_;
+
+    invincibility_timer_ -= delta_time_;    //タイマーからデルタタイムを引く
     __super::Update();
 }
 
@@ -66,7 +72,12 @@ void ComponentHp::SetHitPoints(int hp)
 //---------------------------------------------------------------------------
 void ComponentHp::TakeDamage(int damage)
 {
-    hp_ -= damage;
+    //タイマーが0.0fよりも上なら無敵時間中なので早期リターンを行う。
+    if(invincibility_timer_ > 0.0f) {
+        return;
+    }
+    hp_                  -= damage;                 //ダメージを受けて
+    invincibility_timer_  = INVINCIBILITY_TIME_;    //無敵時間分を代入
 }
 CEREAL_REGISTER_TYPE(ComponentHp)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentHp)

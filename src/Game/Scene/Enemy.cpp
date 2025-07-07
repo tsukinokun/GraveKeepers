@@ -166,6 +166,7 @@ void Enemy::GUI()
 {
     __super::GUI();
 }
+
 //---------------------------------------------------------------------------------
 //!	ヒット時処理
 //---------------------------------------------------------------------------------
@@ -182,7 +183,9 @@ void Enemy::OnHit(const ComponentCollision::HitInfo& hit_info)
         if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>()) {
             //触ったオブジェクトの速度が少しでもあれば
             if(length(hit_rb->GetVelocity()) > float1(1.0f)) {
-                GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
+                GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());    //ノックバック
+                int damage = static_cast<int>(hit_rb->GetMass());                         //ダメージは当たったオブジェクトの質量に比例
+                GetComponent<ComponentHp>()->TakeDamage(damage);                          //ダメージを受ける
             }
         }
     }

@@ -149,6 +149,8 @@ void Player::OnHit(const ComponentCollision::HitInfo& hit_info)
             //触ったオブジェクトの速度が少しでもあれば
             if(length(hit_rb->GetVelocity()) > float1(1.0f)) {
                 GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
+                int damage = static_cast<int>(hit_rb->GetMass());    //ダメージは当たったオブジェクトの質量に比例
+                GetComponent<ComponentHp>()->TakeDamage(damage);     //ダメージを受ける
             }
         }
     }
