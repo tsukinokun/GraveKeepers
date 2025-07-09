@@ -86,6 +86,14 @@ void ComponentRigidbody::SetUseGravity(bool use_gravity_flag)
 }
 
 //---------------------------------------------------------------------------
+//! @brief  速度を設定
+//---------------------------------------------------------------------------
+void ComponentRigidbody::SetVelocity(float3 velocity)
+{
+    velocity_ = velocity;
+}
+
+//---------------------------------------------------------------------------
 //! @brief  速度を取得
 //---------------------------------------------------------------------------
 float3 ComponentRigidbody::GetVelocity() const
@@ -99,6 +107,22 @@ float3 ComponentRigidbody::GetVelocity() const
 float ComponentRigidbody::GetMass() const
 {
     return mass_;
+}
+
+//---------------------------------------------------------------------------
+//! @brief  反発係数を設定する
+//---------------------------------------------------------------------------
+void ComponentRigidbody::SetRestitution(float restitution)
+{
+    restitution_ = restitution;
+}
+
+//---------------------------------------------------------------------------
+//! @brief  反発係数を設取得する
+//---------------------------------------------------------------------------
+float ComponentRigidbody::GetRestitution() const
+{
+    return restitution_;
 }
 CEREAL_REGISTER_TYPE(ComponentRigidbody)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentRigidbody)

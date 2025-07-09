@@ -15,7 +15,7 @@ bool Block::Init()
     __super::Init();
 
     SetName(u8"ブロック");
-    AddComponent<ComponentRigidbody>();
+    auto rb = AddComponent<ComponentRigidbody>();
     AddComponent<ComponentLiftable>();    //持ち上げられ機能コンポーネント
     auto block_com = AddComponent<ComponentCollisionCapsule>();
     //block_com->UseGravity();
