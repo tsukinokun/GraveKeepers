@@ -10,6 +10,7 @@
 #include <System/Component/ComponentCollisionModel.h>
 #include <System/Component/ComponentCollisionLine.h>
 #include <System/Component/ComponentModel.h>
+#include <System/Component/ComponentRigidbody.h>
 
 #include <System/Utils/HelperLib.h>
 
@@ -84,6 +85,25 @@ void ComponentCollision::OnHit(const HitInfo& hitInfo)
             now_gravity_ *= ((1 - (d * d)) * 0.1f);
             //GetOwner()->SetGravity( calc_gravity_ );
         }
+    }
+
+    float3 hit_velocity = float3(0.0f, 0.0f, 0.0f);    //ヒットしたオブジェクトの速度
+    auto   hit_owner    = hitInfo.hit_collision_->GetOwner();
+
+    /*if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>())
+	{
+		hit_velocity = hit_rb->GetVelocity();
+	}*/
+
+    float3 velocity = float3(0.0f, 0.0f, 0.0f);    //自身の速度
+    if(auto rb = obj->GetComponent<ComponentRigidbody>()) {
+        velocity = rb->GetVelocity();
+        //床の場合だけxzの方向を保つ。
+        if(hit_owner->GetNameDefault() == "Field") {
+            velocity.x = -velocity.x;
+            velocity.z = -velocity.z;
+        }
+        rb->SetVelocity(-velocity * rb->GetRestitution());
     }
 
     obj->OnHit(hitInfo);
