@@ -38,6 +38,10 @@ public:
     //質量を取得する
     //! @retval 質量
     float GetMass() const;
+
+    //反発係数を設定する
+    //! @param restitution [in] 反発係数の値
+    void SetRestitution(float restitution);
     //! @}
 
 private:
@@ -52,6 +56,7 @@ private:
     bool                                               use_gravity_  = true;                        //重力を使用するか否か
     float                                              drag_         = 15.0f;                       //空気抵抗
     float                                              angular_drag_ = 0.0f;                        //回転抵抗
+    float                                              restitution_  = 0.0f;                        //反発係数
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

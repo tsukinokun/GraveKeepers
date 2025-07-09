@@ -100,5 +100,13 @@ float ComponentRigidbody::GetMass() const
 {
     return mass_;
 }
+
+//---------------------------------------------------------------------------
+//! @brief  反発係数を設定する
+//---------------------------------------------------------------------------
+void ComponentRigidbody::SetRestitution(float restitution)
+{
+    restitution_ = restitution;
+}
 CEREAL_REGISTER_TYPE(ComponentRigidbody)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentRigidbody)
