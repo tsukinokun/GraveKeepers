@@ -36,20 +36,20 @@ private:
     float neutral_pos_  = TOP_POINT_;    //円の位置の高さ
     bool  is_face_down_ = false;         //うつ伏せの状態かを確認する用の変数
 
-    const float1 LIFT_RANGE_ = 7.0f;    //持ち上げることができる距離
+    const float1 LIFT_RANGE_  = 7.0f;     //持ち上げることができる距離
+    const float1 THROW_RANGE_ = 10.0f;    //持ち上げることができる距離
 
     bool set_lift_  = false;    //持ち上げるかどうかを決めるフラグ
     bool set_throw_ = false;    //持ち上げたものを投げるかどうかを決めるフラグ
 
     //以下のものはAIができたら消してください
-    const int RANDOM_TIME_MIN_ = 60;                       //しゃがむ時間の最小時間
-    const int RANDOM_TIME_MAX_ = RANDOM_TIME_MIN_ * 10;    //しゃがむ時間の最大時間
+    //const int RANDOM_TIME_MAX_ = RANDOM_TIME_MIN_ * 10;	   //しゃがむ時間の最大時間
 
-    int squat_timer_     = 0;    //しゃがむまでの時間
-    int jump_timer_      = 0;    //ジャンプするまでの時間
-    int face_down_timer_ = 0;    //うつ伏せするまでの時間
+    //int squat_timer_		   = 0;	   //しゃがむまでの時間
+    //int jump_timer_			   = 0;	   //ジャンプするまでの時間
+    //int face_down_timer_	   = 0;	   //うつ伏せするまでの時間
 
-    bool lifting_block_ = false;
-    int  lift_timer_    = 0;    //ブロックを持ち上げるまでの時間
-    int  throw_timer_   = 0;    //ブロックを投げるまでの時間
+    //bool lifting_block_		   = false;
+    //int	 lift_timer_		   = 0;	   //ブロックを持ち上げるまでの時間
+    //int	 throw_timer_		   = 0;	   //ブロックを投げるまでの時間
 };
