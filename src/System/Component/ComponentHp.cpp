@@ -72,12 +72,28 @@ void ComponentHp::SetHitPoints(int hp)
 //---------------------------------------------------------------------------
 void ComponentHp::TakeDamage(int damage)
 {
+    //HPが0以下なら当然これ以上ダメージを受けない
+    if(IsDead()) {
+        return;
+    }
     //タイマーが0.0fよりも上なら無敵時間中なので早期リターンを行う。
     if(invincibility_timer_ > 0.0f) {
         return;
     }
     hp_                  -= damage;                 //ダメージを受けて
+    hp_                   = std::max(0, hp_);       //0.0fより小さくならない
     invincibility_timer_  = INVINCIBILITY_TIME_;    //無敵時間分を代入
+}
+
+//---------------------------------------------------------------------------
+//! @brief	HPが0であるかを返す関数
+//---------------------------------------------------------------------------
+bool ComponentHp::IsDead()
+{
+    if(hp_ <= 0) {
+        return true;
+    }
+    return false;
 }
 CEREAL_REGISTER_TYPE(ComponentHp)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentHp)

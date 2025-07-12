@@ -69,6 +69,12 @@ bool Enemy::Init()
 void Enemy::Update()
 {
     __super::Update();
+    if(auto hp = GetComponent<ComponentHp>()) {
+        //死亡で
+        if(hp->IsDead()) {
+            return;
+        }
+    }
     //-------ここに区切られているものはAI出来たら消してください-------------
     if(!GetComponent<ComponentLiftable>()->IsLifted()) {
         squat_timer_--;

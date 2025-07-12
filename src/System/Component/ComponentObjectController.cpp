@@ -2,6 +2,7 @@
 #include <System/Component/ComponentObjectController.h>
 #include <System/Component/ComponentSpringArm.h>
 #include <System/Component/ComponentModel.h>
+#include <System/Component/ComponentHp.h>
 
 void ComponentObjectController::Init()
 {
@@ -15,7 +16,12 @@ void ComponentObjectController::Update()
     // オーナー(自分がAddComponentされたObject)を取得します
     // 処理されるときは必ずOwnerは存在しますので基本的にnullptrチェックは必要ありません
     auto owner = GetOwner();
-
+    if(auto hp = owner->GetComponent<ComponentHp>()) {
+        //死亡で
+        if(hp->IsDead()) {
+            return;
+        }
+    }
     // 移動方向
     float3 dir{0, 0, 0};
     if(IsKey(key_up_))

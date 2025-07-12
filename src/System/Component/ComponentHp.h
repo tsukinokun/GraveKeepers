@@ -31,6 +31,10 @@ public:
     //! @param damage [in] ダメージ量
     //! @attention 無敵時間中の場合は自動的にダメージを受けないようになっています。
     void TakeDamage(int damage);
+
+    //HPが0であることを返す関数
+    //! @retval HPが0か否か
+    bool IsDead();
     //! @}
 
 private:
