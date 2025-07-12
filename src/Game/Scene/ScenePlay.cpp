@@ -43,7 +43,7 @@ bool ScenePlay::Init()
         auto wall = Scene::Object::Create<Wall>();
         wall->SetTranslate(WALL_POS_[i]);
         if(i == 2 || i == 3) {
-            wall->AddRotationAxisXYZ(float3(0.0f, 90.0f, 0.0f));
+            wall->SetRotationAxisXYZ(float3(90.0f, 0.0f, 0.0f));
         }
     }
     return true;
