@@ -16,13 +16,13 @@ bool Wall::Init()
     __super::Init();
 
     SetName(u8"Wall");
-    AddRotationAxisXYZ(float3(0.0f, 0.0f, 90.0f));
+    SetRotationAxisXYZ(float3(0.0f, 0.0f, 90.0f));
     //フィールドの読み込み（仮で山口先生の素材を入れている）
     auto model_comp = AddComponent<ComponentModel>("data/Sample/PoyPoy/Field/field.mv1");
     model_comp->SetStatus(Component::StatusBit::NoDraw, true);    //描画をオフにする
     AddComponent<ComponentCollisionModel>()->AttachToModel();     //< GUIでの 「モデルにコリジョンを張り付ける」動作
     //座標の設定
-    SetTranslate({0, 0, 0});
+    SetTranslate(float3(0.0f, 0.0f, 0.0f));
     //モデルを１０倍している
     SetScaleAxisXYZ(10.0f);
     return true;
