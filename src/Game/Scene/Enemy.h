@@ -36,8 +36,8 @@ private:
     float neutral_pos_  = TOP_POINT_;    //円の位置の高さ
     bool  is_face_down_ = false;         //うつ伏せの状態かを確認する用の変数
 
-    const float1 LIFT_RANGE_  = 7.0f;     //持ち上げることができる距離
-    const float1 THROW_RANGE_ = 10.0f;    //持ち上げることができる距離
+    const float1 LIFT_RANGE_  = 7.0f;    //持ち上げることができる距離
+    const float1 THROW_RANGE_ = 7.0f;    //持ち上げることができる距離
 
     bool set_lift_  = false;    //持ち上げるかどうかを決めるフラグ
     bool set_throw_ = false;    //持ち上げたものを投げるかどうかを決めるフラグ

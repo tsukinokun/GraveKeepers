@@ -67,58 +67,52 @@ void Enemy::Update()
 {
     __super::Update();
     float3 rot = GetRotationAxisXYZ();
-    float3 obj_pos;
     //高さを半径の3倍にする
     neutral_pos_              = TOP_POINT_;
     float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
 
-    auto SearchObj = [&]() {
-        for(auto obj : Scene::Object::GetArray<Object>()) {
-            if(obj->GetComponent<ComponentLiftable>() == nullptr) {
-                continue;    //持ち上げられないオブジェクトはコンティニュー
-            }
-            if(obj->GetName() == GetName()) {
-                continue;    //自分はコンティニュー
-            }
-            if(GetComponent<ComponentLiftable>()->IsLifted()) {
-                continue;    //オーナーが持ち上げられ中なら持ち上げない
-            }
-            if(auto obj_lif_comp = obj->GetComponent<ComponentLift>()) {
-                if(obj_lif_comp->IsLifting())    //オブジェクトが持ち上げ中ならコンテニュー
-                {
-                    continue;
-                }
-            }
-
-            float3 owner_front = float3(0.0f, 0.0f, 0.0f);
-            owner_front.x      = -1.0f * sinf(D2R(0.0f));
-            owner_front.z      = -1.0f * cosf(D2R(0.0f));
-            float3 owner_rot   = GetRotationAxisXYZ();
-            //一応正規化
-            owner_front = normalize(owner_front);
-            //オブジェクトとオーナーのベクトルを取得
-            float3 vec_owner_to_obj = obj->GetMatrix().translate() - GetMatrix().translate();
-            //単位ベクトルを求める
-            float3 normalize_vec = normalize(vec_owner_to_obj);
-            //オブジェクトと持ち上げオーナーの内積を求める
-            float obj_to_owner_dot = dot(owner_front.xz, normalize_vec.xz);
-            //内積から角度を求める
-            float rad = acosf(obj_to_owner_dot);
-            //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
-            if(length(vec_owner_to_obj) < most_near_distance) {
-                if(obj->GetName() != u8"ブロック" && obj->GetName() != GetName()) {
-                    obj_pos = obj->GetMatrix().translate();
-                }
-                most_near_distance = length(vec_owner_to_obj);
-                rot.y              = R2D(rad);
-            }
-        }
-        SetRotationAxisXYZ(-rot);
-    };
-
     //持ち上げられていない状態だったら
     if(!GetComponent<ComponentLiftable>()->IsLifted()) {
-        SearchObj();
+        if(set_lift_ == false) {
+            for(auto obj : Scene::Object::GetArray<Object>()) {
+                if(obj->GetComponent<ComponentLiftable>() == nullptr) {
+                    continue;    //持ち上げられないオブジェクトはコンティニュー
+                }
+                if(obj->GetName() == GetName()) {
+                    continue;    //自分はコンティニュー
+                }
+                if(GetComponent<ComponentLiftable>()->IsLifted()) {
+                    continue;    //オーナーが持ち上げられ中なら持ち上げない
+                }
+                if(auto obj_lif_comp = obj->GetComponent<ComponentLift>()) {
+                    if(obj_lif_comp->IsLifting())    //オブジェクトが持ち上げ中ならコンテニュー
+                    {
+                        continue;
+                    }
+                }
+
+                float3 owner_front = float3(0.0f, 0.0f, 0.0f);
+                owner_front.x      = -1.0f * sinf(D2R(0.0f));
+                owner_front.z      = -1.0f * cosf(D2R(0.0f));
+                float3 owner_rot   = GetRotationAxisXYZ();
+                //一応正規化
+                owner_front = normalize(owner_front);
+                //オブジェクトとオーナーのベクトルを取得
+                float3 vec_owner_to_obj = obj->GetMatrix().translate() - GetMatrix().translate();
+                //単位ベクトルを求める
+                float3 normalize_vec = normalize(vec_owner_to_obj);
+                //オブジェクトと持ち上げオーナーの内積を求める
+                float obj_to_owner_dot = dot(owner_front.xz, normalize_vec.xz);
+                //内積から角度を求める
+                float rad = acosf(obj_to_owner_dot);
+                //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
+                if(length(vec_owner_to_obj) < most_near_distance) {
+                    most_near_distance = length(vec_owner_to_obj);
+                    rot.y              = R2D(rad);
+                }
+            }
+            SetRotationAxisXYZ(-rot);
+        }
 
         //オブジェクトの位置が持ち上げられる範囲内にあったら
         if(most_near_distance < LIFT_RANGE_ && set_lift_ == false) {
@@ -149,10 +143,47 @@ void Enemy::Update()
         //しゃがんでいないと返す
         is_face_down_ = false;
     }
+    if(set_lift_ == true) {
+        for(auto obj : Scene::Object::GetArray<Object>()) {
+            if(obj->GetComponent<ComponentLiftable>() == nullptr) {
+                continue;    //持ち上げられないオブジェクトはコンティニュー
+            }
+            if(obj->GetName() == GetName()) {
+                continue;    //自分はコンティニュー
+            }
+            if(obj->GetComponent<ComponentLiftable>()->IsLifted()) {
+                continue;    //オーナーが持ち上げられ中なら持ち上げない
+            }
 
-    float3 vec_owner_to_obj = obj_pos - GetMatrix().translate();
-    if(length(vec_owner_to_obj) < THROW_RANGE_ && set_lift_ == true) {
-        set_throw_ = true;
+            float3 owner_front = float3(0.0f, 0.0f, 0.0f);
+            owner_front.x      = -1.0f * sinf(D2R(0.0f));
+            owner_front.z      = -1.0f * cosf(D2R(0.0f));
+            float3 owner_rot   = GetRotationAxisXYZ();
+            //一応正規化
+            owner_front = normalize(owner_front);
+            //オブジェクトとオーナーのベクトルを取得
+            float3 vec_owner_to_obj = obj->GetMatrix().translate() - GetMatrix().translate();
+            //単位ベクトルを求める
+            float3 normalize_vec = normalize(vec_owner_to_obj);
+            //オブジェクトと持ち上げオーナーの内積を求める
+            float obj_to_owner_dot = dot(owner_front.xz, normalize_vec.xz);
+            //内積から角度を求める
+            float rad = acosf(obj_to_owner_dot);
+            //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
+            if(length(vec_owner_to_obj) < most_near_distance) {
+                if(obj->GetName() == u8"エネミー" && obj->GetName() != GetName() || obj->GetName() == u8"プレイヤー") {
+                    most_near_distance = length(vec_owner_to_obj);
+                    rot.y              = R2D(rad);
+                }
+                else
+                    continue;
+            }
+        }
+        SetRotationAxisXYZ(-rot);
+
+        if(most_near_distance < THROW_RANGE_) {
+            set_throw_ = true;
+        }
     }
 
     auto pos  = GetTranslate();
