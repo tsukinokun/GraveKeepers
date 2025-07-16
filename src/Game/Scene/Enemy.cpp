@@ -29,10 +29,9 @@ bool Enemy::Init()
     auto jump_comp = AddComponent<ComponentJump>();
     SetRotationAxisXYZ({0.0f, GetRand(360), 0.0f});
     jump_comp->SetConditionsJump([this]() {
-        //if(jump_timer_ < 0)
-        //{
-        //	return true;
-        //}
+        if(set_jump_) {
+            return true;
+        }
         return false;
     });
 
@@ -40,20 +39,22 @@ bool Enemy::Init()
     lift_comp->SetConditionsForLifting(
         //ラムダ式を代入
         [this]() {
-            if(set_lift_) {
+            if(set_lift_ == true) {
                 return true;
             }
             return false;
         });
     lift_comp->SetConditionsForThrow(    //ラムダ式を代入
         [this]() {
-            if(set_throw_) {
+            if(set_throw_ == true) {
                 set_lift_  = false;    //持ち上げフラグを下ろす
                 set_throw_ = false;
                 return true;
             }
             return false;
         });
+
+    previous_time_ = std::chrono::high_resolution_clock::now();
 
     SetName(u8"エネミー");
 
@@ -67,12 +68,21 @@ void Enemy::Update()
 {
     __super::Update();
     float3 rot = GetRotationAxisXYZ();
+
     //高さを半径の3倍にする
     neutral_pos_              = TOP_POINT_;
     float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
 
     //持ち上げられていない状態だったら
     if(!GetComponent<ComponentLiftable>()->IsLifted()) {
+        auto current_time = std::chrono::high_resolution_clock::now();
+        auto delta_time   = current_time - previous_time_;
+        previous_time_    = current_time;
+
+        // タイマーを減算（カウントダウン）
+        timer_count_ -= std::chrono::duration<float>(delta_time).count();
+        int seconds   = static_cast<int>(timer_count_) % 60;
+
         if(set_lift_ == false) {
             for(auto obj : Scene::Object::GetArray<Object>()) {
                 if(obj->GetComponent<ComponentLiftable>() == nullptr) {
@@ -119,24 +129,34 @@ void Enemy::Update()
             //持ち上げるかどうかを決めるフラグを立てる
             set_lift_ = true;
         }
-        //ジャンプをしていないなら
-        if(GetComponent<ComponentJump>()->IsJumping() == false) {
-            //ジャンプをできない状態にする
-            GetComponent<ComponentJump>()->SetEnable();
-            //高さを半径にする
-            //neutral_pos_ = SQUAT_TOP_POINT_;
-        }
-        else if(GetComponent<ComponentJump>()->IsJumping() == false) {
-            //ジャンプをできない状態にする
-            GetComponent<ComponentJump>()->SetEnable();
-            //高さを半径にする
-            //neutral_pos_ = FACE_DOWN_TOP_POINT_;
-            //しゃがんでいると返す
-            is_face_down_ = true;
+
+        //しゃがんでいないと返す
+        is_face_down_ = false;
+        if(seconds <= 0) {
+            state_rand_ = GetRand(2);
+            if(state_rand_ == 0) {
+                set_jump_ = true;    //ジャンプするかどうかを決めるフラグを立てる
+            }
+            //ジャンプをしていないなら
+            else if(state_rand_ == 1 && GetComponent<ComponentJump>()->IsJumping() == false) {
+                //ジャンプをできない状態にする
+                GetComponent<ComponentJump>()->SetEnable();
+                //高さを半径にする
+                neutral_pos_ = SQUAT_TOP_POINT_;
+            }
+            else if(state_rand_ == 2 && GetComponent<ComponentJump>()->IsJumping() == false) {
+                //ジャンプをできない状態にする
+                GetComponent<ComponentJump>()->SetEnable();
+                //高さを半径にする
+                neutral_pos_ = FACE_DOWN_TOP_POINT_;
+                //しゃがんでいると返す
+                is_face_down_ = true;
+            }
+
+            timer_count_ = static_cast<float>(GetRand(5) + 1);    //タイマーをリセット
         }
         else {
-            //しゃがんでいないと返す
-            is_face_down_ = false;
+            set_jump_ = false;    //ジャンプするかどうかを決めるフラグを下ろす
         }
     }
     else {

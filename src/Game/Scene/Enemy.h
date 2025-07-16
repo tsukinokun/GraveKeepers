@@ -37,10 +37,16 @@ private:
     bool  is_face_down_ = false;         //うつ伏せの状態かを確認する用の変数
 
     const float1 LIFT_RANGE_  = 7.0f;    //持ち上げることができる距離
-    const float1 THROW_RANGE_ = 7.0f;    //持ち上げることができる距離
+    const float1 THROW_RANGE_ = 7.0f;    //投げることができる距離
 
     bool set_lift_  = false;    //持ち上げるかどうかを決めるフラグ
     bool set_throw_ = false;    //持ち上げたものを投げるかどうかを決めるフラグ
+    bool set_jump_  = false;    //ジャンプするかどうかを決めるフラグ
+
+    float timer_count_ = static_cast<float>(GetRand(5) + 1);    //タイマー
+    int   state_rand_  = 0;                                     //状態を決めるための乱数
+
+    std::chrono::high_resolution_clock::time_point previous_time_;
 
     //以下のものはAIができたら消してください
     //const int RANDOM_TIME_MAX_ = RANDOM_TIME_MIN_ * 10;	   //しゃがむ時間の最大時間
