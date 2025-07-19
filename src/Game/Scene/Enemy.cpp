@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 //!	@file	Enemy.cpp
 //! @brief	エネミー
 //---------------------------------------------------------------------------
@@ -27,15 +27,9 @@ bool Enemy::Init()
     col_comp->SetRadius(RADIUS_);                   // 球コリジョンの半径を2.0 にする
     col_comp->SetHeight(RADIUS_ + neutral_pos_);    // 球コリジョンの高さを半径の４倍 にする
     auto jump_comp = AddComponent<ComponentJump>();
-
-    squat_timer_     = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-    jump_timer_      = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-    face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-    lift_timer_      = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-    throw_timer_     = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-
+    SetRotationAxisXYZ({0.0f, GetRand(360), 0.0f});
     jump_comp->SetConditionsJump([this]() {
-        if(jump_timer_ < 0) {
+        if(set_jump_) {
             return true;
         }
         return false;
@@ -45,18 +39,22 @@ bool Enemy::Init()
     lift_comp->SetConditionsForLifting(
         //ラムダ式を代入
         [this]() {
-            if(lift_timer_ < 0) {
+            if(set_lift_ == true) {
                 return true;
             }
             return false;
         });
     lift_comp->SetConditionsForThrow(    //ラムダ式を代入
         [this]() {
-            if(throw_timer_ < 0) {
+            if(set_throw_ == true) {
+                set_lift_  = false;    //持ち上げフラグを下ろす
+                set_throw_ = false;
                 return true;
             }
             return false;
         });
+
+    previous_time_ = std::chrono::high_resolution_clock::now();
 
     SetName(u8"エネミー");
 
@@ -69,71 +67,160 @@ bool Enemy::Init()
 void Enemy::Update()
 {
     __super::Update();
+
+    float3 rot = GetRotationAxisXYZ();
+
+    float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
+
     if(auto hp = GetComponent<ComponentHp>()) {
         //死亡で
         if(hp->IsDead()) {
             return;
         }
     }
-    //-------ここに区切られているものはAI出来たら消してください-------------
+  
+    //持ち上げられていない状態だったら
     if(!GetComponent<ComponentLiftable>()->IsLifted()) {
-        squat_timer_--;
-        jump_timer_--;
-        face_down_timer_--;
-        if(lifting_block_ == false)
-            lift_timer_--;
-        else
-            throw_timer_--;
-        //------------------------------------------------------------------
-        //ジャンプをしていないなら
-        if(squat_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
-            //ジャンプをできない状態にする
-            GetComponent<ComponentJump>()->SetEnable();
-            //高さを半径にする
-            neutral_pos_ = SQUAT_TOP_POINT_;
-            if(squat_timer_ < -RANDOM_TIME_MIN_) {
-                squat_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
+        auto current_time = std::chrono::high_resolution_clock::now();
+        auto delta_time   = current_time - previous_time_;
+        previous_time_    = current_time;
+
+        // タイマーを減算（カウントダウン）
+        timer_count_ -= std::chrono::duration<float>(delta_time).count();
+        int seconds   = static_cast<int>(timer_count_) % 60;
+
+        if(set_lift_ == false) {
+            for(auto obj : Scene::Object::GetArray<Object>()) {
+                if(obj->GetComponent<ComponentLiftable>() == nullptr) {
+                    continue;    //持ち上げられないオブジェクトはコンティニュー
+                }
+                if(obj->GetName() == GetName()) {
+                    continue;    //自分はコンティニュー
+                }
+                if(GetComponent<ComponentLiftable>()->IsLifted()) {
+                    continue;    //オーナーが持ち上げられ中なら持ち上げない
+                }
+                if(auto obj_lif_comp = obj->GetComponent<ComponentLift>()) {
+                    if(obj_lif_comp->IsLifting())    //オブジェクトが持ち上げ中ならコンテニュー
+                    {
+                        continue;
+                    }
+                }
+
+                float3 owner_front = float3(0.0f, 0.0f, 0.0f);
+                owner_front.x      = -1.0f * sinf(D2R(0.0f));
+                owner_front.z      = -1.0f * cosf(D2R(0.0f));
+                float3 owner_rot   = GetRotationAxisXYZ();
+                //一応正規化
+                owner_front = normalize(owner_front);
+                //オブジェクトとオーナーのベクトルを取得
+                float3 vec_owner_to_obj = obj->GetMatrix().translate() - GetMatrix().translate();
+                //単位ベクトルを求める
+                float3 normalize_vec = normalize(vec_owner_to_obj);
+                //オブジェクトと持ち上げオーナーの内積を求める
+                float obj_to_owner_dot = dot(owner_front.xz, normalize_vec.xz);
+                //内積から角度を求める
+                float rad = acosf(obj_to_owner_dot);
+                //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
+                if(length(vec_owner_to_obj) < most_near_distance) {
+                    most_near_distance = length(vec_owner_to_obj);
+                    rot.y              = R2D(rad);
+                }
             }
-        }
-        else if(face_down_timer_ < 0 && GetComponent<ComponentJump>()->IsJumping() == false) {
-            //ジャンプをできない状態にする
-            GetComponent<ComponentJump>()->SetEnable();
-            //高さを半径にする
-            neutral_pos_ = FACE_DOWN_TOP_POINT_;
-            //しゃがんでいると返す
-            is_face_down_ = true;
-            if(face_down_timer_ < -RANDOM_TIME_MIN_) {
-                face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;
-            }
-        }
-        else {
-            //高さを半径の3倍にする
-            neutral_pos_ = TOP_POINT_;
-            //しゃがんでいないと返す
-            is_face_down_ = false;
+            SetRotationAxisXYZ(-rot);
         }
 
-        if(jump_timer_ < -RANDOM_TIME_MIN_) {
-            jump_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+        //オブジェクトの位置が持ち上げられる範囲内にあったら
+        if(most_near_distance < LIFT_RANGE_ && set_lift_ == false) {
+            //持ち上げるかどうかを決めるフラグを立てる
+            set_lift_ = true;
         }
-        if(face_down_timer_ < -RANDOM_TIME_MIN_) {
-            face_down_timer_ = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
+
+        if(seconds <= 0) {
+            is_face_down_ = false;
+            //ジャンプかしゃがみかうつ伏せをするかを決める
+            int state_rand = GetRand(2);
+            if(state_rand == 0) {
+                //高さを半径の3倍にする
+                neutral_pos_ = TOP_POINT_;
+
+                set_jump_ = true;    //ジャンプするかどうかを決めるフラグを立てる
+            }
+            //ジャンプをしていないなら
+            else if(state_rand == 1 && GetComponent<ComponentJump>()->IsJumping() == false) {
+                //ジャンプをできない状態にする
+                GetComponent<ComponentJump>()->SetEnable();
+                //高さを半径にする
+                neutral_pos_ = SQUAT_TOP_POINT_;
+            }
+            else if(state_rand == 2 && GetComponent<ComponentJump>()->IsJumping() == false) {
+                //ジャンプをできない状態にする
+                GetComponent<ComponentJump>()->SetEnable();
+                //高さを半径にする
+                neutral_pos_ = FACE_DOWN_TOP_POINT_;
+                //しゃがんでいると返す
+                is_face_down_ = true;
+            }
+
+            timer_count_ = static_cast<float>(GetRand(TIMER_RANDOM_MAX_) + 1);    //タイマーをリセット
         }
-        if(lift_timer_ < -RANDOM_TIME_MIN_) {
-            lift_timer_    = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-            lifting_block_ = true;
-        }
-        if(throw_timer_ < -RANDOM_TIME_MIN_) {
-            throw_timer_   = GetRand(RANDOM_TIME_MAX_) + RANDOM_TIME_MIN_;    //AIができたら消してください
-            lifting_block_ = false;
+        else {
+            set_jump_ = false;    //ジャンプするかどうかを決めるフラグを下ろす
         }
     }
     else {
-        //高さを半径の3倍にする
-        neutral_pos_ = TOP_POINT_;
         //しゃがんでいないと返す
         is_face_down_ = false;
     }
+    if(set_lift_ == true) {
+        for(auto obj : Scene::Object::GetArray<Object>()) {
+            if(obj->GetComponent<ComponentLiftable>() == nullptr) {
+                continue;    //持ち上げられないオブジェクトはコンティニュー
+            }
+            if(obj->GetName() == GetName()) {
+                continue;    //自分はコンティニュー
+            }
+            if(obj->GetComponent<ComponentLiftable>()->IsLifted()) {
+                continue;    //オーナーが持ち上げられ中なら持ち上げない
+            }
+
+            float3 owner_front = float3(0.0f, 0.0f, 0.0f);
+            owner_front.x      = -1.0f * sinf(D2R(0.0f));
+            owner_front.z      = -1.0f * cosf(D2R(0.0f));
+            float3 owner_rot   = GetRotationAxisXYZ();
+            //一応正規化
+            owner_front = normalize(owner_front);
+            //オブジェクトとオーナーのベクトルを取得
+            float3 vec_owner_to_obj = obj->GetMatrix().translate() - GetMatrix().translate();
+            //単位ベクトルを求める
+            float3 normalize_vec = normalize(vec_owner_to_obj);
+            //オブジェクトと持ち上げオーナーの内積を求める
+            float obj_to_owner_dot = dot(owner_front.xz, normalize_vec.xz);
+            //内積から角度を求める
+            float rad = acosf(obj_to_owner_dot);
+            //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
+            if(length(vec_owner_to_obj) < most_near_distance) {
+                if(obj->GetName() == u8"エネミー" && obj->GetName() != GetName() || obj->GetName() == u8"プレイヤー") {
+                    most_near_distance = length(vec_owner_to_obj);
+                    rot.y              = R2D(rad);
+                }
+                else
+                    continue;
+            }
+        }
+        SetRotationAxisXYZ(-rot);
+
+        if(most_near_distance < THROW_RANGE_) {
+            set_throw_ = true;
+        }
+    }
+
+    auto pos  = GetTranslate();
+    pos.x    += MOVE_SPEED_ * sinf(D2R(rot.y));
+    pos.z    -= MOVE_SPEED_ * cos(D2R(rot.y));
+
+    SetTranslate(pos);
+
     //コリジョンの高さの設定
     GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + neutral_pos_);
 }
