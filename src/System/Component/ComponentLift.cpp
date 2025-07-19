@@ -8,6 +8,7 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentRigidbody.h>
+#include <System/Component/ComponentHp.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化
@@ -24,7 +25,12 @@ void ComponentLift::Update()
 {
     __super::Update();
     auto owner = GetOwner();
-
+    if(auto hp = owner->GetComponent<ComponentHp>()) {
+        //死亡で
+        if(hp->IsDead()) {
+            return;
+        }
+    }
     //持ち上げる処理
     if(auto lift_obj = lift_object_.lock()) {
         lift_obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(true);

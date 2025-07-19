@@ -66,6 +66,12 @@ bool Player::Init()
 void Player::Update()
 {
     __super::Update();
+    if(auto hp = GetComponent<ComponentHp>()) {
+        //死亡で
+        if(hp->IsDead()) {
+            return;
+        }
+    }
     //下キーを押しているかつジャンプをしていないなら
     if(!GetComponent<ComponentLiftable>()->IsLifted()) {
         if(CheckHitKey(KEY_INPUT_DOWN) && GetComponent<ComponentJump>()->IsJumping() == false) {

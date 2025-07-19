@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 //!	@file	Enemy.cpp
 //! @brief	エネミー
 //---------------------------------------------------------------------------
@@ -67,10 +67,18 @@ bool Enemy::Init()
 void Enemy::Update()
 {
     __super::Update();
+
     float3 rot = GetRotationAxisXYZ();
 
     float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
 
+    if(auto hp = GetComponent<ComponentHp>()) {
+        //死亡で
+        if(hp->IsDead()) {
+            return;
+        }
+    }
+  
     //持ち上げられていない状態だったら
     if(!GetComponent<ComponentLiftable>()->IsLifted()) {
         auto current_time = std::chrono::high_resolution_clock::now();

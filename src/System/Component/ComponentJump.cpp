@@ -7,6 +7,7 @@
 #include <System/Component/ComponentJump.h>
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
+#include <System/Component/ComponentHp.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化処理
@@ -24,6 +25,12 @@ void ComponentJump::Update()
     __super::Update();
     jump_frame_count_--;
     auto owner = GetOwner();
+    if(auto hp = owner->GetComponent<ComponentHp>()) {
+        //死亡で
+        if(hp->IsDead()) {
+            return;
+        }
+    }
     //オーナーが持ち上げられ状態なら、後の処理は行わない。
     if(owner->GetComponent<ComponentLiftable>()->IsLifted())
         return;

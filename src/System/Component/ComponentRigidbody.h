@@ -31,6 +31,10 @@ public:
     //! @param use_gravity_flag [in] 重力を使用するかフラグ
     void SetUseGravity(bool use_gravity_flag);
 
+    //速度を設定する
+    //! @param velocity [in] 設定する速度
+    void SetVelocity(float3 velocity);
+
     //速度を取得する
     //! @retval 速度
     float3 GetVelocity() const;
@@ -38,6 +42,14 @@ public:
     //質量を取得する
     //! @retval 質量
     float GetMass() const;
+
+    //反発係数を設定する
+    //! @param restitution [in] 反発係数の値
+    void SetRestitution(float restitution);
+
+    //反発係数の取得
+    //! @retval 反発係数の値
+    float GetRestitution() const;
     //! @}
 
 private:
@@ -52,6 +64,7 @@ private:
     bool                                               use_gravity_  = true;                        //重力を使用するか否か
     float                                              drag_         = 15.0f;                       //空気抵抗
     float                                              angular_drag_ = 0.0f;                        //回転抵抗
+    float                                              restitution_  = 0.5f;                        //反発係数
 
     //--------------------------------------------------------------------
     //! @name Cereal処理
