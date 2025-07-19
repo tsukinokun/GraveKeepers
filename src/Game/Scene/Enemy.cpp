@@ -69,8 +69,6 @@ void Enemy::Update()
     __super::Update();
     float3 rot = GetRotationAxisXYZ();
 
-    //高さを半径の3倍にする
-    neutral_pos_              = TOP_POINT_;
     float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
 
     //持ち上げられていない状態だったら
@@ -130,21 +128,24 @@ void Enemy::Update()
             set_lift_ = true;
         }
 
-        //しゃがんでいないと返す
-        is_face_down_ = false;
         if(seconds <= 0) {
-            state_rand_ = GetRand(2);
-            if(state_rand_ == 0) {
+            is_face_down_ = false;
+            //ジャンプかしゃがみかうつ伏せをするかを決める
+            int state_rand = GetRand(2);
+            if(state_rand == 0) {
+                //高さを半径の3倍にする
+                neutral_pos_ = TOP_POINT_;
+
                 set_jump_ = true;    //ジャンプするかどうかを決めるフラグを立てる
             }
             //ジャンプをしていないなら
-            else if(state_rand_ == 1 && GetComponent<ComponentJump>()->IsJumping() == false) {
+            else if(state_rand == 1 && GetComponent<ComponentJump>()->IsJumping() == false) {
                 //ジャンプをできない状態にする
                 GetComponent<ComponentJump>()->SetEnable();
                 //高さを半径にする
                 neutral_pos_ = SQUAT_TOP_POINT_;
             }
-            else if(state_rand_ == 2 && GetComponent<ComponentJump>()->IsJumping() == false) {
+            else if(state_rand == 2 && GetComponent<ComponentJump>()->IsJumping() == false) {
                 //ジャンプをできない状態にする
                 GetComponent<ComponentJump>()->SetEnable();
                 //高さを半径にする
@@ -153,7 +154,7 @@ void Enemy::Update()
                 is_face_down_ = true;
             }
 
-            timer_count_ = static_cast<float>(GetRand(5) + 1);    //タイマーをリセット
+            timer_count_ = static_cast<float>(GetRand(TIMER_RANDOM_MAX_) + 1);    //タイマーをリセット
         }
         else {
             set_jump_ = false;    //ジャンプするかどうかを決めるフラグを下ろす

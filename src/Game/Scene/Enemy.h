@@ -32,6 +32,7 @@ private:
     const float MOVE_SPEED_          = 0.1f;           //移動速度
     const int   PUT_RADIUS_MAX_      = 70;             //出現する範囲の最大
     const int   HP_MAX_              = 200;            //HPの最大値
+    const int   TIMER_RANDOM_MAX_    = 5;              //タイマーのランダムの最大値
 
     float neutral_pos_  = TOP_POINT_;    //円の位置の高さ
     bool  is_face_down_ = false;         //うつ伏せの状態かを確認する用の変数
@@ -43,19 +44,7 @@ private:
     bool set_throw_ = false;    //持ち上げたものを投げるかどうかを決めるフラグ
     bool set_jump_  = false;    //ジャンプするかどうかを決めるフラグ
 
-    float timer_count_ = static_cast<float>(GetRand(5) + 1);    //タイマー
-    int   state_rand_  = 0;                                     //状態を決めるための乱数
+    float timer_count_ = static_cast<float>(GetRand(TIMER_RANDOM_MAX_) + 1);    //タイマー
 
-    std::chrono::high_resolution_clock::time_point previous_time_;
-
-    //以下のものはAIができたら消してください
-    //const int RANDOM_TIME_MAX_ = RANDOM_TIME_MIN_ * 10;	   //しゃがむ時間の最大時間
-
-    //int squat_timer_		   = 0;	   //しゃがむまでの時間
-    //int jump_timer_			   = 0;	   //ジャンプするまでの時間
-    //int face_down_timer_	   = 0;	   //うつ伏せするまでの時間
-
-    //bool lifting_block_		   = false;
-    //int	 lift_timer_		   = 0;	   //ブロックを持ち上げるまでの時間
-    //int	 throw_timer_		   = 0;	   //ブロックを投げるまでの時間
+    std::chrono::high_resolution_clock::time_point previous_time_;    // 前回の時間を記録する変数
 };
