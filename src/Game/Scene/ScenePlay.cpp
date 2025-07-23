@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "ScenePlay.h"
 #include <chrono>
+#include <Game/Scene/UIObject/UIText.h>
+#include <System/UIComponent/ComponentString.h>
 #include <System/Component/ComponentHp.h>
 #include "Enemy.h"
 #include "Camera.h"
@@ -20,6 +22,9 @@ bool ScenePlay::Init()
 {
     __super::Init();
 
+    //文字の回りに黒い縁を追加
+    ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
+
     auto field = Scene::Object::Create<Field>();
 
     auto player = Scene::Object::Create<Player>();
@@ -28,7 +33,7 @@ bool ScenePlay::Init()
         auto enemy = Scene::Object::Create<Enemy>();
     }
 
-    previousTime_ = std::chrono::high_resolution_clock::now();
+    previous_time_ = std::chrono::high_resolution_clock::now();
 
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
         auto block = Scene::Object::Create<Block>();
@@ -46,6 +51,15 @@ bool ScenePlay::Init()
             wall->SetRotationAxisXYZ(float3(90.0f, 0.0f, 0.0f));
         }
     }
+
+    //時間UIオブジェクトの生成
+    auto timer_ui = Scene::Object::Create<UIText>(u8"タイマーUI");
+    timer_ui->SetTranslate(float3(100.0f, 50.0f, 0.0f));
+    if(auto text = timer_ui->text_component_.lock()) {
+        text->SetString("00:00");                 // 初期値を設定
+        text->SetColor(GetColor(255, 255, 0));    // 色を黄色に設定
+    }
+    timer_ui_ = timer_ui;
     return true;
 }
 
@@ -55,6 +69,30 @@ bool ScenePlay::Init()
 void ScenePlay::Update()
 {
     __super::Update();
+    // 時間差分を計算
+    auto current_time = std::chrono::high_resolution_clock::now();
+    auto delta_time   = current_time - previous_time_;
+    previous_time_    = current_time;
+
+    //---------------------------------------------------------------------------------
+    //	タイマー処理
+    //---------------------------------------------------------------------------------
+    // タイマーを減算（カウントダウン）
+    TIMER_COUNT_ -= std::chrono::duration<float>(delta_time).count();
+    if(TIMER_COUNT_ < 0.0f) {
+        TIMER_COUNT_ = 0.0f;
+    }
+    // 分と秒に変換（ゼロ埋め付き表示）
+    int minutes = static_cast<int>(TIMER_COUNT_) / 60;
+    int seconds = static_cast<int>(TIMER_COUNT_) % 60;
+    //タイマーUIのウィークポインタをとらえる
+    if(auto timer_ui = timer_ui_.lock()) {
+        //タイマーのUIテキストコンポーネントに時間をセット
+        if(auto text = timer_ui->text_component_.lock()) {
+            text->SetString(std::to_string(minutes) + ":" + std::to_string(seconds));
+        }
+    }
+
     // ここにゲームの更新処理を追加
     //プレイヤーのHPをカメラに与える
     auto player = Scene::Object::Get<Player>(u8"プレイヤー");
@@ -76,27 +114,8 @@ void ScenePlay::Draw()
 {
     __super::Draw();
 
-    // ここにゲームの描画処理を追加
-    //文字の回りに黒い縁を追加
-    ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
-
-    // 時間差分を計算
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    auto deltaTime   = currentTime - previousTime_;
-    previousTime_    = currentTime;
-
-    // タイマーを減算（カウントダウン）
-    TIMER_COUNT_ -= std::chrono::duration<float>(deltaTime).count();
-    if(TIMER_COUNT_ < 0.0f) {
-        TIMER_COUNT_ = 0.0f;
-    }
-
-    // 分と秒に変換（ゼロ埋め付き表示）
-    int minutes = static_cast<int>(TIMER_COUNT_) / 60;
-    int seconds = static_cast<int>(TIMER_COUNT_) % 60;
-
     // タイマーを画面に描画（DxLib関数）
-    DrawFormatString(100, 50, GetColor(255, 255, 0), "%02d:%02d", minutes, seconds);
+    //DrawFormatString(100, 50, GetColor(255, 255, 0), "%02d:%02d", minutes, seconds);
 }
 
 //---------------------------------------------------------------------------------

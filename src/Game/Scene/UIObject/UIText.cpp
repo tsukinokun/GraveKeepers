@@ -12,8 +12,11 @@
 bool UIText::Init()
 {
     __super::Init();
-
-    auto com_comp = AddComponent<ComponentString>();
+    //---------------------------------------------------------------------------------
+    //	文字列機能コンポーネントの追加
+    //---------------------------------------------------------------------------------
+    auto text_comp  = AddComponent<ComponentString>();    // 文字列機能コンポーネントを追加
+    text_component_ = text_comp;                          // weak_ptrとして保持
     return true;
 }
 

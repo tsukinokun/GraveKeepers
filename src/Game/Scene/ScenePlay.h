@@ -4,6 +4,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 #include <System/Scene.h>
+class UIText;    //ポインタとして使用するための前方宣言
 
 //===========================================================================
 //! アニメーションサンプルシーン
@@ -23,8 +24,9 @@ public:
 private:
     float                                          TIMER_COUNT_ = 120.0f;
     const int                                      ENEMY_MAX_   = 3;
-    std::chrono::high_resolution_clock::time_point previousTime_;
+    std::chrono::high_resolution_clock::time_point previous_time_;
     const int                                      BLOCK_NUM_MAX_ = 10;
 
     const std::array<float3, 4> WALL_POS_ = {float3(50.0f, 0.0f, 0.0f), float3(-50.0f, 0.0f, 0.0f), float3(0.0f, 0.0f, 50.0f), float3(0.0f, 0.0f, -50.0f)};
+    std::weak_ptr<UIText>       timer_ui_;    // タイマーのUIテキストコンポーネントへの参照
 };
