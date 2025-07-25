@@ -22,10 +22,18 @@ public:
     //文字列の設定
     //! @param str [in] 描画する文字列の設定
     std::shared_ptr<ComponentString> SetString(const std::string_view& str);
+
+    //文字色の設定
+    //! @param		text_color [in] 描画する文字色の設定
+    //! @param		edge_color [in] 描画する文字のふち色の設定
+    //! @details	第二引数はデフォルト引数で黒に設定されています。
+    std::shared_ptr<ComponentString> SetColor(int text_color, int edge_color = 0);
     //! @}
 
 private:
-    std::string_view str_;    //描画する文字列
+    int         text_color_ = 0;    //文字の色
+    int         edge_color_ = 0;    //文字の縁の色
+    std::string str_;               //描画する文字列
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

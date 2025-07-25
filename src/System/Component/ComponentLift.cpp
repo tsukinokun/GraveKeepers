@@ -77,6 +77,10 @@ void ComponentLift::Update()
                 if(!CheckLiftObjName(def_name.data())) {
                     continue;
                 }
+                //ComponentLiftableがついていなかったらコンティニュー
+                if(!obj->GetComponent<ComponentLiftable>()) {
+                    continue;
+                }
                 //オブジェクトが持ち上げられ中ならコンティニュー
                 if(obj->GetComponent<ComponentLiftable>()->IsLifted()) {
                     continue;
