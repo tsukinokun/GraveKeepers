@@ -98,13 +98,14 @@ void ScenePlay::Update()
     auto player = Scene::Object::Get<Player>(u8"プレイヤー");
     auto camera = Scene::Object::Get<Camera>("Camera");
 
-    camera->GetPlayerHP(player->GetComponent<ComponentHp>()->GetHitPoints());
+    //camera->GetPlayerHP(player->GetComponent<ComponentHp>()->GetHitPoints());
     int enemy_num = 0;
-    for(auto enemy : Scene::Object::GetArray<Enemy>()) {
-        //エネミーのHPをカメラに与える
-        camera->GetEnemyHP(enemy->GetComponent<ComponentHp>()->GetHitPoints(), enemy_num);
-        enemy_num++;
-    }
+    //for(auto enemy : Scene::Object::GetArray<Enemy>())
+    //{
+    //	//エネミーのHPをカメラに与える
+    //	camera->GetEnemyHP(enemy->GetComponent<ComponentHp>()->GetHitPoints(), enemy_num);
+    //	enemy_num++;
+    //}
 }
 
 //---------------------------------------------------------------------------------
