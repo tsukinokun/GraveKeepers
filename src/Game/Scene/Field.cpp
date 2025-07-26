@@ -15,10 +15,12 @@ bool Field::Init()
     __super::Init();
     SetName(u8"Field");
     //フィールドの読み込み（仮で山口先生の素材を入れている）
-    auto model_comp = AddComponent<ComponentModel>("data/Sample/PoyPoy/Field/field.mv1");
+    auto model_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/stage.mv1");
     AddComponent<ComponentCollisionModel>()->AttachToModel();    //< GUIでの 「モデルにコリジョンを張り付ける」動作
     //座標の設定
     SetTranslate({0, -1, 0});
+    //回転
+    SetRotationAxisXYZ({0, 180, 0});
     //モデルを１０倍している
     SetScaleAxisXYZ(10.0f);
     return true;
