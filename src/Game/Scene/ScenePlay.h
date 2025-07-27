@@ -28,5 +28,4 @@ private:
     const int                                      BLOCK_NUM_MAX_ = 10;
 
     const std::array<float3, 4> WALL_POS_ = {float3(50.0f, 0.0f, 0.0f), float3(-50.0f, 0.0f, 0.0f), float3(0.0f, 0.0f, 50.0f), float3(0.0f, 0.0f, -50.0f)};
-    std::weak_ptr<UIText>       timer_ui_;    // タイマーのUIテキストコンポーネントへの参照
 };

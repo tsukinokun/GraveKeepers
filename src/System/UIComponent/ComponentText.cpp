@@ -1,14 +1,14 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	ComponentString.cpp
+//!	@file	ComponentText.cpp
 //! @brief	文字列コンポーネント
 //! @auther 山﨑愛
 //---------------------------------------------------------------------------
-#include "ComponentString.h"
+#include "ComponentText.h"
 
 //---------------------------------------------------------------------------
 //! @brief	初期化関数
 //---------------------------------------------------------------------------
-void ComponentString::Init()
+void ComponentText::Init()
 {    // 初期化処理
     __super::Init();
 }
@@ -16,7 +16,7 @@ void ComponentString::Init()
 //---------------------------------------------------------------------------
 //! @brief	UI描画
 //---------------------------------------------------------------------------
-void ComponentString::LateDraw()
+void ComponentText::LateDraw()
 {
     __super::LateDraw();
     auto   owner = GetOwner();
@@ -28,7 +28,7 @@ void ComponentString::LateDraw()
 //---------------------------------------------------------------------------
 //! @brief	ImGui
 //---------------------------------------------------------------------------
-void ComponentString::GUI()
+void ComponentText::GUI()
 {
     __super::GUI();
 
@@ -50,20 +50,20 @@ void ComponentString::GUI()
 //---------------------------------------------------------------------------
 //! @brief	文字列の設定
 //---------------------------------------------------------------------------
-std::shared_ptr<ComponentString> ComponentString::SetString(const std::string_view& str)
+std::shared_ptr<ComponentText> ComponentText::SetText(const std::string_view& str)
 {
     str_ = std::string(str);    // コピーして保持
-    return dynamic_pointer_cast<ComponentString>(shared_from_this());
+    return dynamic_pointer_cast<ComponentText>(shared_from_this());
 }
 
 //---------------------------------------------------------------------------
 //! @brief	文字列色の設定
 //---------------------------------------------------------------------------
-std::shared_ptr<ComponentString> ComponentString::SetColor(int text_color, int edge_color)
+std::shared_ptr<ComponentText> ComponentText::SetColor(int text_color, int edge_color)
 {
     text_color_ = text_color;    // 文字色を設定
     edge_color_ = edge_color;    // 縁取り色を設定
-    return dynamic_pointer_cast<ComponentString>(shared_from_this());
+    return dynamic_pointer_cast<ComponentText>(shared_from_this());
 }
-CEREAL_REGISTER_TYPE(ComponentString)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentString)
+CEREAL_REGISTER_TYPE(ComponentText)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentText)

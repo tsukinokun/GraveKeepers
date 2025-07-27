@@ -1,11 +1,11 @@
 ﻿//---------------------------------------------------------------------------
 //!	@file	UIText.h
 //! @brief	UIの文字オブジェクト
-//! @author
+//! @author 山﨑愛
 //---------------------------------------------------------------------------
 #pragma once
 #include <System/Scene.h>
-class ComponentString;    //ポインタとして使用するための前方宣言
+class ComponentText;    //ポインタとして使用するための前方宣言
 USING_PTR(UIText);
 
 class UIText : public Object
@@ -20,7 +20,17 @@ public:
     void Exit() override;      //!< 終了
     void GUI() override;       //!< GUI表示
 
-public:
-    std::weak_ptr<ComponentString>
+    //文字列の設定
+    //! @param str [in] 描画する文字列の設定
+    std::shared_ptr<UIText> SetText(const std::string_view& str);
+
+    //文字色の設定
+    //! @param		text_color [in] 描画する文字色の設定
+    //! @param		edge_color [in] 描画する文字のふち色の設定
+    //! @details	第二引数はデフォルト引数で黒に設定されています。
+    std::shared_ptr<UIText> SetColor(int text_color, int edge_color = 0);
+
+private:
+    std::weak_ptr<ComponentText>
         text_component_;    // 文字コンポーネントへの参照、使う側が毎回GetCompoenentするのも、weak_ptrを保持しておくのもさすがに面倒なので、ここでpublicにして保持しておく
 };
