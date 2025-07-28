@@ -6,7 +6,7 @@
 #include "ScenePlay.h"
 #include <chrono>
 #include <Game/Scene/UIObject/UIText.h>
-#include <System/UIComponent/ComponentString.h>
+#include <System/UIComponent/ComponentText.h>
 #include <System/Component/ComponentHp.h>
 #include "Enemy.h"
 #include "Camera.h"
@@ -55,11 +55,8 @@ bool ScenePlay::Init()
     //時間UIオブジェクトの生成
     auto timer_ui = Scene::Object::Create<UIText>(u8"タイマーUI");
     timer_ui->SetTranslate(float3(100.0f, 50.0f, 0.0f));
-    if(auto text = timer_ui->text_component_.lock()) {
-        text->SetString("00:00");                 // 初期値を設定
-        text->SetColor(GetColor(255, 255, 0));    // 色を黄色に設定
-    }
-    timer_ui_ = timer_ui;
+    timer_ui->SetText("00:00");
+    timer_ui->SetColor(GetColor(255, 255, 0));    // 色を黄色に設定
     return true;
 }
 
@@ -85,12 +82,9 @@ void ScenePlay::Update()
     // 分と秒に変換（ゼロ埋め付き表示）
     int minutes = static_cast<int>(TIMER_COUNT_) / 60;
     int seconds = static_cast<int>(TIMER_COUNT_) % 60;
-    //タイマーUIのウィークポインタをとらえる
-    if(auto timer_ui = timer_ui_.lock()) {
-        //タイマーのUIテキストコンポーネントに時間をセット
-        if(auto text = timer_ui->text_component_.lock()) {
-            text->SetString(std::to_string(minutes) + ":" + std::to_string(seconds));
-        }
+    //タイマーUIの更新
+    if(auto timer_ui = Scene::Object::Get<UIText>(u8"タイマーUI")) {
+        timer_ui->SetText(std::to_string(minutes) + ":" + std::to_string(seconds));
     }
 
     // ここにゲームの更新処理を追加
@@ -114,9 +108,6 @@ void ScenePlay::Update()
 void ScenePlay::Draw()
 {
     __super::Draw();
-
-    // タイマーを画面に描画（DxLib関数）
-    //DrawFormatString(100, 50, GetColor(255, 255, 0), "%02d:%02d", minutes, seconds);
 }
 
 //---------------------------------------------------------------------------------

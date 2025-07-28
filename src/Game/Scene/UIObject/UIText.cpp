@@ -4,7 +4,7 @@
 //! @author	山﨑愛
 //---------------------------------------------------------------------------
 #include "UIText.h"
-#include <System/UIComponent/ComponentString.h>
+#include <System/UIComponent/ComponentText.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -15,8 +15,8 @@ bool UIText::Init()
     //---------------------------------------------------------------------------------
     //	文字列機能コンポーネントの追加
     //---------------------------------------------------------------------------------
-    auto text_comp  = AddComponent<ComponentString>();    // 文字列機能コンポーネントを追加
-    text_component_ = text_comp;                          // weak_ptrとして保持
+    auto text_comp  = AddComponent<ComponentText>();    // 文字列機能コンポーネントを追加
+    text_component_ = text_comp;                        // weak_ptrとして保持
     return true;
 }
 
@@ -48,4 +48,26 @@ void UIText::Exit()
 void UIText::GUI()
 {
     __super::GUI();
+}
+
+//---------------------------------------------------------------------------
+//! @brief	文字列の設定
+//---------------------------------------------------------------------------
+std::shared_ptr<UIText> UIText::SetText(const std::string_view& str)
+{
+    if(auto text_comp = text_component_.lock()) {
+        text_comp->SetText(str);    // 文字列コンポーネントに文字列を設定
+    }
+    return dynamic_pointer_cast<UIText>(shared_from_this());
+}
+
+//---------------------------------------------------------------------------
+//! @brief	文字列色の設定
+//---------------------------------------------------------------------------
+std::shared_ptr<UIText> UIText::SetColor(int text_color, int edge_color)
+{
+    if(auto text_comp = text_component_.lock()) {
+        text_comp->SetColor(text_color, edge_color);    // 文字列コンポーネントに色を設定
+    }
+    return dynamic_pointer_cast<UIText>(shared_from_this());
 }
