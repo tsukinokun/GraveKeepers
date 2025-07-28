@@ -8,7 +8,7 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentRigidbody.h>
-#include <System/Component/ComponentHp.h>
+#include <System/Component/ComponentStatus.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化
@@ -25,7 +25,7 @@ void ComponentLift::Update()
 {
     __super::Update();
     auto owner = GetOwner();
-    if(auto hp = owner->GetComponent<ComponentHp>()) {
+    if(auto hp = owner->GetComponent<ComponentStatus>()) {
         //死亡で
         if(hp->IsDead()) {
             return;

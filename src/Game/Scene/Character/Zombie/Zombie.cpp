@@ -11,7 +11,7 @@
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
-#include <System/Component/ComponentHp.h>
+#include <System/Component/ComponentStatus.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -22,8 +22,9 @@ bool Zombie::Init()
     if(auto model_comp = model_component_.lock()) {
         model_comp->Load("data/PoyPoy/Model/Character/Zombie/Zombie.mv1");
     }
-    if(auto hp_comp = hp_component_.lock()) {
-        hp_comp->SetHitPoints(HP_MAX_);
+    if(auto status_comp = status_component_.lock()) {
+        status_comp->SetHitPoints(HP_MAX_);
+        status_comp->SetSpeed(MOVE_SPEED);
     }
     SetName(u8"ゾンビ");
     return true;
