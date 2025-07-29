@@ -9,7 +9,7 @@
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentLiftable.h>
-#include <System/Component/ComponentHp.h>
+#include <System/Component/ComponentStatus.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -18,8 +18,8 @@ bool Enemy::Init()
 {
     __super::Init();
     AddComponent<ComponentRigidbody>();
-    AddComponent<ComponentLiftable>();             //持ち上げられ機能コンポーネント
-    auto hp_comp = AddComponent<ComponentHp>();    //HP機能コンポーネント
+    AddComponent<ComponentLiftable>();                 //持ち上げられ機能コンポーネント
+    auto hp_comp = AddComponent<ComponentStatus>();    //HP機能コンポーネント
     hp_comp->SetHitPoints(HP_MAX_);
     SetTranslate({GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2, 2, GetRand(PUT_RADIUS_MAX_) - PUT_RADIUS_MAX_ / 2});
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
@@ -72,7 +72,7 @@ void Enemy::Update()
 
     float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
 
-    if(auto hp = GetComponent<ComponentHp>()) {
+    if(auto hp = GetComponent<ComponentStatus>()) {
         //死亡で
         if(hp->IsDead()) {
             return;
@@ -278,7 +278,7 @@ void Enemy::OnHit(const ComponentCollision::HitInfo& hit_info)
             if(length(hit_rb->GetVelocity()) > float1(1.0f)) {
                 GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());    //ノックバック
                 int damage = static_cast<int>(hit_rb->GetMass());                         //ダメージは当たったオブジェクトの質量に比例
-                GetComponent<ComponentHp>()->TakeDamage(damage);                          //ダメージを受ける
+                GetComponent<ComponentStatus>()->TakeDamage(damage);                      //ダメージを受ける
             }
         }
     }

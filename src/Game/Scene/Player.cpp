@@ -11,7 +11,7 @@
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
-#include <System/Component/ComponentHp.h>
+#include <System/Component/ComponentStatus.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -21,22 +21,9 @@ bool Player::Init()
     __super::Init();
     auto chara         = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
     auto controll_comp = chara->AddComponent<ComponentObjectController>();
-    controll_comp->SetMoveSpeed(0.2f);
+    controll_comp->SetMoveSpeed(chara->GetComponent<ComponentStatus>()->GetSpeed());
     controll_comp->SetRotateSpeed(20.0f);
     controll_character_ = chara;
-    //AddComponent<ComponentRigidbody>();			   //剛体コンポーネントを追加
-    //AddComponent<ComponentLiftable>();			   //持ち上げられ機能コンポーネント
-    //auto hp_comp = AddComponent<ComponentHp>();	   //HP機能コンポーネント
-    //hp_comp->SetHitPoints(HP_MAX_);
-    //auto object_controller_comp = AddComponent<ComponentObjectController>();
-    //object_controller_comp->SetMoveSpeed(0.2f);
-    //object_controller_comp->SetRotateSpeed(20.0f);
-    //SetTranslate({0, 2, 0});
-    //auto col_comp = AddComponent<ComponentCollisionCapsule>();
-    //col_comp->SetRadius(RADIUS_);				   // 球コリジョンの半径を2.0 にする
-    //col_comp->SetHeight(RADIUS_ + neutralpos_);	   // 球コリジョンの高さを半径の４倍 にする
-
-    //auto jump_comp = AddComponent<ComponentJump>();
     if(auto jump_comp = chara->GetComponent<ComponentJump>()) {
         jump_comp->SetConditionsJump([]() {
             if(IsKeyOn(KEY_INPUT_SPACE))
@@ -63,26 +50,6 @@ bool Player::Init()
                 return false;
             });
     }
-    //lift_comp->SetConditionsForLifting(
-    //	//ラムダ式を代入
-    //	[]()
-    //	{
-    //		if(IsKeyOn(KEY_INPUT_Z))
-    //		{
-    //			return true;
-    //		}
-    //		return false;
-    //	});
-    //lift_comp->SetConditionsForThrow(	 //ラムダ式を代入
-    //	[]()
-    //	{
-    //		if(IsKeyOn(KEY_INPUT_Z))
-    //		{
-    //			return true;
-    //		}
-    //		return false;
-    //	});
-
     SetName(u8"プレイヤー");
 
     return true;
@@ -94,7 +61,7 @@ bool Player::Init()
 void Player::Update()
 {
     __super::Update();
-    //if(auto hp = GetComponent<ComponentHp>())
+    //if(auto hp = GetComponent<ComponentStatus>())
     //{
     //	//死亡で
     //	if(hp->IsDead())
@@ -191,8 +158,8 @@ void Player::OnHit(const ComponentCollision::HitInfo& hit_info)
             //触ったオブジェクトの速度が少しでもあれば
             if(length(hit_rb->GetVelocity()) > float1(1.0f)) {
                 GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
-                int damage = static_cast<int>(hit_rb->GetMass());    //ダメージは当たったオブジェクトの質量に比例
-                GetComponent<ComponentHp>()->TakeDamage(damage);     //ダメージを受ける
+                int damage = static_cast<int>(hit_rb->GetMass());       //ダメージは当たったオブジェクトの質量に比例
+                GetComponent<ComponentStatus>()->TakeDamage(damage);    //ダメージを受ける
             }
         }
     }

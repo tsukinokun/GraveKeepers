@@ -7,7 +7,7 @@
 #include <chrono>
 #include <Game/Scene/UIObject/UIText.h>
 #include <System/UIComponent/ComponentText.h>
-#include <System/Component/ComponentHp.h>
+#include <System/Component/ComponentStatus.h>
 #include "Enemy.h"
 #include "Camera.h"
 #include "Field.h"
@@ -92,12 +92,12 @@ void ScenePlay::Update()
     auto player = Scene::Object::Get<Player>(u8"プレイヤー");
     auto camera = Scene::Object::Get<Camera>("Camera");
 
-    //camera->GetPlayerHP(player->GetComponent<ComponentHp>()->GetHitPoints());
+    //camera->GetPlayerHP(player->GetComponent<ComponentStatus>()->GetHitPoints());
     int enemy_num = 0;
     //for(auto enemy : Scene::Object::GetArray<Enemy>())
     //{
     //	//エネミーのHPをカメラに与える
-    //	camera->GetEnemyHP(enemy->GetComponent<ComponentHp>()->GetHitPoints(), enemy_num);
+    //	camera->GetEnemyHP(enemy->GetComponent<ComponentStatus>()->GetHitPoints(), enemy_num);
     //	enemy_num++;
     //}
 }

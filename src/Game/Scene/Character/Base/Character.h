@@ -12,7 +12,7 @@ class ComponentLift;
 class ComponentLiftable;
 class ComponentModel;
 class ComponentJump;
-class ComponentHp;
+class ComponentStatus;
 class ComponentRigidbody;
 
 class Character : public Object
@@ -35,7 +35,7 @@ protected:
     std::weak_ptr<ComponentJump>             jump_component_;         // ジャンプcomponent
     std::weak_ptr<ComponentModel>            model_component_;        // モデルcomponent
     std::weak_ptr<ComponentCollisionCapsule> collision_component_;    //コリジョンcomponent
-    std::weak_ptr<ComponentHp>               hp_component_;           // ヒットポイントcomponent
+    std::weak_ptr<ComponentStatus>           status_component_;       // ヒットポイントcomponent
     std::weak_ptr<ComponentRigidbody>        rigidbody_component_;    // 剛体component
 
 private:
