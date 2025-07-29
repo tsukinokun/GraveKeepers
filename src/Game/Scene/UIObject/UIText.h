@@ -5,10 +5,11 @@
 //---------------------------------------------------------------------------
 #pragma once
 #include <System/Scene.h>
+#include "UIObject.h"
 class ComponentText;    //ポインタとして使用するための前方宣言
 USING_PTR(UIText);
 
-class UIText : public Object
+class UIText : public UIObject
 {
 public:
     BP_OBJECT_DECL(UIText, u8"UIの文字オブジェクト")
