@@ -20,11 +20,11 @@ void ComponentStatus::Init()
 void ComponentStatus::Update()
 {
     //時間の更新
-    current_time_    = std::chrono::high_resolution_clock::now();
-    auto delta_time_ = std::chrono::duration<float>(current_time_ - prev_time_).count();
-    prev_time_       = current_time_;
+    current_time_   = std::chrono::high_resolution_clock::now();
+    auto delta_time = std::chrono::duration<float>(current_time_ - prev_time_).count();
+    prev_time_      = current_time_;
 
-    invincibility_timer_ -= delta_time_;    //タイマーからデルタタイムを引く
+    invincibility_timer_ -= delta_time;    //タイマーからデルタタイムを引く
     __super::Update();
 }
 
@@ -97,6 +97,7 @@ bool ComponentStatus::IsDead() const
     }
     return false;
 }
+
 //---------------------------------------------------------------------------
 //! @brief	移動スピードのセッタ
 //---------------------------------------------------------------------------
