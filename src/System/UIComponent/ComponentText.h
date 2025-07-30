@@ -4,7 +4,6 @@
 
 USING_PTR(ComponentText);
 
-//! 剛体コンポーネント
 class ComponentText : public Component
 {
 public:
