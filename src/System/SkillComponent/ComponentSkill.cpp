@@ -14,6 +14,14 @@ void ComponentSkill::Init()
 }
 
 //---------------------------------------------------------------------------
+//! @brief	更新処理関数
+//---------------------------------------------------------------------------
+void ComponentSkill::Update()
+{    // 初期化処理
+    __super::Update();
+}
+
+//---------------------------------------------------------------------------
 //! @brief	ImGui
 //---------------------------------------------------------------------------
 void ComponentSkill::GUI()
@@ -32,6 +40,23 @@ void ComponentSkill::GUI()
         }
     }
     ImGui::End();
+}
+
+//---------------------------------------------------------------------------
+//! @brief	スキルを発動条件を設定する
+//---------------------------------------------------------------------------
+std::shared_ptr<ComponentSkill> ComponentSkill::SetConditionsForUseSkill(const std::function<bool()>& is_use_skill)
+{
+    is_use_skill_ = is_use_skill;
+    return dynamic_pointer_cast<ComponentSkill>(shared_from_this());
+}
+
+//---------------------------------------------------------------------------
+//! @brief	スキルを発動する
+//---------------------------------------------------------------------------
+std::shared_ptr<ComponentSkill> ComponentSkill::UseSkill()
+{
+    return dynamic_pointer_cast<ComponentSkill>(shared_from_this());
 }
 
 CEREAL_REGISTER_TYPE(ComponentSkill)

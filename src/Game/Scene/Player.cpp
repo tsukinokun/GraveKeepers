@@ -12,6 +12,7 @@
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
+#include <System/SkillComponent/ComponentFireBall.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -50,6 +51,18 @@ bool Player::Init()
                 return false;
             });
     }
+    //----------------------------------------------
+    //スキルコンポーネント(仮でファイアーボールを付ける)の設定
+    //----------------------------------------------
+    auto fireball_comp = chara->AddComponent<ComponentFireBall>();
+    fireball_comp->SetConditionsForUseSkill(
+        //ラムダ式を代入、xキーを押すとスキル仕様と割り当てる。
+        []() {
+            if(IsKeyOn(KEY_INPUT_X)) {
+                return true;
+            }
+            return false;
+        });
     SetName(u8"プレイヤー");
 
     return true;

@@ -27,7 +27,7 @@ public:
     //	初期化処理
     void Init() override;
 
-    //	物理演算
+    //	描画処理
     void LateDraw() override;
 
     //ImGui
