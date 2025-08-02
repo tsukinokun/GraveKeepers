@@ -17,8 +17,6 @@ public:
     bool Init() override
     {
         __super::Init();
-
-        Scene::GetCurrentScene()->SetPriority(shared_from_this(), ProcTiming::PostUpdate, static_cast<ProcPriority>(ProcPriority::LOW));
         return true;
     }
 
@@ -36,21 +34,7 @@ public:
             func_(effect_owner_.lock());
 
         // 自分ごと消去
-        Scene::ReleaseObject(SharedThis());
-    }
-
-    void PostUpdate() override
-    {
-        __super::PostUpdate();
-
-        auto eff_mat = matrix::identity();
-        if(auto eff = GetComponent<ComponentEffect>())
-            eff_mat = eff->GetMatrix();
-
-        if(auto owner = effect_owner_.lock())
-            eff_mat = mul(eff_mat, owner->GetMatrix());
-
-        SetMatrix(eff_mat);
+        Scene::Object::Release(SharedThis());
     }
 
     void SetEffect(const std::string_view name) { AddComponent<ComponentEffect>(name); }
@@ -129,19 +113,33 @@ ObjectPtr ComponentEffect::CreateObject(const std::string_view effect_name,
                                         const ObjectPtr&       object,
                                         const EffectFunc&      callback_func)
 {
-    return CreateObject(effect_name, HelperLib::Math::ToMatrix(pos, rotation, scale), object, callback_func);
+    return Object::Create(effect_name, HelperLib::Math::ToMatrix(pos, rotation, scale), object, callback_func);
+}
+
+ObjectPtr ComponentEffect::Object::Create(const std::string_view effect_name,
+                                          const float3&          pos,
+                                          const float3&          rotation,
+                                          const float3&          scale,
+                                          const ObjectPtr&       object,
+                                          const EffectFunc&      callback_func)
+{
+    return Object::Create(effect_name, HelperLib::Math::ToMatrix(pos, rotation, scale), object, callback_func);
 }
 
 ObjectPtr ComponentEffect::CreateObject(const std::string_view effect_name, const matrix& offset, const ObjectPtr& object, const EffectFunc& callback_func)
 {
-    auto obj = Scene::Object::CreateDelayInitialize<EffectObject>("effect_object");
+    return Object::Create(effect_name, offset, object, callback_func);
+}
+
+ObjectPtr ComponentEffect::Object::Create(const std::string_view effect_name, const matrix& offset, const ObjectPtr& object, const EffectFunc& callback_func)
+{
+    auto obj = Scene::Object::Create<EffectObject>("effect_object");
     obj->SetEffect(effect_name);
 
     if(object)
         obj->SetEffectOwnerAndFunction(object, callback_func);
 
-    obj->SetEffectMatrix(offset);
-
+    obj->SetMatrix(offset);
     obj->Play();
 
     return obj;
@@ -285,7 +283,7 @@ void ComponentEffect::GUI()
             // アニメーション名
             if(IsPlaying()) {
                 ImGui::TextColored({0.5, 1, 0.5, 1}, u8"再生中");
-                ImGui::Text(u8"[%3.2f]%s", effect_time_, GetEffectName().data());
+                ImGui::Text(u8"[%3.2f] %s", effect_time_, GetEffectName().data());
                 ImGui::Separator();
             }
 
@@ -379,7 +377,7 @@ bool ComponentEffect::IsValid()
     return effect_status_.is(EffectBit::Initialized);
 }
 
-const std::string_view ComponentEffect::GetEffectName()
+const std::string ComponentEffect::GetEffectName() const
 {
     return HelperLib::File::GetOnlyFileNameWithoutExtension(path_);
 }

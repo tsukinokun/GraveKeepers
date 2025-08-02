@@ -26,17 +26,34 @@ public:
 
     using EffectFunc = std::function<void(ObjectPtr)>;
 
+    [[deprecated("ComponentEffect::CreateObject()は古い形式です。ComponentEffect::Object::Create()を使用してください")]]
     static ObjectPtr CreateObject(const std::string_view effect_name,
                                   const matrix&          offset,
                                   const ObjectPtr&       object        = nullptr,
                                   const EffectFunc&      callback_func = nullptr);
 
+    [[deprecated("ComponentEffect::CreateObject()は古い形式です。ComponentEffect::Object::Create()を使用してください")]]
     static ObjectPtr CreateObject(const std::string_view effect_name,
                                   const float3&          pos,
                                   const float3&          rotation      = {0, 0, 0},
-                                  const float3&          scale         = {0, 0, 0},
+                                  const float3&          scale         = {1, 1, 1},
                                   const ObjectPtr&       object        = nullptr,
                                   const EffectFunc&      callback_func = nullptr);
+
+    struct Object
+    {
+        static ObjectPtr Create(const std::string_view effect_name,
+                                const matrix&          offset,
+                                const ObjectPtr&       object        = nullptr,
+                                const EffectFunc&      callback_func = nullptr);
+
+        static ObjectPtr Create(const std::string_view effect_name,
+                                const float3&          pos,
+                                const float3&          rotation      = {0, 0, 0},
+                                const float3&          scale         = {1, 1, 1},
+                                const ObjectPtr&       object        = nullptr,
+                                const EffectFunc&      callback_func = nullptr);
+    };
 
     static void ClearResource()
     {
@@ -102,7 +119,7 @@ public:
 
     //! @brief 再生アニメーション名
     //! @return アニメーション名
-    const std::string_view GetEffectName();
+    const std::string GetEffectName() const;
 
     //! @brief 再生経過時間の取得
     //! @return 再生経過時間
