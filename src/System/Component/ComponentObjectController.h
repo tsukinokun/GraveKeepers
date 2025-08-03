@@ -67,8 +67,10 @@ private:
     float limit_cam_down_ = -45.0f;    //!< 下を見る
 
     ObjectWeakPtr target_;
-    float         target_cam_side_speed_ = 3.0f;     //!< ロックオン時のカーソル移動速度
-    float         target_cam_up_down     = 10.0f;    //!< ターゲットを見る際の上下固定
+    float         target_cam_side_speed_ = 3.0f;                        //!< ロックオン時のカーソル移動速度
+    float         target_cam_up_down     = 10.0f;                       //!< ターゲットを見る際の上下固定
+    float3        dir_                   = float3(0.0f, 0.0f, 1.0f);    //!<内部の方向
+    float3        display_dir_           = float3(0.0f, 0.0f, 1.0f);    //!< 表示方向
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

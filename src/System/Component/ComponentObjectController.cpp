@@ -22,45 +22,76 @@ void ComponentObjectController::Update()
             return;
         }
     }
+    //----------------------------------------------------------------------------------
+    // キャラクターの移動
+    //----------------------------------------------------------------------------------
+    auto   world_mat = owner->Matrix();
+    float3 position  = world_mat[3].xyz;               //ワールド座標の一成分を取得
+    float3 front     = normalize(world_mat[2].xyz);    //前方の単位ベクトルを取得
+    float3 up        = normalize(world_mat[1].xyz);    //上方の単位ベクトルを取得
+    float3 right     = normalize(world_mat[0].xyz);    //右の単位ベクトルを取得
+
     // 移動方向
-    float3 dir{0, 0, 0};
+    float3 move = float3(0.0f, 0.0f, 0.0f);
     if(IsKey(key_up_))
-        dir += {0, 0, -1};
+        move += {0, 0, -1};
 
     if(IsKey(key_down_))
-        dir += {0, 0, 1};
+        move += {0, 0, 1};
 
     if(IsKey(key_right_))
-        dir += {-1, 0, 0};
+        move += {-1, 0, 0};
 
     if(IsKey(key_left_))
-        dir += {1, 0, 0};
+        move += {1, 0, 0};
 
     // 移動キーが押されているか?
-    if((float)length(dir) > 0.0f) {
+    if(float1(0.0001f) < dot(move, move)) {
         // 斜めが押されていることを考慮し、
         // その方向の移動スピードを1とし、スピードを掛け合わせる
-        dir = normalize(dir);
-
-        //owner->AddTranslate(dir * move_speed_, true);
-        // キャラのワールド方向で移動をさせる
-        owner->SetMatrix(mul(owner->GetMatrix(), matrix::translate(dir * move_speed_)));
-        //キャラの向きを変更
-        owner->SetRotationToVectorWithLimit(dir, rot_speed_);
-        //// モデルを移動の方向に向けます
-        //if(auto mdl = owner->GetComponent<ComponentModel>())
-        //{
-        //	mdl->SetRotationToVectorWithLimit(dir, rot_speed_);
-        //	mdl->PlayAnimationNoSame("walk", true);
-        //}
-    }
-    else {
-        // モデルを移動の方向に向けます
-        /*if(auto mdl = owner->GetComponent<ComponentModel>())
-			mdl->PlayAnimationNoSame("idle", true);*/
+        move = normalize(move);
+        dir_ = move;    // 内部の方向を更新
     }
 
+    //移動
+    position += move * move_speed_;
+
+    float cosine = dot(display_dir_, dir_);    //ベクトルのなす角
+    cosine       = std::clamp(cosine, -1.0f, 1.0f);
+    float radian = acosf(cosine);
+    //----------------------------------------------------------------------------------
+    // 回転追従
+    //----------------------------------------------------------------------------------
+    //右回転か左回転どちらが最短かを判定
+    //cross_dirの軸を中心に回転させるだけで実現可能。
+    float3 cross_dir = cross(display_dir_, dir_);
+    //外積結果が使えない場合(同じ方向 or 逆方向)
+    if(dot(cross_dir, cross_dir) < float1(0.00001f)) {
+        cross_dir = float3(0.0f, 1.0f, 0.0f);
+    }
+    {
+        matrix mat_rot_y = matrix::rotateAxis(cross_dir, radian * 0.1f);
+        display_dir_     = mul(float4(display_dir_, 0.0f), mat_rot_y).xyz;
+    }
+
+    front = display_dir_;
+
+    //frontの方向に併せてrightを追従させる(外積で方向を再計算)
+    right = cross(up, front);
+    right = normalize(right);
+    //----------------------------------------------------------------------------------
+    // ワールド行列を指定
+    //----------------------------------------------------------------------------------
+    world_mat[0] = float4(right, 0.0f);       //右方向ベクトル
+    world_mat[1] = float4(up, 0.0f);          //上方向ベクトル
+    world_mat[2] = float4(-front, 0.0f);      //前方向ベクトル
+    world_mat[3] = float4(position, 1.0f);    //位置座標
+    //オーナーのワールド行列を更新
+    owner->Matrix() = world_mat;
+
+    //----------------------------------------------------------------------------------
     // カメラが存在している場合
+    //----------------------------------------------------------------------------------
     if(auto camera = Scene::GetCurrentCamera().lock()) {
         // SpringArmのオブジェクトが自分の場合のみ
         auto cam_owner = camera->GetOwner();
