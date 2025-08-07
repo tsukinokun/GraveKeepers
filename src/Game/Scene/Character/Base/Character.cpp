@@ -30,8 +30,10 @@ bool Character::Init()
     collision_component_ = col_comp;
     auto jump_comp       = AddComponent<ComponentJump>();
     jump_component_      = jump_comp;
-    model_component_     = AddComponent<ComponentModel>();    //剛体コンポーネントを追加
-    lift_component_      = AddComponent<ComponentLift>();     //持ち上げコンポーネント
+    auto model           = AddComponent<ComponentModel>();    //剛体コンポーネントを追加
+    model->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));    //モデルの回転を設定
+    model_component_ = model;
+    lift_component_  = AddComponent<ComponentLift>();    //持ち上げコンポーネント
 
     SetName(u8"キャラクターのベースクラス");
 
