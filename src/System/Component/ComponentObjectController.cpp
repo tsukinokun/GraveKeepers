@@ -84,7 +84,7 @@ void ComponentObjectController::Update()
     //----------------------------------------------------------------------------------
     world_mat[0] = float4(right, 0.0f);       //右方向ベクトル
     world_mat[1] = float4(up, 0.0f);          //上方向ベクトル
-    world_mat[2] = float4(-front, 0.0f);      //前方向ベクトル
+    world_mat[2] = float4(front, 0.0f);       //前方向ベクトル
     world_mat[3] = float4(position, 1.0f);    //位置座標
     //オーナーのワールド行列を更新
     owner->Matrix() = world_mat;
