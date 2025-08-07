@@ -21,4 +21,16 @@ public:
 
 private:
     const float RADUIS_ = 2.0f;
+
+    const float SCALE_ = 1.0f;
+
+    const float DISTANCE_RANGE_ = 25.0f;
+
+    enum
+    {
+        CrossGrave,
+        FlatGrave,
+
+        BlockTypeMax,
+    };
 };
