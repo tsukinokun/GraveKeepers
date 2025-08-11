@@ -7,7 +7,9 @@
 #include <chrono>
 #include <Game/Scene/UIObject/UIText.h>
 #include <System/UIComponent/ComponentText.h>
+#include <Game/Scene/UIObject/UIImage.h>
 #include <System/Component/ComponentStatus.h>
+#include <Game/System/ImageBuffer.h>
 #include "Enemy.h"
 #include "Camera.h"
 #include "Field.h"
@@ -21,7 +23,7 @@
 bool ScenePlay::Init()
 {
     __super::Init();
-
+    ImageBuffer::Init();    // 画像バッファの初期化
     //文字の回りに黒い縁を追加
     ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
 
@@ -57,6 +59,15 @@ bool ScenePlay::Init()
     timer_ui->SetTranslate(float3(100.0f, 50.0f, 0.0f));
     timer_ui->SetText("00:00");
     timer_ui->SetColor(GetColor(255, 255, 0));    // 色を黄色に設定
+
+    //---------------------------------------------------------------------------------
+    //	テスト画像
+    //---------------------------------------------------------------------------------
+    auto test_image = Scene::Object::Create<UIImage>(u8"テスト画像");
+    test_image->SetTranslate(float3(WINDOW_W / 2, WINDOW_H / 2, 0.0f));
+    test_image->SetAlignment(ComponentTransformUI::Alignment::MiddleCenter);
+    test_image->SetScaleAxisXYZ(0.1f);
+    test_image->SetImage(ImageBuffer::GetImageHandle("test"));    // 画像ハンドルを設定
     return true;
 }
 
@@ -117,6 +128,7 @@ void ScenePlay::Exit()
 {
     __super::Exit();
     // ここにゲームの終了処理を追加
+    ImageBuffer::Exit();    // 画像バッファの終了処理
 }
 
 //!GUI表示
