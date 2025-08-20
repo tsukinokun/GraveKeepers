@@ -1,7 +1,7 @@
 ﻿//---------------------------------------------------------------------------
 //!	@file	Werewolf.cpp
-//! @brief	インゲームシーンのゾンビ
-//! @author 山﨑愛
+//! @brief	インゲームシーンの狼男
+//! @author
 //---------------------------------------------------------------------------
 #include "Werewolf.h"
 #include <System/Component/ComponentObjectController.h>
