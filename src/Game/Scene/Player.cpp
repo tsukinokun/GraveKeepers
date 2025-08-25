@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 #include "Player.h"
 #include <Game/Scene/Character/Zombie/Zombie.h>
+#include <Game/Scene/Character/Werewolf/Werewolf.h>
 #include <System/Component/ComponentObjectController.h>
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentJump.h>
@@ -20,7 +21,8 @@
 bool Player::Init()
 {
     __super::Init();
-    auto chara         = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
+    //auto chara		   = Scene::Object::Create<Zombie>();	 //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
+    auto chara         = Scene::Object::Create<Werewolf>();    //狼男を表示するためにゾンビをコメントアウトしています
     auto controll_comp = chara->AddComponent<ComponentObjectController>();
     controll_comp->SetMoveSpeed(chara->GetComponent<ComponentStatus>()->GetSpeed());
     controll_comp->SetRotateSpeed(20.0f);
