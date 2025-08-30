@@ -20,6 +20,7 @@ void ComponentText::Init()
 void ComponentText::LateDraw()
 {
     __super::LateDraw();
+    DxLib::SetFontSize(font_size_);                  //フォントサイズに合わせる
     auto   owner      = GetOwner();                  //オーナーを取得
     float3 adjustment = float3(0.0f, 0.0f, 0.0f);    // 調整値(Alignmentに合わせて)
     if(auto comp_transform = owner->GetComponent<ComponentTransformUI>()) {
@@ -54,6 +55,7 @@ void ComponentText::LateDraw()
     float3 pos = float3(0.0f, 0.0f, 0.0f);
     pos        = owner->GetTranslate() + adjustment;
     DrawString(pos.x, pos.y, str_.data(), text_color_, edge_color_);
+    DxLib::SetFontSize(DEFAULT_FONT_SIZE);    //フォントサイズを元に戻す
 }
 
 //---------------------------------------------------------------------------
@@ -95,5 +97,15 @@ std::shared_ptr<ComponentText> ComponentText::SetColor(int text_color, int edge_
     edge_color_ = edge_color;    // 縁取り色を設定
     return dynamic_pointer_cast<ComponentText>(shared_from_this());
 }
+
+//---------------------------------------------------------------------------
+//! @brief	フォントサイズの設定
+//---------------------------------------------------------------------------
+std::shared_ptr<ComponentText> ComponentText::SetFontSize(int font_size)
+{
+    font_size_ = font_size;    // フォントサイズを設定
+    return dynamic_pointer_cast<ComponentText>(shared_from_this());
+}
+
 CEREAL_REGISTER_TYPE(ComponentText)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentText)

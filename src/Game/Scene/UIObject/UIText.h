@@ -31,6 +31,11 @@ public:
     //! @details	第二引数はデフォルト引数で黒に設定されています。
     std::shared_ptr<UIText> SetColor(int text_color, int edge_color = 0);
 
+    //フォントサイズの設定
+    //! @param font_size [in] フォントサイズの設定
+    //! @retval 自身のポインタ
+    std::shared_ptr<UIText> SetFontSize(int font_size);
+
 private:
     std::weak_ptr<ComponentText>
         text_component_;    // 文字コンポーネントへの参照、使う側が毎回GetCompoenentするのも、weak_ptrを保持しておくのもさすがに面倒なので、ここでpublicにして保持しておく

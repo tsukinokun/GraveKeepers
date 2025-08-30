@@ -71,3 +71,14 @@ std::shared_ptr<UIText> UIText::SetColor(int text_color, int edge_color)
     }
     return dynamic_pointer_cast<UIText>(shared_from_this());
 }
+
+//---------------------------------------------------------------------------
+//! @brief	フォントサイズの設定
+//---------------------------------------------------------------------------
+std::shared_ptr<UIText> UIText::SetFontSize(int font_size)
+{
+    if(auto text_comp = text_component_.lock()) {
+        text_comp->SetFontSize(font_size);    // フォントサイズを設定
+    }
+    return dynamic_pointer_cast<UIText>(shared_from_this());
+}
