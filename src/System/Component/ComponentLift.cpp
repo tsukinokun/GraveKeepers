@@ -43,14 +43,14 @@ void ComponentLift::Update()
         //投げる
         if(conditions_for_throw_()) {
             if(auto lift_obj = lift_object_.lock()) {
-                auto   lift_rb         = lift_obj->GetComponent<ComponentRigidbody>();
-                float3 throw_impulse_  = float3(0.0f, throw_virtical_power_, 0.0f);
-                float3 owner_rot       = owner->GetRotationAxisXYZ();    //オーナーの向きを取得
-                owner_rot.y           += 180.0f;                         //座標系の関係でyを180度回転する、オブジェクトの背中が正面
+                auto   lift_rb        = lift_obj->GetComponent<ComponentRigidbody>();
+                float3 throw_impulse  = float3(0.0f, throw_virtical_power_, 0.0f);
+                float3 owner_rot      = owner->GetRotationAxisXYZ();    //オーナーの向きを取得
+                owner_rot.y          += 180.0f;                         //座標系の関係でyを180度回転する、オブジェクトの背中が正面
                 //オーナーのy軸回転から、throw_impulse_のxとzを設定
-                throw_impulse_.x = -throw_horizontal_power_ * sinf(D2R(owner_rot.y));
-                throw_impulse_.z = -throw_horizontal_power_ * cosf(D2R(owner_rot.y));
-                lift_rb->AddImpulse(throw_impulse_);
+                throw_impulse.x = -throw_horizontal_power_ * sinf(D2R(owner_rot.y));
+                throw_impulse.z = -throw_horizontal_power_ * cosf(D2R(owner_rot.y));
+                lift_rb->AddImpulse(throw_impulse);
                 auto lift_col = lift_obj->GetComponent<ComponentCollision>();
                 lift_col->SetEnableFlag(true);
                 lift_col->UseGravity();
