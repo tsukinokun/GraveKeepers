@@ -22,9 +22,9 @@
 bool Player::Init()
 {
     __super::Init();
-    //auto chara		   = Scene::Object::Create<Zombie>();	 //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
+    auto chara = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
     //auto chara		   = Scene::Object::Create<Werewolf>();	   //狼男を表示するためにゾンビをコメントアウトしています
-    auto chara         = Scene::Object::Create<Pumpking>();
+    //auto chara		   = Scene::Object::Create<Pumpking>();
     auto controll_comp = chara->AddComponent<ComponentObjectController>();
     controll_comp->SetMoveSpeed(chara->GetComponent<ComponentStatus>()->GetSpeed());
     controll_comp->SetRotateSpeed(20.0f);

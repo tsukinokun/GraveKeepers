@@ -12,6 +12,7 @@
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
+#include <System/State/StateIdleWalk.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -34,7 +35,10 @@ bool Character::Init()
     model->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));    //モデルの回転を設定
     model_component_ = model;
     lift_component_  = AddComponent<ComponentLift>();    //持ち上げコンポーネント
-
+    //---------------------------------------------------------------------------------
+    //状態コンポーネントをつける
+    //---------------------------------------------------------------------------------
+    AddComponent<StateIdleWalk>();
     SetName(u8"キャラクターのベースクラス");
 
     return true;
