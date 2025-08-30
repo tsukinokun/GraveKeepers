@@ -96,10 +96,11 @@ void ComponentLift::Update()
                     }
                 }
                 //オーナーの正面ベクトルを取得
-                float3 owner_front = float3(0.0f, 0.0f, 0.0f);
-                float3 owner_rot   = owner->GetRotationAxisXYZ();
-                owner_front.x      = -1.0f * sinf(D2R(owner_rot.y));
-                owner_front.z      = -1.0f * cosf(D2R(owner_rot.y));
+                float3 owner_front  = float3(0.0f, 0.0f, 0.0f);
+                float3 owner_rot    = owner->GetRotationAxisXYZ();
+                owner_rot.y        += 180.0f;    //座標系の関係でyを180度回転する、オブジェクトの背中が正面
+                owner_front.x       = -1.0f * sinf(D2R(owner_rot.y));
+                owner_front.z       = -1.0f * cosf(D2R(owner_rot.y));
                 //一応正規化
                 owner_front = normalize(owner_front);
                 //オブジェクトとオーナーのベクトルを取得
