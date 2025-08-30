@@ -36,7 +36,7 @@ void ComponentLift::Update()
         lift_obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(true);
         auto   owner_col  = owner->GetComponent<ComponentCollisionCapsule>();    //オーナーのコリジョンを取得
         float3 end        = owner->GetTranslate();                               //高さ
-        end.y            += (owner_col->GetHeight() + 2.0f);                     //終点座標は頭なので、高さの半分を足す。
+        end.y            += (owner_col->GetHeight() + 4.0f);                     //終点座標は頭なので、高さの半分を足す。
         //持ち上げ対象を持ち上げる
         lift_obj->SetTranslate(end);
 
@@ -44,12 +44,13 @@ void ComponentLift::Update()
         if(conditions_for_throw_()) {
             if(auto lift_obj = lift_object_.lock()) {
                 auto   lift_rb        = lift_obj->GetComponent<ComponentRigidbody>();
-                float3 throw_impulse_ = float3(0.0f, throw_virtical_power_, 0.0f);
+                float3 throw_impulse  = float3(0.0f, throw_virtical_power_, 0.0f);
                 float3 owner_rot      = owner->GetRotationAxisXYZ();    //オーナーの向きを取得
+                owner_rot.y          += 180.0f;                         //座標系の関係でyを180度回転する、オブジェクトの背中が正面
                 //オーナーのy軸回転から、throw_impulse_のxとzを設定
-                throw_impulse_.x = -throw_horizontal_power_ * sinf(D2R(owner_rot.y));
-                throw_impulse_.z = -throw_horizontal_power_ * cosf(D2R(owner_rot.y));
-                lift_rb->AddImpulse(throw_impulse_);
+                throw_impulse.x = -throw_horizontal_power_ * sinf(D2R(owner_rot.y));
+                throw_impulse.z = -throw_horizontal_power_ * cosf(D2R(owner_rot.y));
+                lift_rb->AddImpulse(throw_impulse);
                 auto lift_col = lift_obj->GetComponent<ComponentCollision>();
                 lift_col->SetEnableFlag(true);
                 lift_col->UseGravity();
