@@ -10,6 +10,7 @@
 #include <Game/Scene/UIObject/UIImage.h>
 #include <System/Component/ComponentStatus.h>
 #include <Game/System/ImageBuffer.h>
+#include <Game/System/common.h>
 #include "Enemy.h"
 #include "Camera.h"
 #include "Field.h"
@@ -54,12 +55,25 @@ bool ScenePlay::Init()
         }
     }
 
-    //時間UIオブジェクトの生成
+    //---------------------------------------------------------------------------------
+    //	時間UIオブジェクトの設定
+    //---------------------------------------------------------------------------------
     auto timer_ui = Scene::Object::Create<UIText>(u8"タイマーUI");
     timer_ui->SetTranslate(float3(100.0f, 50.0f, 0.0f));
     timer_ui->SetText("00:00");
     timer_ui->SetColor(GetColor(255, 255, 0));    // 色を黄色に設定
-
+    //---------------------------------------------------------------------------------
+    //	HPのUIオブジェクト
+    //---------------------------------------------------------------------------------
+    for(int i = 0; i < CHARACTER_ALL; i++) {
+        std::string name  = "HP";
+        name             += std::to_string(i);    //オブジェクト名をHP0、HP1、HP2、HP3とする
+        auto hp_ui        = Scene::Object::Create<UIText>(name);
+        hp_ui->SetFontSize(HP_FONT_SIZE);          //フォントサイズ
+        hp_ui->SetText("888");                     //HPテキスト、三桁が最大
+        hp_ui->SetColor(GetColor(0, 255, 255));    //文字色は水色に
+        hp_ui->SetTranslate(float3(HP_POS_X[i], HP_POS_Y, 0.0f));
+    }
     //---------------------------------------------------------------------------------
     //	テスト画像
     //---------------------------------------------------------------------------------
@@ -111,6 +125,22 @@ void ScenePlay::Update()
     //	camera->GetEnemyHP(enemy->GetComponent<ComponentStatus>()->GetHitPoints(), enemy_num);
     //	enemy_num++;
     //}
+
+    //---------------------------------------------------------------------------------
+    //	HPのUIオブジェクト
+    //---------------------------------------------------------------------------------
+    for(int i = 0; i < CHARACTER_ALL; i++) {
+        std::string name  = "HP";                 //HPテキストオブジェクトの名前
+        name             += std::to_string(i);    //オブジェクト名をHP0、HP1、HP2、HP3とする
+        if(auto hp_ui = Scene::Object::Get<UIText>(name)) {
+            //キャラクター名からキャラを取得し、
+            std::string chara_name  = "Character";
+            chara_name             += std::to_string(i + 1);
+            if(auto chara = Scene::Object::Get<Object>(chara_name)) {
+                hp_ui->SetText(std::to_string(chara->GetComponent<ComponentStatus>()->GetHitPoints()));    //キャラのHPをUIに反映
+            }
+        }
+    }
 }
 
 //---------------------------------------------------------------------------------
