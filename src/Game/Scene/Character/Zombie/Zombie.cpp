@@ -30,7 +30,7 @@ bool Zombie::Init()
         status_comp->SetHitPoints(HP_MAX_);
         status_comp->SetSpeed(MOVE_SPEED_);
     }
-    SetName(u8"ゾンビ");
+    //SetName(u8"ゾンビ");
     return true;
 }
 

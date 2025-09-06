@@ -23,7 +23,6 @@ bool Player::Init()
 {
     __super::Init();
     auto chara = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
-    chara->SetName("Character1");                    //テストでここで名前を付けます、後で自動化します。
     //auto chara		   = Scene::Object::Create<Werewolf>();	   //狼男を表示するためにゾンビをコメントアウトしています
     //auto chara		   = Scene::Object::Create<Pumpking>();
     auto controll_comp = chara->AddComponent<ComponentObjectController>();
