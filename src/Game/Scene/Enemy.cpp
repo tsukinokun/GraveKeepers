@@ -11,6 +11,7 @@
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
+#include <System/Component/ComponentAI.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -21,33 +22,26 @@ bool Enemy::Init()
     auto chara = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
     //auto chara		   = Scene::Object::Create<Werewolf>();	   //狼男を表示するためにゾンビをコメントアウトしています
     //auto chara		   = Scene::Object::Create<Pumpking>();
-    controll_character_ = chara;
+    chara->AddComponent<ComponentAI>();
     if(auto jump_comp = chara->GetComponent<ComponentJump>()) {
-        jump_comp->SetConditionsJump([]() {
-            if(IsKeyOn(KEY_INPUT_SPACE))
-                return true;
-            return false;
-        });
+        jump_comp->SetConditionsJump([]() { return false; });
     }
-    //col_comp->SetCollisionGroup(ComponentCollision::CollisionGroup::PLAYER);	// 所属するグループを「PLAYER」とします
-    //auto lift_comp = AddComponent<ComponentLift>();								//持ち上げコンポーネント
+
     if(auto lift_comp = chara->GetComponent<ComponentLift>()) {
         lift_comp->SetConditionsForLifting(
             //ラムダ式を代入
-            []() {
-                if(IsKeyOn(KEY_INPUT_Z)) {
-                    return true;
-                }
-                return false;
-            });
+            []() { return true; });
         lift_comp->SetConditionsForThrow(    //ラムダ式を代入
-            []() {
-                if(IsKeyOn(KEY_INPUT_Z)) {
-                    return true;
+            [this]() {
+                if(auto controll_lock = controll_character_.lock()) {
+                    if(auto ai = controll_lock->GetComponent<ComponentAI>()) {
+                        return ai->ThrowSignal();
+                    }
                 }
                 return false;
             });
     }
+    controll_character_ = chara;
     SetName(u8"プレイヤー");
     //AddComponent<ComponentRigidbody>();
     //AddComponent<ComponentLiftable>();				   //持ち上げられ機能コンポーネント
