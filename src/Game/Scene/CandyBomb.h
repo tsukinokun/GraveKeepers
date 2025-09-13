@@ -22,7 +22,7 @@ public:
 private:
     const float RADUIS_ = 2.0f;
 
-    const float SCALE_ = 0.02f;
+    const float SCALE_ = 0.3f;
 
     const float DISTANCE_RANGE_ = 25.0f;
 };

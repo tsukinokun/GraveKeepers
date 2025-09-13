@@ -24,7 +24,7 @@ bool CandyBomb::Init()
     // コリジョンの半径を設定
     candy_col->SetRadius(RADUIS_);
 
-    AddComponent<ComponentModel>("data/PoyPoy/Model/Object/CandyBomb/CandyBomb.mv1");
+    AddComponent<ComponentModel>("data/PoyPoy/Model/Object/CandyBomb/candy.mv1");
 
     //モデルコンポーネントを取得
     auto obj = GetComponent<ComponentModel>();
