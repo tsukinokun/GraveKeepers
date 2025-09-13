@@ -16,6 +16,7 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/SkillComponent/ComponentFireBall.h>
+#include <System/SkillComponent/ComponentPoison.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -64,6 +65,18 @@ bool Player::Init()
         //ラムダ式を代入、xキーを押すとスキル仕様と割り当てる。
         []() {
             if(IsKeyOn(KEY_INPUT_X)) {
+                return true;
+            }
+            return false;
+        });
+    //----------------------------------------------
+    //スキルコンポーネント(仮で毒設置アニメーション)の設定
+    //----------------------------------------------
+    auto poison_comp = chara->AddComponent<ComponentPoison>();
+    poison_comp->SetConditionsForUseSkill(
+        //ラムダ式を代入、cキーを押すとスキル仕様と割り当てる。
+        []() {
+            if(IsKeyOn(KEY_INPUT_C)) {
                 return true;
             }
             return false;
