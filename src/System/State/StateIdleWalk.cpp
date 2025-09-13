@@ -10,6 +10,8 @@
 void StateIdleWalk::Init()
 {
     __super::Init();
+    auto owner = GetOwner();
+    prev_pos_  = owner->GetTranslate();    //初期座標を設定しておく
 }
 
 void StateIdleWalk::Update()
@@ -17,24 +19,21 @@ void StateIdleWalk::Update()
     __super::Update();
 
     auto owner = GetOwner();
+
     //アニメーション
     auto model = owner->GetComponent<ComponentModel>();
-    if(CheckHitKey(key_up_) || CheckHitKey(key_down_) || CheckHitKey(key_left_) || CheckHitKey(key_right_)) {
+
+    float3 curr_pos = owner->GetTranslate();    //現在の座標
+    //前フレームとの差分ベクトルを求める
+    float3 diff = curr_pos - prev_pos_;
+    //前フレームから移動しているなら歩き状態
+    if(float1(0.01f) < dot(diff, diff)) {
         model->PlayAnimationNoSame("walk", true);
     }
     else {
         model->PlayAnimationNoSame("idle", true);
     }
-}
-
-StateIdleWalkPtr StateIdleWalk::SetKeys(int up, int down, int left, int right)
-{
-    // 移動キーの設定
-    key_up_    = up;
-    key_down_  = down;
-    key_left_  = left;
-    key_right_ = right;
-    return std::dynamic_pointer_cast<StateIdleWalk>(shared_from_this());
+    prev_pos_ = curr_pos;    //updateの末尾で、座標を保存しておく
 }
 
 void StateIdleWalk::GUI()
