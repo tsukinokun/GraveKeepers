@@ -39,7 +39,7 @@ bool Character::Init()
     //状態コンポーネントをつける
     //---------------------------------------------------------------------------------
     AddComponent<StateIdleWalk>();
-    SetName(u8"キャラクターのベースクラス");
+    SetName(u8"Character");
 
     return true;
 }

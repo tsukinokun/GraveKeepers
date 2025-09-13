@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "ScenePlay.h"
 #include <chrono>
+#include <Game/Scene/Character/Base/Character.h>
 #include <Game/Scene/UIObject/UIText.h>
 #include <System/UIComponent/ComponentText.h>
 #include <Game/Scene/UIObject/UIImage.h>
@@ -134,8 +135,11 @@ void ScenePlay::Update()
         name             += std::to_string(i);    //オブジェクト名をHP0、HP1、HP2、HP3とする
         if(auto hp_ui = Scene::Object::Get<UIText>(name)) {
             //キャラクター名からキャラを取得し、
-            std::string chara_name  = "Character";
-            chara_name             += std::to_string(i + 1);
+            std::string chara_name = "Character";
+            //二体目以降の命名規則
+            if(i != 0) {
+                chara_name += "_" + std::to_string(i);
+            }
             if(auto chara = Scene::Object::Get<Object>(chara_name)) {
                 hp_ui->SetText(std::to_string(chara->GetComponent<ComponentStatus>()->GetHitPoints()));    //キャラのHPをUIに反映
             }
