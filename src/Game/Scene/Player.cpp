@@ -7,6 +7,7 @@
 #include <Game/Scene/Character/Zombie/Zombie.h>
 #include <Game/Scene/Character/Werewolf/Werewolf.h>
 #include <Game/Scene/Character/Pumpking/Pumpking.h>
+#include <Game/Scene/Character/Witch/Witch.h>
 #include <System/Component/ComponentObjectController.h>
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentJump.h>
