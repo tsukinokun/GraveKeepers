@@ -20,8 +20,6 @@ bool Enemy::Init()
 {
     __super::Init();
     auto chara = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
-    //auto chara		   = Scene::Object::Create<Werewolf>();	   //狼男を表示するためにゾンビをコメントアウトしています
-    //auto chara		   = Scene::Object::Create<Pumpking>();
     chara->AddComponent<ComponentAI>();
     if(auto jump_comp = chara->GetComponent<ComponentJump>()) {
         jump_comp->SetConditionsJump([]() { return false; });
@@ -37,8 +35,11 @@ bool Enemy::Init()
                     if(auto ai = controll_lock->GetComponent<ComponentAI>()) {
                         return ai->ThrowSignal();
                     }
+                }
+            });
+    }
     controll_character_ = chara;
-    SetName(u8"プレイヤー");
+
     //AddComponent<ComponentRigidbody>();
     //AddComponent<ComponentLiftable>();				   //持ち上げられ機能コンポーネント
     //auto hp_comp = AddComponent<ComponentStatus>();	   //HP機能コンポーネント
