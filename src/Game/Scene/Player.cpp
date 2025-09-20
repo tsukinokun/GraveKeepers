@@ -16,6 +16,7 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/SkillComponent/ComponentFireBall.h>
+#include <System/SkillComponent/ComponentDash.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -65,6 +66,19 @@ bool Player::Init()
         //ラムダ式を代入、xキーを押すとスキル仕様と割り当てる。
         []() {
             if(IsKeyOn(KEY_INPUT_X)) {
+                return true;
+            }
+            return false;
+        });
+
+    //----------------------------------------------
+    //スキルコンポーネント(仮で突進)の設定
+    //----------------------------------------------
+    auto dash_comp = chara->AddComponent<ComponentDash>();
+    dash_comp->SetConditionsForUseSkill(
+        //ラムダ式を代入、Bキーを押すとスキル仕様と割り当てる。
+        []() {
+            if(IsKeyOn(KEY_INPUT_B)) {
                 return true;
             }
             return false;
