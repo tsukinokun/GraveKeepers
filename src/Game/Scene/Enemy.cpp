@@ -37,10 +37,6 @@ bool Enemy::Init()
                     if(auto ai = controll_lock->GetComponent<ComponentAI>()) {
                         return ai->ThrowSignal();
                     }
-                }
-                return false;
-            });
-    }
     controll_character_ = chara;
     SetName(u8"プレイヤー");
     //AddComponent<ComponentRigidbody>();
