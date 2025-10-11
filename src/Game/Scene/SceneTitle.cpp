@@ -21,7 +21,7 @@ bool SceneTitle::Init()
 void SceneTitle::Update()
 {
     __super::Update();
-    Scene::Change(Scene::GetScene<ScenePlay>());
+    Scene::Change(Scene::GetScene<ScenePlay>());    //シーンの変更を行う処理
 }
 
 //---------------------------------------------------------------------------------
