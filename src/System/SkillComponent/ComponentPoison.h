@@ -7,7 +7,7 @@ USING_PTR(ComponentFireBall);
 class ComponentPoison : public ComponentSkill
 {
 public:
-    BP_COMPONENT_DECL(ComponentPoison, u8"ファイアボールのコンポーネント");
+    BP_COMPONENT_DECL(ComponentPoison, u8"ポイズンのコンポーネント");
     //! @{
     //	初期化処理
     void Init() override;
