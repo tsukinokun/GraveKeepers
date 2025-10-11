@@ -17,6 +17,7 @@
 #include <System/Component/ComponentStatus.h>
 #include <System/SkillComponent/ComponentFireBall.h>
 #include <System/SkillComponent/ComponentPoison.h>
+#include <System/SkillComponent/ComponentComboAttack.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -25,6 +26,7 @@ bool Player::Init()
 {
     __super::Init();
     auto chara = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
+    chara->SetTranslate(float3(20.0f, 1.0f, 20.0f));
     //auto chara		   = Scene::Object::Create<Werewolf>();	   //狼男を表示するためにゾンビをコメントアウトしています
     //auto chara		   = Scene::Object::Create<Pumpking>();
     auto controll_comp = chara->AddComponent<ComponentObjectController>();
@@ -77,6 +79,13 @@ bool Player::Init()
         //ラムダ式を代入、cキーを押すとスキル仕様と割り当てる。
         []() {
             if(IsKeyOn(KEY_INPUT_C)) {
+    //スキルコンポーネント(仮で連撃を付ける)の設定
+    //----------------------------------------------
+    auto combo_attack_comp = chara->AddComponent<ComponentComboAttack>();
+    combo_attack_comp->SetConditionsForUseSkill(
+        //ラムダ式を代入、vキーを押すとスキル仕様と割り当てる。
+        []() {
+            if(IsKeyOn(KEY_INPUT_V)) {
                 return true;
             }
             return false;

@@ -18,6 +18,7 @@
 #include "Block.h"
 #include "UFO.h"
 #include "Wall.h"
+#include "CandyBomb.h"
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -41,6 +42,10 @@ bool ScenePlay::Init()
 
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
         auto block = Scene::Object::Create<Block>();
+    }
+
+    for(int i = 0; i < CANDYBOMB_NUM_MAX_; i++) {
+        auto candybomb = Scene::Object::Create<CandyBomb>();
     }
 
     auto ufo = Scene::Object::Create<UFO>();
