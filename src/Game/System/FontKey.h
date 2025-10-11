@@ -4,6 +4,7 @@
 //! @author 山﨑愛
 //---------------------------------------------------------------------------
 #pragma once
+
 struct FontKey
 {
     std::string fontName;
