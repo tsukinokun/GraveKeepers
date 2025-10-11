@@ -79,6 +79,10 @@ bool Player::Init()
         //ラムダ式を代入、cキーを押すとスキル仕様と割り当てる。
         []() {
             if(IsKeyOn(KEY_INPUT_C)) {
+                return true;
+            }
+            return false;
+        });
     //スキルコンポーネント(仮で連撃を付ける)の設定
     //----------------------------------------------
     auto combo_attack_comp = chara->AddComponent<ComponentComboAttack>();
