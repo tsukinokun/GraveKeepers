@@ -56,9 +56,8 @@ std::shared_ptr<ComponentSkill> ComponentDash::UseSkill()
     //ファイルパス
     const std::string eff_name = "data/PoyPoy/Effect/Dash/Simple_SpawnMethod1.efkefc";
     //高さの値は仮、後に持ち上げているオブジェクトの位置に変更するはず。
-    const float3 pos = owner->GetTranslate() + float3(0.0f, 10.0f, 0.0f);
-
-    auto effect = ComponentEffect::Object::Create(eff_name, pos);
+    const float3 pos    = owner->GetTranslate() + float3(0.0f, 10.0f, 0.0f);
+    auto         effect = ComponentEffect::Object::Create(eff_name, pos);
     effect->SetScaleAxisXYZ(SCALE_);
     //プレイヤーの向きに合わせる
     effect->SetRotationAxisXYZ(owner_->GetRotationAxisXYZ());
