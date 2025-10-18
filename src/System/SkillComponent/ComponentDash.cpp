@@ -60,6 +60,7 @@ std::shared_ptr<ComponentSkill> ComponentDash::UseSkill()
     auto         effect = ComponentEffect::Object::Create(eff_name, pos);
     //大きさを変える
     effect->SetScaleAxisXYZ(SCALE_);
+
     //プレイヤーの向きに合わせる
     effect->SetRotationAxisXYZ(owner_->GetRotationAxisXYZ());
     //自身のポインタを変換
