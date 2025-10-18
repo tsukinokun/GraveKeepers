@@ -58,6 +58,7 @@ std::shared_ptr<ComponentSkill> ComponentDash::UseSkill()
     //高さの値は仮、後に持ち上げているオブジェクトの位置に変更するはず。
     const float3 pos    = owner->GetTranslate() + float3(0.0f, 10.0f, 0.0f);
     auto         effect = ComponentEffect::Object::Create(eff_name, pos);
+    //大きさを変える
     effect->SetScaleAxisXYZ(SCALE_);
     //プレイヤーの向きに合わせる
     effect->SetRotationAxisXYZ(owner_->GetRotationAxisXYZ());
