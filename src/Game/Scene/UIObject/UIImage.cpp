@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 #include "UIImage.h"
 #include <System/UIComponent/ComponentImage.h>
+#include <Game/system/ImageBuffer.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -13,10 +14,12 @@ bool UIImage::Init()
 {
     __super::Init();
     //---------------------------------------------------------------------------------
-    //	文字列機能コンポーネントの追加
+    //	画像機能コンポーネントの追加
     //---------------------------------------------------------------------------------
-    auto img_comp    = AddComponent<ComponentImage>();    // 文字列機能コンポーネントを追加
-    image_component_ = img_comp;                          // weak_ptrとして保持
+    auto img_comp = AddComponent<ComponentImage>();    // 画像機能コンポーネントを追加
+    //デフォルト画像を設定
+    img_comp->SetImage(ImageBuffer::GetImageHandle("deff"));    // 画像コンポーネントに画像を設定
+    image_component_ = img_comp;                                // weak_ptrとして保持
     return true;
 }
 
@@ -51,7 +54,7 @@ void UIImage::GUI()
 }
 
 //---------------------------------------------------------------------------
-//! @brief	文字列の設定
+//! @brief	画像の設定
 //---------------------------------------------------------------------------
 std::shared_ptr<UIImage> UIImage::SetImage(int image)
 {
@@ -59,4 +62,15 @@ std::shared_ptr<UIImage> UIImage::SetImage(int image)
         image_comp->SetImage(image);    // 画像コンポーネントに画像を設定
     }
     return dynamic_pointer_cast<UIImage>(shared_from_this());
+}
+
+//---------------------------------------------------------------------------
+//画像ハンドルの取得
+//---------------------------------------------------------------------------
+int UIImage::GetImageHandle()
+{
+    if(auto image_comp = image_component_.lock()) {
+        return image_comp->GetImageHandle();    // 画像コンポーネントから画像ハンドルを取得
+    }
+    return -1;
 }

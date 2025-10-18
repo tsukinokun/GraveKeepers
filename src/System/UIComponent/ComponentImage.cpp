@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 #include "ComponentImage.h"
 #include "ComponentTransformUI.h"
+#include <Game/system/ImageBuffer.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化関数
@@ -12,14 +13,96 @@
 void ComponentImage::Init()
 {    // 初期化処理
     __super::Init();
+    //---------------------------------------------------------------------------
+    //  UI描画を登録
+    //---------------------------------------------------------------------------
+    auto draw_ui = [this]() {
+        auto   owner      = GetOwner();         //オーナーを取得
+        float3 adjustment = GetAdjustment();    // 調整値
+        float3 pos        = float3(0.0f, 0.0f, 0.0f);
+        pos               = owner->GetTranslate() + adjustment;
+        float3 scale      = owner->GetScaleAxisXYZ();
+        //サイズは、Transformの平均
+        float size = (scale.x + scale.y + scale.z) / 3.0f;    // 平均値をとる
+        //角度はx軸の角度から取る
+        float angle = owner->GetRotationAxisXYZ().x;    // X軸の角度を取得0
+        DrawRotaGraphF(pos.x, pos.y, static_cast<double>(size), static_cast<double>(angle), image_, TRUE);
+    };
+    SetProc("UIDraw", draw_ui, ProcTiming::UI, static_cast<ProcPriority>(NONE));
 }
 
 //---------------------------------------------------------------------------
-//! @brief	UI描画
+//! @brief	ImGui
 //---------------------------------------------------------------------------
-void ComponentImage::LateDraw()
+void ComponentImage::GUI()
 {
-    __super::LateDraw();
+    __super::GUI();
+
+    // GUI内に出現させる
+    ImGui::Begin(GetOwner()->GetName().data());
+    {
+        ImGui::Separator();
+        if(ImGui::TreeNode(u8"画像コンポーネント")) {
+            if(ImGui::Button(u8"削除"))
+                GetOwner()->RemoveComponent(shared_from_this());
+
+            ImGui::TreePop();
+        }
+    }
+    ImGui::End();
+}
+
+//---------------------------------------------------------------------------
+//! @brief	画像の設定
+//---------------------------------------------------------------------------
+std::shared_ptr<ComponentImage> ComponentImage::SetImage(int image)
+{
+    image_ = image;    // 画像ハンドルを設定
+    return dynamic_pointer_cast<ComponentImage>(shared_from_this());
+}
+
+//---------------------------------------------------------------------------
+//画像ハンドルの取得
+//---------------------------------------------------------------------------
+int ComponentImage::GetImageHandle()
+{
+    return image_;
+}
+
+//---------------------------------------------------------------------------
+//! @brief	画像のサイズを取得する関数
+//---------------------------------------------------------------------------
+float2 ComponentImage::GetImageSize() const
+{
+    float width = 0;                          // 幅
+    float hight = 0;                          //高さ
+    GetGraphSizeF(image_, &width, &hight);    // 画像のサイズを取得
+    return float2(width, hight);              // 画像のサイズをfloat2で返す
+}
+
+//---------------------------------------------------------------------------
+//! @brief	画面にうつる画像のサイズを取得する関数
+//---------------------------------------------------------------------------
+float2 ComponentImage::GetScreenImageSize()
+{
+    float width = 0;                          // 幅
+    float hight = 0;                          //高さ
+    GetGraphSizeF(image_, &width, &hight);    // 画像のサイズを取得
+    auto   owner = GetOwner();                //オーナーを取得
+    float3 scale = owner->GetScaleAxisXYZ();
+    //サイズは、Transformの平均
+    float size  = (scale.x + scale.y + scale.z) / 3.0f;    // 平均値をとる
+    width      *= size;                                    // 幅にサイズをかける
+    hight      *= size;                                    // 高さにサイズをかける
+    return float2(width, hight);                           // 画像のサイズをfloat2で返す
+}
+
+//---------------------------------------------------------------------------
+//! @brief  画像座標の補正値を取得する関数
+//! @retval 画像座標の補正値
+//---------------------------------------------------------------------------
+float3 ComponentImage::GetAdjustment() const
+{
     auto   owner      = GetOwner();                  //オーナーを取得
     float3 adjustment = float3(0.0f, 0.0f, 0.0f);    // 調整値(Alignmentに合わせて)
     if(auto comp_transform = owner->GetComponent<ComponentTransformUI>()) {
@@ -52,44 +135,7 @@ void ComponentImage::LateDraw()
             break;    // 右寄せ
         }
     }
-    float3 pos   = float3(0.0f, 0.0f, 0.0f);
-    pos          = owner->GetTranslate() + adjustment;
-    float3 scale = owner->GetScaleAxisXYZ();
-    //サイズは、Transformの平均
-    float size = (scale.x + scale.y + scale.z) / 3.0f;    // 平均値をとる
-    //角度はx軸の角度から取る
-    float angle = owner->GetRotationAxisXYZ().x;    // X軸の角度を取得
-    DrawRotaGraphF(pos.x, pos.y, static_cast<double>(size), static_cast<double>(angle), image_, TRUE);
-}
-
-//---------------------------------------------------------------------------
-//! @brief	ImGui
-//---------------------------------------------------------------------------
-void ComponentImage::GUI()
-{
-    __super::GUI();
-
-    // GUI内に出現させる
-    ImGui::Begin(GetOwner()->GetName().data());
-    {
-        ImGui::Separator();
-        if(ImGui::TreeNode(u8"文字列コンポーネント")) {
-            if(ImGui::Button(u8"削除"))
-                GetOwner()->RemoveComponent(shared_from_this());
-
-            ImGui::TreePop();
-        }
-    }
-    ImGui::End();
-}
-
-//---------------------------------------------------------------------------
-//! @brief	文字列の設定
-//---------------------------------------------------------------------------
-std::shared_ptr<ComponentImage> ComponentImage::SetImage(int image)
-{
-    image_ = image;    // 画像ハンドルを設定
-    return dynamic_pointer_cast<ComponentImage>(shared_from_this());
+    return adjustment;
 }
 
 CEREAL_REGISTER_TYPE(ComponentImage)
