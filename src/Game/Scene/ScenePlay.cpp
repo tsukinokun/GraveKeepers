@@ -25,6 +25,11 @@
 //---------------------------------------------------------------------------------
 bool ScenePlay::Init()
 {
+    // フォントを使用できるように登録（アプリ内限定）
+    int result = AddFontResourceEx("data/PoyPoy/Font/Hyakki85_OTF/Hyakki85.otf", FR_PRIVATE, NULL);
+    if(result == 0) {
+        MessageBox(NULL, "フォント読み込み失敗", "エラー", MB_OK);
+    }
     __super::Init();
     ImageBuffer::Init();    // 画像バッファの初期化
     //文字の回りに黒い縁を追加
