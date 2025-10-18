@@ -8,6 +8,7 @@
 #include <System/Component/ComponentCollisionSphere.h>
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
+#include <System/Component/ComponentEffect.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -32,38 +33,35 @@ bool CandyBomb::Init()
     //位置の設定（-DISTANCE_RANGE_からDISTANCE_RANGE_の間に設置）
     SetTranslate(float3(GetRandomRangeF(-DISTANCE_RANGE_, DISTANCE_RANGE_), 0.0f, GetRandomRangeF(-DISTANCE_RANGE_, DISTANCE_RANGE_)));
 
-    auto rb = AddComponent<ComponentRigidbody>();
-    AddComponent<ComponentLiftable>();    //持ち上げられ機能コンポーネント
-
+    auto rb             = AddComponent<ComponentRigidbody>();
+    liftable_component_ = AddComponent<ComponentLiftable>();    //持ち上げられ機能コンポーネント
+    //--------------------------------------------------------------------
+    // 更新処理で、一度でも持ち上げられたことがあるかを更新する
+    //--------------------------------------------------------------------
+    auto check_has_been_lifted = [this]() {
+        if(auto liftable_comp = liftable_component_.lock()) {
+            //持ち上げられていたら、一度でも持ち上げられていることにする。
+            if(liftable_comp->IsLifted()) {
+                has_been_lifted = true;
+            }
+        }
+    };
+    SetProc("check_has_been_lifted", check_has_been_lifted, ProcTiming::Update, ProcPriority::NONE);
     return true;
 }
 
 //---------------------------------------------------------------------------------
-//!	更新
+//!	ヒットした際に呼ばれるコールバック関数
 //---------------------------------------------------------------------------------
-void CandyBomb::Update()
+void CandyBomb::OnHit(const ComponentCollision::HitInfo& hit_info)
 {
-    __super::Update();
-}
-
-//---------------------------------------------------------------------------------
-//!	描画
-//---------------------------------------------------------------------------------
-void CandyBomb::Draw()
-{
-    __super::Draw();
-}
-
-//---------------------------------------------------------------------------------
-//!	終了
-//---------------------------------------------------------------------------------
-void CandyBomb::Exit()
-{
-    __super::Exit();
-}
-
-//!GUI表示
-void CandyBomb::GUI()
-{
-    __super::GUI();
+    __super::OnHit(hit_info);
+    //どこかにヒットしたタイミングで一度でも持ち上げられたことがあれば爆発
+    if(has_been_lifted) {
+        Scene::Object::Release(shared_from_this());    //解放を行って
+        //エフェクトを生成
+        const std::string eff_name = "data/PoyPoy/Effect/CandyBomb/Simple_Sprite_BillBoard.efkefc";
+        const float3      pos      = GetTranslate();
+        auto              effect   = ComponentEffect::Object::Create(eff_name, pos);
+    }
 }
