@@ -150,6 +150,9 @@ void ScenePlay::Update()
             }
         }
     }
+    if(IsKeyDown(KEY_INPUT_SPACE)) {
+        SaveDrawScreen(0, 0, 640, 480, "output.png");
+    }
 }
 
 //---------------------------------------------------------------------------------

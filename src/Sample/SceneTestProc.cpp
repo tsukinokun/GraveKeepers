@@ -70,7 +70,7 @@ void SceneTestProc::InitSerialize()
 
     // Updateを違う処理に変更します
     obj->SetProc("Update", [wkobj]() {
-        printfDx("Update!\n");
+        printfDx("Update!\+n");
         if(auto obj = wkobj.lock())
             obj->AddRotationAxisXYZ({0, 1, 0});
     });
