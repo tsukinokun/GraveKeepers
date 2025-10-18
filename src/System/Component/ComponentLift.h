@@ -38,9 +38,9 @@ public:
     //! @}
 
 private:
-    std::function<bool()> conditions_for_lifting_;    //持ち上げ条件を記述する関数を入れる
+    std::function<bool()> conditions_for_lifting_ = []() { return false; };    //持ち上げ条件を記述する関数を入れる
 
-    std::function<bool()> conditions_for_throw_;    //投げる条件を記述する
+    std::function<bool()> conditions_for_throw_ = []() { return false; };    //投げる条件を記述する
 
     std::weak_ptr<Object> lift_object_;    //持ち上げているオブジェクト
 
