@@ -1,11 +1,13 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	StateBase.cpp
+//!	@file	StateIdleWalk.cpp
 //! @brief	歩き&待機状態コンポーネント
 //! @author 山﨑愛
 //---------------------------------------------------------------------------
 #include "StateIdleWalk.h"
+#include <System/State/StateDeath.h>
 #include <System/Component/ComponentSpringArm.h>
 #include <System/Component/ComponentModel.h>
+#include <System/Component/ComponentStatus.h>
 
 void StateIdleWalk::Init()
 {
@@ -34,6 +36,15 @@ void StateIdleWalk::Update()
         model->PlayAnimationNoSame("idle", true);
     }
     prev_pos_ = curr_pos;    //updateの末尾で、座標を保存しておく
+
+    //---------------------------------------------------------------------------
+    //HPが0で死亡
+    //---------------------------------------------------------------------------
+    if(auto status = owner->GetComponent<ComponentStatus>()) {
+        if(status->GetHitPoints() <= 0) {
+            ChangeState<StateDeath>();
+        }
+    }
 }
 
 void StateIdleWalk::GUI()

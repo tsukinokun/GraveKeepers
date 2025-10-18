@@ -9,6 +9,7 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentStatus.h>
+#include <System/State/StateDeath.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化処理
@@ -25,12 +26,16 @@ void ComponentAI::Update()
 {
     __super::Update();
     //時間の更新
-    current_time_     = std::chrono::high_resolution_clock::now();
-    float delta_time  = std::chrono::duration<float>(current_time_ - prev_time_).count();
-    prev_time_        = current_time_;
-    auto   owner      = GetOwner();    //オーナーを取得
-    float3 rot        = owner->GetRotationAxisXYZ();
-    rot.y            += 180.0f;    //座標系の違いの関係で180度回転させる
+    current_time_    = std::chrono::high_resolution_clock::now();
+    float delta_time = std::chrono::duration<float>(current_time_ - prev_time_).count();
+    prev_time_       = current_time_;
+    auto owner       = GetOwner();    //オーナーを取得
+    //オーナーが死亡状態ならこれ以降の処理を行わない
+    if(owner->GetComponent<StateDeath>()) {
+        return;
+    }
+    float3 rot  = owner->GetRotationAxisXYZ();
+    rot.y      += 180.0f;    //座標系の違いの関係で180度回転させる
     //持ち上げコンポーネント処理
     if(auto lift_comp = owner->GetComponent<ComponentLift>()) {
         float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
@@ -66,6 +71,9 @@ void ComponentAI::Update()
             for(auto obj : Scene::Object::GetArray<Object>()) {
                 if(!obj->GetComponent<ComponentLift>()) {
                     continue;    //持ち上げオブジェクト以外はコンティニュー
+                }
+                if(obj->GetComponent<StateDeath>()) {
+                    continue;    //死亡状態ならコンティニュー
                 }
                 if(owner->GetName() == obj->GetName()) {
                     continue;    //自分はコンティニュー

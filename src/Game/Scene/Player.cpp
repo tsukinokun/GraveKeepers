@@ -17,6 +17,8 @@
 #include <System/Component/ComponentStatus.h>
 #include <System/SkillComponent/ComponentFireBall.h>
 #include <System/SkillComponent/ComponentDash.h>
+#include <System/SkillComponent/ComponentPoison.h>
+#include <System/SkillComponent/ComponentComboAttack.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -79,6 +81,25 @@ bool Player::Init()
         //ラムダ式を代入、Bキーを押すとスキル仕様と割り当てる。
         []() {
             if(IsKeyOn(KEY_INPUT_B)) {
+    //----------------------------------------------
+    //スキルコンポーネント(仮で毒設置アニメーション)の設定
+    //----------------------------------------------
+    auto poison_comp = chara->AddComponent<ComponentPoison>();
+    poison_comp->SetConditionsForUseSkill(
+        //ラムダ式を代入、cキーを押すとスキル仕様と割り当てる。
+        []() {
+            if(IsKeyOn(KEY_INPUT_C)) {
+                return true;
+            }
+            return false;
+        });
+    //スキルコンポーネント(仮で連撃を付ける)の設定
+    //----------------------------------------------
+    auto combo_attack_comp = chara->AddComponent<ComponentComboAttack>();
+    combo_attack_comp->SetConditionsForUseSkill(
+        //ラムダ式を代入、vキーを押すとスキル仕様と割り当てる。
+        []() {
+            if(IsKeyOn(KEY_INPUT_V)) {
                 return true;
             }
             return false;

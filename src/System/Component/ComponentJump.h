@@ -42,7 +42,7 @@ public:
     //! @}
 
 private:
-    std::function<bool()> conditions_jump_;    //ジャンプ条件
+    std::function<bool()> conditions_jump_ = []() { return false; };    //ジャンプ条件
 
     int   jump_frame_max_   = 60;       //何フレームジャンプするか
     int   jump_frame_count_ = 0;        //ジャンプ中のフレーム
