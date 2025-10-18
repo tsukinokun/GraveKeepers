@@ -1,4 +1,9 @@
 ﻿#pragma once
+//---------------------------------------------------------------------------
+//!	@file	ComponentImage.h
+//! @brief	画像コンポーネント
+//! @auther 山﨑愛
+//---------------------------------------------------------------------------
 #include <System/Scene.h>
 #include <System/Component/Component.h>
 
@@ -12,9 +17,6 @@ public:
     //	初期化処理
     void Init() override;
 
-    //描画処理
-    void LateDraw() override;
-
     //ImGui
     void GUI() override;
 
@@ -22,6 +24,22 @@ public:
     //! @param image [in] 描画する画像ハンドル
     //! @retval 自身のポインタ
     std::shared_ptr<ComponentImage> SetImage(int image);
+
+    //画像ハンドルの取得
+    //! @retval 画像のハンドル
+    int GetImageHandle();
+
+    //画像のサイズを取得する関数
+    //! @retval 画像のサイズ
+    float2 GetImageSize() const;
+
+    //スクリーンにうつる画像の大きさを取得する関数
+    //! @retval スクリーンにうつる画像の大きさ
+    float2 GetScreenImageSize();
+
+    //画像座標の補正値を取得する関数
+    //! @retval 画像座標の補正値
+    float3 GetAdjustment() const;
     //! @}
 
 private:

@@ -27,9 +27,6 @@ public:
     //	初期化処理
     void Init() override;
 
-    //	描画処理
-    void LateDraw() override;
-
     //ImGui
     void GUI() override;
 
@@ -44,7 +41,7 @@ public:
     //! @}
 
 private:
-    Alignment alignment_ = Alignment::UpperLeft;    //配置の設定
+    Alignment alignment_ = Alignment::MiddleCenter;    //配置の設定
 
     //--------------------------------------------------------------------
     //! @name Cereal処理
