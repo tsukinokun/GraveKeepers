@@ -22,7 +22,7 @@ bool Field::Init()
     //回転
     SetRotationAxisXYZ({0, 180, 0});
     //モデルを１０倍している
-    SetScaleAxisXYZ(10.0f);
+    SetScaleAxisXYZ(1.0f);
     return true;
 }
 
