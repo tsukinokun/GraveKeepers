@@ -29,9 +29,9 @@ void FontBuffer::Exit()
 //---------------------------------------------------------------------------------
 //!	フォントハンドルを取得する関数
 //---------------------------------------------------------------------------------
-int FontBuffer::GetFontHandle(const std::string& fontName, int size, int thickness, int type)
+int FontBuffer::GetFontHandle(const std::string& font_name, int size, int thickness, int type, int edge_size)
 {
-    FontKey key(fontName, size, thickness, type);
+    FontKey key(font_name, size, thickness, type, edge_size);
     //バッファにあれば使いまわす
     auto it = font_buffer_.find(key);
     if(it != font_buffer_.end()) {
@@ -39,7 +39,7 @@ int FontBuffer::GetFontHandle(const std::string& fontName, int size, int thickne
     }
 
     //なければ新規作成
-    int handle = CreateFontToHandle(fontName.c_str(), size, thickness, type);
+    int handle = CreateFontToHandle(font_name.c_str(), size, thickness, type, -1, edge_size);
     if(handle != -1) {
         font_buffer_[key] = handle;
     }
