@@ -323,6 +323,15 @@ void ComponentEffect::Play(bool loop)
     effect_play_handle_ = PlayEffekseer3DEffect(effect_handle_);
 }
 
+void ComponentEffect::Play(int time)
+{
+    // 前のエフェクトは止める
+    StopEffekseer3DEffect(effect_play_handle_);
+    effect_status_.set(EffectBit::Loop, false);
+    effect_status_.set(EffectBit::Playing, true);
+    //effect_play_handle_ = PlayEffekseer3DEffectAtTime(effect_handle_, time);
+}
+
 void ComponentEffect::Stop()
 {
     if(effect_play_handle_ != -1) {
