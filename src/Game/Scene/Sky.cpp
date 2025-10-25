@@ -14,10 +14,10 @@ bool Sky::Init()
 {
     __super::Init();
     SetName(u8"Sky");
-    auto model_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/sky2.mv1");
-    //model_comp->SetScaleAxisXYZ(5);
+    auto model_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/Stage00_sky.mv1");
+    //model_comp->SetScaleAxisXYZ(1);
     //座標の設定
-    model_comp->SetTranslate({0, -30, 0});
+    model_comp->SetTranslate({0, -120, 0});
 
     return true;
 }
@@ -28,6 +28,13 @@ bool Sky::Init()
 void Sky::Update()
 {
     __super::Update();
+    //--------------------------------------------------------------
+    // 雲を動かすように空をY軸で少しづつ回転させます　⑤
+    //--------------------------------------------------------------
+    if(auto sky = Scene::Object::Get<Object>("Sky")) {
+        sky->AddRotationAxisXYZ({0, 0.1f, 0});
+    }
+    //--------------------------------------------------------------
 }
 
 //---------------------------------------------------------------------------------

@@ -19,6 +19,7 @@
 #include "UFO.h"
 #include "Wall.h"
 #include "CandyBomb.h"
+#include "Sky.h"
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -60,6 +61,8 @@ bool ScenePlay::Init()
             wall->SetRotationAxisXYZ(float3(90.0f, 0.0f, 0.0f));
         }
     }
+
+    auto sky = Scene::Object::Create<Sky>();
 
     //---------------------------------------------------------------------------------
     //	時間UIオブジェクトの設定

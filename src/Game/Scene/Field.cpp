@@ -23,6 +23,10 @@ bool Field::Init()
     SetRotationAxisXYZ({0, 180, 0});
     //モデルを１０倍している
     SetScaleAxisXYZ(1.0f);
+    auto sky2_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/Background.mv1");
+    sky2_comp->SetTranslate({0, -400, 500});
+    sky2_comp->SetScaleAxisXYZ(0.8f);
+
     return true;
 }
 
