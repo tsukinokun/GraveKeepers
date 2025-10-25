@@ -42,7 +42,7 @@ bool CandyBomb::Init()
         if(auto liftable_comp = liftable_component_.lock()) {
             //持ち上げられていたら、一度でも持ち上げられていることにする。
             if(liftable_comp->IsLifted()) {
-                has_been_lifted = true;
+                has_been_lifted_ = true;
             }
         }
     };
@@ -57,7 +57,7 @@ void CandyBomb::OnHit(const ComponentCollision::HitInfo& hit_info)
 {
     __super::OnHit(hit_info);
     //どこかにヒットしたタイミングで一度でも持ち上げられたことがあれば爆発
-    if(has_been_lifted) {
+    if(has_been_lifted_) {
         Scene::Object::Release(shared_from_this());    //解放を行って
         //エフェクトを生成
         const std::string eff_name = "data/PoyPoy/Effect/CandyBomb/Simple_Sprite_BillBoard.efkefc";

@@ -28,5 +28,5 @@ private:
 
     const float DISTANCE_RANGE_ = 25.0f;
 
-    bool has_been_lifted = false;    //一度でも持ち上げられたことがあるかを保持する関数
+    bool has_been_lifted_ = false;    //一度でも持ち上げられたことがあるかを保持する関数
 };
