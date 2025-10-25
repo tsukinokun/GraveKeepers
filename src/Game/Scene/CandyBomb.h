@@ -1,10 +1,12 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	Block.h
-//! @brief	ゲームメイン
+//!	@file	CandyBomb.h
+//! @brief	プレイシーンのキャンディー爆弾オブジェクト
 //---------------------------------------------------------------------------
 #pragma once
 #include <System/Scene.h>
+//前方宣言
 class ComponentLiftable;
+class ComponentCollisionSphere;
 USING_PTR(CandyBomb);
 
 class CandyBomb : public Object
@@ -20,13 +22,10 @@ public:
     void OnHit(const ComponentCollision::HitInfo& hit_info) override;
 
 private:
-    std::weak_ptr<ComponentLiftable> liftable_component_;    //持ち上げコンポーネントの弱参照
-
-    const float RADUIS_ = 2.0f;
-
-    const float SCALE_ = 0.3f;
-
-    const float DISTANCE_RANGE_ = 25.0f;
-
-    bool has_been_lifted_ = false;    //一度でも持ち上げられたことがあるかを保持する関数
+    std::weak_ptr<ComponentLiftable>        liftable_component_;     //持ち上げコンポーネントの弱参照
+    std::weak_ptr<ComponentCollisionSphere> collision_component_;    //コリジョンコンポーネントの弱参照
+    const float                             RADUIS_          = 2.0f;
+    const float                             SCALE_           = 0.3f;
+    const float                             DISTANCE_RANGE_  = 25.0f;
+    bool                                    has_been_lifted_ = false;    //一度でも持ち上げられたことがあるかを保持する関数
 };
