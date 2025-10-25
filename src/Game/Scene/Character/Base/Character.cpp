@@ -20,14 +20,21 @@
 bool Character::Init()
 {
     __super::Init();
+    //---------------------------------------------------------------------------------
+    // 剛体コンポーネント
+    //---------------------------------------------------------------------------------
     rigidbody_component_ = AddComponent<ComponentRigidbody>();    //剛体コンポーネントを追加
     liftable_component_  = AddComponent<ComponentLiftable>();     //持ち上げられ機能コンポーネント
     auto hp_comp         = AddComponent<ComponentStatus>();       //HP機能コンポーネント
     status_component_    = hp_comp;
     SetTranslate({0, 2, 0});
+    //---------------------------------------------------------------------------------
+    // コリジョン
+    //---------------------------------------------------------------------------------
     auto col_comp = AddComponent<ComponentCollisionCapsule>();
-    col_comp->SetRadius(RADIUS_);                  // 球コリジョンの半径を2.0 にする
-    col_comp->SetHeight(RADIUS_ + neutralpos_);    // 球コリジョンの高さを半径の４倍 にする
+    col_comp->SetRadius(RADIUS_);                                               // 球コリジョンの半径を2.0 にする
+    col_comp->SetHeight(RADIUS_ + neutralpos_);                                 // 球コリジョンの高さを半径の４倍 にする
+    col_comp->SetCollisionGroup(ComponentCollision::CollisionGroup::PLAYER);    // 所属するグループを「PLAYER」とします。
     collision_component_ = col_comp;
     auto jump_comp       = AddComponent<ComponentJump>();
     jump_component_      = jump_comp;

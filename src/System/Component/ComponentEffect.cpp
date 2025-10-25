@@ -61,6 +61,7 @@ private:
     ObjectWeakPtr               effect_owner_;
     ComponentEffect::EffectFunc func_ = nullptr;
 };
+
 }    // namespace
 
 std::unordered_map<std::string, int> ComponentEffect::exist_effects_resource_{};

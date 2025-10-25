@@ -11,7 +11,6 @@
 #include <ImGuizmo/ImGuizmo.h>
 
 #include <functional>
-
 USING_PTR(ComponentEffect);
 
 //! @brief モデルコンポーネントクラス

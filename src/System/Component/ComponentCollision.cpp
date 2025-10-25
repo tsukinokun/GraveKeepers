@@ -241,6 +241,7 @@ void ComponentCollision::guiCollisionData()
         ImGui::CheckboxFlags("ITEM", (u32*)&collision_hit_, (u32)CollisionGroup::ITEM);
         ImGui::CheckboxFlags("CAMERA", (u32*)&collision_hit_, (u32)CollisionGroup::CAMERA);
         ImGui::CheckboxFlags("ETC", (u32*)&collision_hit_, (u32)CollisionGroup::ETC);
+        ImGui::CheckboxFlags("SKILL", (u32*)&collision_hit_, (u32)CollisionGroup::SKILL);
         ImGui::TreePop();
     }
 
@@ -256,6 +257,7 @@ void ComponentCollision::guiCollisionData()
         ImGui::CheckboxFlags("ITEM", (u32*)&collision_overlap_, (u32)CollisionGroup::ITEM);
         ImGui::CheckboxFlags("CAMERA", (u32*)&collision_overlap_, (u32)CollisionGroup::CAMERA);
         ImGui::CheckboxFlags("ETC", (u32*)&collision_overlap_, (u32)CollisionGroup::ETC);
+        ImGui::CheckboxFlags("SKILL", (u32*)&collision_overlap_, (u32)CollisionGroup::SKILL);
         ImGui::TreePop();
     }
     ImGui::Separator();
