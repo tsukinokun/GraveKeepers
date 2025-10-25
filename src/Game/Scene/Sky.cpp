@@ -1,8 +1,8 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	Field.cpp
-//! @brief	フィールド
+//!	@file	Sky.cpp
+//! @brief	そら
 //---------------------------------------------------------------------------
-#include "Field.h"
+#include "Sky.h"
 #include <System/Component/ComponentModel.h>
 #include <System/Component/ComponentCollisionModel.h>
 #include <System/Component/ComponentLiftable.h>
@@ -10,22 +10,14 @@
 //---------------------------------------------------------------------------------
 //!	初期化
 //---------------------------------------------------------------------------------
-bool Field::Init()
+bool Sky::Init()
 {
     __super::Init();
-    SetName(u8"Field");
-    //フィールドの読み込み（仮で山口先生の素材を入れている）
-    auto model_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/stage.mv1");
-    AddComponent<ComponentCollisionModel>()->AttachToModel();    //< GUIでの 「モデルにコリジョンを張り付ける」動作
+    SetName(u8"Sky");
+    auto model_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/Stage00_sky.mv1");
+    //model_comp->SetScaleAxisXYZ(1);
     //座標の設定
-    SetTranslate({0, -1, 0});
-    //回転
-    SetRotationAxisXYZ({0, 180, 0});
-    //モデルを１０倍している
-    SetScaleAxisXYZ(1.0f);
-    auto sky2_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/Background.mv1");
-    sky2_comp->SetTranslate({0, -400, 500});
-    sky2_comp->SetScaleAxisXYZ(0.8f);
+    model_comp->SetTranslate({0, -120, 0});
 
     return true;
 }
@@ -33,15 +25,22 @@ bool Field::Init()
 //---------------------------------------------------------------------------------
 //!	更新
 //---------------------------------------------------------------------------------
-void Field::Update()
+void Sky::Update()
 {
     __super::Update();
+    //--------------------------------------------------------------
+    // 雲を動かすように空をY軸で少しづつ回転させます　⑤
+    //--------------------------------------------------------------
+    if(auto sky = Scene::Object::Get<Object>("Sky")) {
+        sky->AddRotationAxisXYZ({0, 0.1f, 0});
+    }
+    //--------------------------------------------------------------
 }
 
 //---------------------------------------------------------------------------------
 //!	描画
 //---------------------------------------------------------------------------------
-void Field::Draw()
+void Sky::Draw()
 {
     __super::Draw();
 }
@@ -49,7 +48,7 @@ void Field::Draw()
 //---------------------------------------------------------------------------------
 //!	終了
 //---------------------------------------------------------------------------------
-void Field::Exit()
+void Sky::Exit()
 {
     __super::Exit();
 }
@@ -57,19 +56,7 @@ void Field::Exit()
 //---------------------------------------------------------------------------------
 ////! GUI表示
 //---------------------------------------------------------------------------------
-void Field::GUI()
+void Sky::GUI()
 {
     __super::GUI();
-}
-
-//---------------------------------------------------------------------------------
-//! ヒット時処理
-//---------------------------------------------------------------------------------
-void Field::OnHit(const ComponentCollision::HitInfo& hit_info)
-{
-    __super::OnHit(hit_info);
-    auto hit_owner = hit_info.hit_collision_->GetOwner();
-    if(auto hit_comp_liftable = hit_owner->GetComponent<ComponentLiftable>()) {
-        hit_comp_liftable->SetLiftedFlag(false);
-    }
 }
