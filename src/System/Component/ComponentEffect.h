@@ -89,6 +89,10 @@ public:
     //! @param loop ループするかどうか
     void Play(bool loop = false);
 
+    //! @brief 再生
+    //! @param 時間を設定できるかどうか
+    void Play(int time);
+
     //! @brief 停止
     void Stop();
 
