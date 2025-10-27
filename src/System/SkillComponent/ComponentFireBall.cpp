@@ -89,7 +89,7 @@ std::shared_ptr<ComponentSkill> ComponentFireBall::UseSkill()
     __super::UseSkill();
     auto owner = GetOwner();
     //ファイルパス
-    const std::string eff_name = "data/PoyPoy/Effect/Fireball/FireBall3.efkefc";
+    const std::string eff_name = "data/PoyPoy/Effect/Fireball/FireBall1.efkefc";
     //高さの値は仮、後に持ち上げているオブジェクトの位置に変更するはず。
     const float3 pos = owner->GetTranslate() + float3(0.0f, 20.0f, 0.0f);
     effect_          = ComponentEffect::Object::Create(eff_name, pos);
