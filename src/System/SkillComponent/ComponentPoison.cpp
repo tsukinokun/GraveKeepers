@@ -1,9 +1,10 @@
 ﻿//---------------------------------------------------------------------------
-//!	@file	ComponentFireBall.cpp
+//!	@file	ComponentPoison.cpp
 //! @brief	ポイズンのコンポーネント
 //! @auther 吉田
 //---------------------------------------------------------------------------
 #include "ComponentPoison.h"
+#include <Game/Scene/SkillObject/Poison.h>
 #include <System/Component/ComponentEffect.h>
 
 //---------------------------------------------------------------------------
@@ -54,14 +55,17 @@ std::shared_ptr<ComponentSkill> ComponentPoison::UseSkill()
 {
     __super::UseSkill();
     auto owner = GetOwner();
-    //ファイルパス
-    const std::string eff_name = "data/PoyPoy/Effect/Poison/Poison.efkefc";
+    //---------------------------------------------------------------------------
+    // スキルオブジェクトの生成
+    //---------------------------------------------------------------------------
+    auto poison = Scene::Object::Create<Poison>();    //ポイズンオブジェクトを生成
+    poison->SetSkillOwnerName(owner->GetName());      //スキル使用者の名前を設定(スキルが使用者に干渉しなくするために設定不可欠。)
     //高さの値は仮、後に持ち上げているオブジェクトの位置に変更するはず。
-    const float3 pos    = owner->GetTranslate() + float3(0.0f, 1.0f, 0.0f);
-    auto         effect = ComponentEffect::Object::Create(eff_name, pos);
+    const float3 pos = owner->GetTranslate() + float3(0.0f, 1.0f, 0.0f);
+    poison->SetTranslate(pos);
 
-    effect->SetScaleAxisXYZ(SCALE_);
-    effect->GetComponent<ComponentEffect>()->SetPlaySpeed(0.2f);
+    poison->SetScaleAxisXYZ(SCALE_);
+    poison->GetComponent<ComponentEffect>()->SetPlaySpeed(0.2f);
     //自身のポインタを変換
     return dynamic_pointer_cast<ComponentSkill>(shared_from_this());
 }
