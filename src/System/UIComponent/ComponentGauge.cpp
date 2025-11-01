@@ -17,13 +17,47 @@ void ComponentGauge::Init()
     //  UI描画を登録
     //---------------------------------------------------------------------------
     auto draw_ui = [this]() {
+        //---------------------------------------------------------------------------
+        // 線形補間でsmooth_rate_の値を更新
+        //-----------------------------------------------------------------------
+        elapsed_time_ += GetDeltaTime();               // 経過時間を更新
+        float t        = elapsed_time_ / duration_;    // 経過時間を割合に変換
+        if(t > 1.0f)
+            t = 1.0f;                                                                         // 最大値を1.0fに制限
+        smooth_rate_ = hlslpp::lerp(float1(duration_start_rate_), float1(gauge_rate_), t);    // 線形補間で割合を更新
+
         auto   owner      = GetOwner();         //オーナーを取得
         float3 adjustment = GetAdjustment();    // 調整値
         float3 pos        = float3(0.0f, 0.0f, 0.0f);
         pos               = owner->GetTranslate() + adjustment;
         float3 scale      = owner->GetScaleAxisXYZ();
-        //サイズは、Transformの平均
-        float size = (scale.x + scale.y + scale.z) / 3.0f;    // 平均値をとる
+        //---------------------------------------------------------------------------
+        //	ゲージの描画
+        //---------------------------------------------------------------------------
+        // 滑らかに変化する部分
+        {
+            int x1 = static_cast<int>(pos.x - (gauge_size_.x * 0.5f));
+            int y1 = static_cast<int>(pos.y - (gauge_size_.y * 0.5f));
+            int x2 = static_cast<int>(pos.x - (gauge_size_.x * 0.5f) + (gauge_size_.x * smooth_rate_));    //右端は割合で変化
+            int y2 = static_cast<int>(pos.y + (gauge_size_.y * 0.5f));
+            DxLib::DrawFillBox(x1, y1, x2, y2, smooth_color_);
+        }
+        // ゲージ本体
+        {
+            int x1 = static_cast<int>(pos.x - (gauge_size_.x * 0.5f));
+            int y1 = static_cast<int>(pos.y - (gauge_size_.y * 0.5f));
+            int x2 = static_cast<int>(pos.x - (gauge_size_.x * 0.5f) + (gauge_size_.x * gauge_rate_));    //右端は割合で変化
+            int y2 = static_cast<int>(pos.y + (gauge_size_.y * 0.5f));
+            DxLib::DrawFillBox(x1, y1, x2, y2, color_);
+        }
+        // 枠
+        {
+            int x1 = static_cast<int>(pos.x - (gauge_size_.x * 0.5f));
+            int y1 = static_cast<int>(pos.y - (gauge_size_.y * 0.5f));
+            int x2 = static_cast<int>(pos.x + (gauge_size_.x * 0.5f));
+            int y2 = static_cast<int>(pos.y + (gauge_size_.y * 0.5f));
+            DxLib::DrawLineBox(x1, y1, x2, y2, GetColor(0, 0, 0));
+        }
     };
     SetProc("UIDraw", draw_ui, ProcTiming::UI, static_cast<ProcPriority>(NONE));
 }
@@ -59,20 +93,33 @@ std::shared_ptr<ComponentGauge> ComponentGauge::SetGaugeSize(const int2& size)
 }
 
 //---------------------------------------------------------------------------
+//! @brief 滑らかに変化する時間を設定する関数
+//---------------------------------------------------------------------------
+std::shared_ptr<ComponentGauge> ComponentGauge::SetDuration(float duration)
+{
+    duration_ = duration;    // 滑らかに変化する時間を設定
+    return dynamic_pointer_cast<ComponentGauge>(shared_from_this());
+}
+
+//---------------------------------------------------------------------------
 //! @brief ゲージの割合を設定する関数
 //---------------------------------------------------------------------------
 std::shared_ptr<ComponentGauge> ComponentGauge::SetGaugeRate(float rate)
 {
     gauge_rate_ = rate;    // ゲージの割合を設定
+    //セットしたタイミングで滑らかに変化するために必要な処理をここに書く
+    duration_start_rate_ = smooth_rate_;    // 滑らかに変化する開始時の割合を現在の割合に設定
+    elapsed_time_        = 0.0f;            // 経過時間をリセット
     return dynamic_pointer_cast<ComponentGauge>(shared_from_this());
 }
 
 //---------------------------------------------------------------------------
 //! @brief ゲージの色を設定する関数
 //---------------------------------------------------------------------------
-std::shared_ptr<ComponentGauge> ComponentGauge::SetGaugeColor(float color)
+std::shared_ptr<ComponentGauge> ComponentGauge::SetGaugeColor(int color, int smooth_color)
 {
-    color_ = color;    // ゲージの色を設定
+    color_        = color;    // ゲージの色を設定
+    smooth_color_ = smooth_color;
     return dynamic_pointer_cast<ComponentGauge>(shared_from_this());
 }
 

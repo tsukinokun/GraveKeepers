@@ -13,6 +13,7 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/State/StateIdleWalk.h>
+#include <Game/Scene/UIObject/UIGauge.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -43,9 +44,41 @@ bool Character::Init()
     model_component_ = model;
     lift_component_  = AddComponent<ComponentLift>();    //持ち上げコンポーネント
     //---------------------------------------------------------------------------------
-    //状態コンポーネントをつける
+    // 状態コンポーネントをつける
     //---------------------------------------------------------------------------------
     AddComponent<StateIdleWalk>();
+    //---------------------------------------------------------------------------------
+    // オブジェクトの頭の上にゲージを表示させる
+    //---------------------------------------------------------------------------------
+    {
+        auto gauge       = Scene::Object::Create<UIGauge>();
+        auto update_proc = [gauge, this]() {
+            //---------------------------------------------------------------------------------
+            // ゲージの位置をキャラクターの頭の上に設定する処理
+            //---------------------------------------------------------------------------------
+            //ワールド空間スクリーン空間に変換したい
+            if(auto camera = Scene::GetCurrentCamera().lock()) {
+                float3 world_position   = GetTranslate();
+                matrix view_matrix      = camera->GetViewMatrix();                                //ビュー行列
+                matrix proj_matrix      = camera->GetProjectionMatrix();                          //投影行列
+                matrix view_proj_matrix = mul(view_matrix, proj_matrix);                          //二つの行列を合成
+                float4 screen_position  = mul(float4(world_position, 1.0f), view_proj_matrix);    //スクリーン座標
+                screen_position.xyz     = screen_position.xyz / screen_position.w;                //奥行を考慮
+                // スクリーン座標(-1～+1)→UV座標(0～1)
+                float2 uv             = screen_position.xy * float2(0.5f, -0.5f) + 0.5f;    //描画のフォーマットに合わせて変換
+                float2 pixel_position = uv * float2(WINDOW_W, WINDOW_H);                    // 画面サイズに合わせる
+                gauge->SetTranslate(float3(pixel_position.xy, 0.0f));                       //ゲージの位置を設定
+            }
+            //---------------------------------------------------------------------------------
+            // ゲージの割合を設定する処理
+            //---------------------------------------------------------------------------------
+            if(auto status = GetComponent<ComponentStatus>()) {
+                float hp_rate = static_cast<float>(status->GetHitPoints()) / static_cast<float>(status->GetMaxHitPoints());
+                gauge->SetGaugeRate(hp_rate);    //ゲージの割合を設定
+            }
+        };
+        gauge->SetProc("update", update_proc);
+    }
     SetName(u8"Character");
 
     return true;
