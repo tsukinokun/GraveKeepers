@@ -12,6 +12,7 @@
 bool SceneTitle::Init()
 {
     __super::Init();
+
     return true;
 }
 
