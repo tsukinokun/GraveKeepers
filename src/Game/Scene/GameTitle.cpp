@@ -13,7 +13,7 @@ bool GameTitle::Init()
     __super::Init();
 
     //背景画像の読み込み
-    titleBackGraph = LoadGraph("data/PoyPoy/Image/Title.png");
+    title_back_graph = LoadGraph("data/PoyPoy/Image/Title.png");
 
     return true;
 }
@@ -39,8 +39,8 @@ void GameTitle::Draw()
     __super::Draw();
 
     // 背景画像の描画（ウィンドウ全体にフィット）
-    if(titleBackGraph != -1) {
-        DrawExtendGraph(0, 0, WINDOW_W, WINDOW_H, titleBackGraph, TRUE);
+    if(title_back_graph != -1) {
+        DrawExtendGraph(0, 0, WINDOW_W, WINDOW_H, title_back_graph, TRUE);
     }
 
     // 文字のサイズを設定
@@ -63,9 +63,9 @@ void GameTitle::Exit()
     __super::Exit();
 
     //　背景画像の削除
-    if(titleBackGraph != -1) {
-        DeleteGraph(titleBackGraph);
-        titleBackGraph = -1;
+    if(title_back_graph != -1) {
+        DeleteGraph(title_back_graph);
+        title_back_graph = -1;
     }
 }
 

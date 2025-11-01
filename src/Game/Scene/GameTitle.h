@@ -20,7 +20,7 @@ public:
     void Exit() override;      //!< 終了
     void GUI() override;       //!< GUI表示
 
-    int titleBackGraph = -1;    //!< タイトル背景画像ハンドル
+    int title_back_graph = -1;    //!< タイトル背景画像ハンドル
 
 private:
 };
