@@ -29,6 +29,12 @@ public:
 
     void OnHit(const ComponentCollision::HitInfo& hit_info) override;
 
+    //---------------------------------------------------------------------------
+    // 生存しているかどうかを返す関数
+    //! @retval 生存しているかどうか
+    //---------------------------------------------------------------------------
+    bool IsAlive() const;
+
 protected:
     std::weak_ptr<ComponentLift>             lift_component_;         //持ち上げcomponent
     std::weak_ptr<ComponentLiftable>         liftable_component_;     // 持ち上げられcomponent

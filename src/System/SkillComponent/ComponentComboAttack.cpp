@@ -5,6 +5,8 @@
 //---------------------------------------------------------------------------
 #include "ComponentComboAttack.h"
 #include <System/Component/ComponentEffect.h>
+#include <Game/Scene/SkillObject/ComboAttack.h>
+#include <System/Component/ComponentStatus.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化関数
@@ -54,13 +56,19 @@ std::shared_ptr<ComponentSkill> ComponentComboAttack::UseSkill()
 {
     __super::UseSkill();
     auto owner = GetOwner();
-    //ファイルパス
-    const std::string eff_name = "data/PoyPoy/Effect/ComboAttack/ComboAttack.efkefc";
+
+    //---------------------------------------------------------------------------
+    // スキルオブジェクトの生成
+    //---------------------------------------------------------------------------
+    auto comboattack = Scene::Object::Create<ComboAttack>();    //ポイズンオブジェクトを生成
+    comboattack->SetSkillOwnerName(owner->GetName());           //スキル使用者の名前を
+
     //高さの値は仮、後に持ち上げているオブジェクトの位置に変更するはず。
-    const float3 pos    = owner->GetTranslate() + float3(0.0f, 20.0f, 0.0f);
-    auto         effect = ComponentEffect::Object::Create(eff_name, pos);
+    const float3 pos = owner->GetTranslate() + float3(0.0f, 20.0f, 0.0f);
+    comboattack->SetTranslate(pos);
+
     //プレイヤーの向きに合わせる
-    effect->SetRotationAxisXYZ(owner_->GetRotationAxisXYZ());
+    comboattack->SetRotationAxisXYZ(owner_->GetRotationAxisXYZ());
     //自身のポインタを変換
     return dynamic_pointer_cast<ComponentSkill>(shared_from_this());
 }
