@@ -5,6 +5,7 @@
 #include "SceneCharaSelect.h"
 #include "Camera.h"
 #include <System/Component/ComponentModel.h>
+#include <Game/System/HlslppUseful.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -21,6 +22,7 @@ bool SceneCharaSelect::Init()
         //座標と注視点の設定
         cam_comp->SetPositionAndTarget({0, 20, 30}, {0, 10, 0});
     }
+    std::vector<std::shared_ptr<Object>> characters;    // キャラクターオブジェクト格納用
     //---------------------------------------------------------------------------------
     // 各キャラクターを作成
     //---------------------------------------------------------------------------------
@@ -41,6 +43,7 @@ bool SceneCharaSelect::Init()
             {"walk", "data/PoyPoy/Model/Character/Zombie/Anims/Walking.mv1", 0, 1.0f},
         });
         model_comp->PlayAnimation("walk", true);
+        characters.push_back(zombie);
     }
     //---------------------------------------------------------------------------------
     // 狼男
@@ -59,6 +62,7 @@ bool SceneCharaSelect::Init()
             {"walk", "data/PoyPoy/Model/Character/Werewolf/Anims/Orc Walk.mv1", 0, 1.0f},
         });
         model_comp->PlayAnimation("walk", true);
+        characters.push_back(wolf);
     }
     //---------------------------------------------------------------------------------
     // パンプキング
@@ -77,6 +81,7 @@ bool SceneCharaSelect::Init()
             {"walk", "data/PoyPoy/Model/Character/Pumpking/Anims/Running.mv1", 1, 1.0f},
         });
         model_comp->PlayAnimation("walk", true);
+        characters.push_back(pumpkin);
     }
     //---------------------------------------------------------------------------------
     // ウィッチ
@@ -95,6 +100,16 @@ bool SceneCharaSelect::Init()
             {"walk", "data/PoyPoy/Model/Character/Witch/Anims/Walking.mv1", 0, 1.0f},
         });
         model_comp->PlayAnimation("walk", true);
+        characters.push_back(witch);
+    }
+    //---------------------------------------------------------------------------------
+    // キャラクターを円形に配置
+    //---------------------------------------------------------------------------------
+    for(int i = 0; i < characters.size(); i++) {
+        float3 center    = float3(0.0f, 0.0f, 0.0f);    // 円の中心
+        float  radius    = 10.0f;                       // 円の半径
+        float3 translate = GetPointOnCircle(center, radius, characters.size(), i);
+        characters[i]->SetTranslate(translate);
     }
     return true;
 }
