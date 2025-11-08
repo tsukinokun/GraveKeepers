@@ -96,44 +96,6 @@ void Character::Update()
             return;
         }
     }
-    //下キーを押しているかつジャンプをしていないなら
-    //if(!GetComponent<ComponentLiftable>()->IsLifted())
-    //{
-    //	if(CheckHitKey(KEY_INPUT_DOWN) && GetComponent<ComponentJump>()->IsJumping() == false)
-    //	{
-    //		//ジャンプをできない状態にする
-    //		GetComponent<ComponentJump>()->SetEnable();
-    //		//高さを半径にする
-    //		neutralpos_ = SQUAT_TOP_POINT_;
-    //	}
-    //	//右のシフトキーを押しているかつジャンプをしていないなら
-    //	else if(CheckHitKey(KEY_INPUT_RSHIFT) && GetComponent<ComponentJump>()->IsJumping() == false)
-    //	{
-    //		//ジャンプをできない状態にする
-    //		GetComponent<ComponentJump>()->SetEnable();
-    //		//高さを半径にする
-    //		neutralpos_ = FACE_DOWN_TOP_POINT_;
-    //		//しゃがんでいると返す
-    //		is_face_down_ = true;
-    //	}
-    //	//上の状態でなかったら
-    //	else
-    //	{
-    //		//高さを半径の3倍にする
-    //		neutralpos_ = TOP_POINT_;
-    //		//しゃがんでいないと返す
-    //		is_face_down_ = false;
-    //	}
-    //}
-    //else
-    //{
-    //	//高さを半径の3倍にする
-    //	neutralpos_ = TOP_POINT_;
-    //	//しゃがんでいないと返す
-    //	is_face_down_ = false;
-    //}
-    ////コリジョンの高さの設定
-    //GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + neutralpos_);
 }
 
 //---------------------------------------------------------------------------------
