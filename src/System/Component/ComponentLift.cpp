@@ -9,6 +9,7 @@
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentStatus.h>
+#include <Game/Scene/Character/Base/Character.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化
@@ -24,7 +25,7 @@ void ComponentLift::Init()
 void ComponentLift::Update()
 {
     __super::Update();
-    auto owner = GetOwner();
+    auto owner = GetOwnerPtr();
     if(auto hp = owner->GetComponent<ComponentStatus>()) {
         //死亡で
         if(hp->IsDead()) {
@@ -127,7 +128,10 @@ void ComponentLift::Update()
                 }
             }
             if(auto obj = lift_object_.lock()) {
-                obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(true);
+                if(auto liftable_comp = obj->GetComponent<ComponentLiftable>()) {
+                    liftable_comp->SetLiftedFlag(true);
+                    liftable_comp->SetLiftCharacter(dynamic_pointer_cast<Character>(owner));
+                }
                 auto lift_col = obj->GetComponent<ComponentCollision>();
                 lift_col->SetEnableFlag(false);
                 lift_col->UseGravity(false);

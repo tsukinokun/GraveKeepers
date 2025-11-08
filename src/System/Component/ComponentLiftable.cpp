@@ -15,17 +15,8 @@ void ComponentLiftable::Init()
 }
 
 //---------------------------------------------------------------------------
-//! @brief	更新処理
-//---------------------------------------------------------------------------
-void ComponentLiftable::Update()
-{
-    __super::Update();
-}
-
-//---------------------------------------------------------------------------
 //! @brief	ImGui
 //---------------------------------------------------------------------------
-
 void ComponentLiftable::GUI()
 {
     __super::GUI();
@@ -45,18 +36,36 @@ void ComponentLiftable::GUI()
     ImGui::End();
 }
 
+//----------------------------------------------------------------
 //! @brief 持ち上げられているかの状態を変更
-//! @param lifted_flag [in] 持ち上げられているかフラグの変更
+//----------------------------------------------------------------
 void ComponentLiftable::SetLiftedFlag(bool lifted_flag)
 {
     is_lifted_ = lifted_flag;
 }
 
+//----------------------------------------------------------------
 //! @brief	持ち上げられているか否かを返す関数
-//! @retval	持ち上げられているかのフラグ
+//----------------------------------------------------------------
 bool ComponentLiftable::IsLifted()
 {
     return is_lifted_;
+}
+
+//----------------------------------------------------------------
+//! @brief 持ち上げたキャラクターの弱参照を設定する関数
+//----------------------------------------------------------------
+void ComponentLiftable::SetLiftCharacter(const std::weak_ptr<Character>& character)
+{
+    lift_character_ = character;
+}
+
+//----------------------------------------------------------------
+//! @brief 最後に持ち上げたキャラクターの参照を取得する関数
+//----------------------------------------------------------------
+std::shared_ptr<Character> ComponentLiftable::GetLiftCharacter()
+{
+    return lift_character_.lock();
 }
 
 CEREAL_REGISTER_TYPE(ComponentLiftable)

@@ -68,12 +68,28 @@ int ComponentStatus::GetHitPoints() const
 }
 
 //---------------------------------------------------------------------------
+//! @brief	最大HPのゲッタ
+//---------------------------------------------------------------------------
+int ComponentStatus::GetMaxHitPoints() const
+{
+    return max_hp_;
+}
+
+//---------------------------------------------------------------------------
 //! @brief	HPのセッタ
 //---------------------------------------------------------------------------
-
 std::shared_ptr<ComponentStatus> ComponentStatus::SetHitPoints(int hp)
 {
     hp_ = hp;
+    return dynamic_pointer_cast<ComponentStatus>(shared_from_this());
+}
+
+//--------------------------------------------------------------------
+//! @brief	最大HPのセッタ
+//--------------------------------------------------------------------
+std::shared_ptr<ComponentStatus> ComponentStatus::SetMaxHitPoints(int max_hp)
+{
+    max_hp_ = max_hp;
     return dynamic_pointer_cast<ComponentStatus>(shared_from_this());
 }
 
