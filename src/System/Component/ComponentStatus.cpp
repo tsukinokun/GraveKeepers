@@ -25,6 +25,15 @@ void ComponentStatus::Update()
     prev_time_      = current_time_;
 
     invincibility_timer_ -= delta_time;    //タイマーからデルタタイムを引く
+
+    if(INVINCIBILITY_TIME_ < 2.0f) {
+        INVINCIBILITY_TIME_ += delta_time;
+        if(INVINCIBILITY_TIME_ >= 2.0f) {
+            INVINCIBILITY_TIME_ = 2.0f;
+            // 無敵終了処理
+        }
+    }
+
     __super::Update();
 }
 
@@ -129,6 +138,11 @@ std::shared_ptr<ComponentStatus> ComponentStatus::SetSpeed(float move_speed)
 float ComponentStatus::GetSpeed() const
 {
     return move_speed_;
+}
+
+void ComponentStatus::SetInvincibilityTime(float time)
+{
+    INVINCIBILITY_TIME_ = time;
 }
 CEREAL_REGISTER_TYPE(ComponentStatus)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentStatus)
