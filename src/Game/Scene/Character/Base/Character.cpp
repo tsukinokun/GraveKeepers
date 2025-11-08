@@ -184,3 +184,17 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
         }
     }
 }
+
+//---------------------------------------------------------------------------
+// 生存しているかどうかを返す関数
+//---------------------------------------------------------------------------
+bool Character::IsAlive() const
+{
+    //ステータスコンポーネントが有効なら
+    if(auto status = status_component_.lock()) {
+        //生存しているかどうかを返す
+        return !status->IsDead();
+    }
+    //ステータスコンポーネントが無効なら生存していないと返す
+    return false;
+}
