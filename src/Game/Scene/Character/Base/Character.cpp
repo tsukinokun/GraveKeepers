@@ -134,6 +134,12 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
         if(!hit_liftable->IsLifted()) {
             return;    //早期リターン
         }
+        //持ち上げていたオーナーが自分自身なら、早期リターンする
+        if(auto lift_chara = hit_liftable->GetLiftCharacter()) {
+            if(lift_chara->GetName() == GetName()) {
+                return;    //早期リターン
+            }
+        }
         //剛体を取得
         if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>()) {
             //触ったオブジェクトの速度が少しでもあれば
