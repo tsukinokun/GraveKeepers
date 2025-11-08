@@ -41,3 +41,21 @@ bool CheckBoxPointHit(const float2& box_pos, const float2& box_size, const float
     }
     return false;
 }
+
+//---------------------------------------------------------------------------
+// 複数の点の中心を求める関数
+//---------------------------------------------------------------------------
+float3 CalculateCenter(const std::vector<float3>& points)
+{
+    // 点が存在しない場合は原点を返す
+    if(points.empty())
+        return float3(0, 0, 0);
+    // 点の合計値を宣言
+    float3 sum(0, 0, 0);
+    // 全ての点を合計
+    for(const auto& p : points) {
+        sum += p;
+    }
+    // 合計を点の数で割って中心を求める
+    return sum / static_cast<float>(points.size());
+}
