@@ -42,9 +42,10 @@ void ComboAttack::OnHit(const ComponentCollision::HitInfo& hit_info)
         }
         //ステータスコンポーネントを取得
         if(auto status_comp = other_owner->GetComponent<ComponentStatus>()) {
-            status_comp->GetInvincibilityTimer(0.5f);
-            //ダメージを与える(とりあえず5)
+            //ダメージを与える(とりあえず5*x)
             status_comp->TakeDamage(ATTACK_DAMAGE_);
+            //無敵時間の調整
+            status_comp->SetInvincibilityTime(0.5f);
         }
     }
 }

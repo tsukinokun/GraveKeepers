@@ -48,14 +48,16 @@ public:
     float GetSpeed() const;
     //! @}
 
+    void SetInvincibilityTime(float time);
+
 private:
     //デルタタイム
     std::chrono::time_point<std::chrono::steady_clock> prev_time_    = std::chrono::high_resolution_clock::now();    //前フレームの時間
     std::chrono::time_point<std::chrono::steady_clock> current_time_ = std::chrono::high_resolution_clock::now();    //現在の時間
     //HP関連
-    int         hp_                  = 0;       //ヒットポイント
-    const float INVINCIBILITY_TIME_  = 2.0f;    //無敵時間
-    float       invincibility_timer_ = 0.0f;    //無敵時間タイマー
+    int   hp_                  = 0;       //ヒットポイント
+    float INVINCIBILITY_TIME_  = 2.0f;    //無敵時間
+    float invincibility_timer_ = 0.0f;    //無敵時間タイマー
     //スピード関連
     float move_speed_ = 0.2f;    //移動スピード
 
