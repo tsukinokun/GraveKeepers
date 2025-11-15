@@ -28,8 +28,6 @@ bool Player::Init()
     __super::Init();
     auto chara = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
     chara->SetTranslate(float3(20.0f, 1.0f, 20.0f));
-    //auto chara		   = Scene::Object::Create<Werewolf>();	   //狼男を表示するためにゾンビをコメントアウトしています
-    //auto chara		   = Scene::Object::Create<Pumpking>();
     auto controll_comp = chara->AddComponent<ComponentObjectController>();
     controll_comp->SetMoveSpeed(chara->GetComponent<ComponentStatus>()->GetSpeed());
     controll_comp->SetRotateSpeed(20.0f);
@@ -47,14 +45,14 @@ bool Player::Init()
         lift_comp->SetConditionsForLifting(
             //ラムダ式を代入
             []() {
-                if(IsKeyOn(KEY_INPUT_Z)) {
+                if(IsKeyOn(KEY_INPUT_RETURN)) {
                     return true;
                 }
                 return false;
             });
         lift_comp->SetConditionsForThrow(    //ラムダ式を代入
             []() {
-                if(IsKeyOn(KEY_INPUT_Z)) {
+                if(IsKeyOn(KEY_INPUT_RETURN)) {
                     return true;
                 }
                 return false;
@@ -66,8 +64,8 @@ bool Player::Init()
     auto fireball_comp = chara->AddComponent<ComponentFireBall>();
     fireball_comp->SetConditionsForUseSkill(
         //ラムダ式を代入、xキーを押すとスキル仕様と割り当てる。
-        []() {
-            if(IsKeyOn(KEY_INPUT_X)) {
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_FIREBALL) {
                 return true;
             }
             return false;
@@ -79,8 +77,8 @@ bool Player::Init()
     auto dash_comp = chara->AddComponent<ComponentDash>();
     dash_comp->SetConditionsForUseSkill(
         //ラムダ式を代入、Bキーを押すとスキル仕様と割り当てる。
-        []() {
-            if(IsKeyOn(KEY_INPUT_B)) {
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_DASH) {
                 return true;
             }
             return false;
@@ -91,23 +89,27 @@ bool Player::Init()
     auto poison_comp = chara->AddComponent<ComponentPoison>();
     poison_comp->SetConditionsForUseSkill(
         //ラムダ式を代入、cキーを押すとスキル仕様と割り当てる。
-        []() {
-            if(IsKeyOn(KEY_INPUT_C)) {
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_POISON) {
                 return true;
             }
             return false;
         });
+    //----------------------------------------------
     //スキルコンポーネント(仮で連撃を付ける)の設定
     //----------------------------------------------
     auto combo_attack_comp = chara->AddComponent<ComponentComboAttack>();
     combo_attack_comp->SetConditionsForUseSkill(
         //ラムダ式を代入、vキーを押すとスキル仕様と割り当てる。
-        []() {
-            if(IsKeyOn(KEY_INPUT_V)) {
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_COMBO_ATTACK) {
                 return true;
             }
             return false;
         });
+
+    selected_skill_index_ = SKILL_FIREBALL;
+
     SetName(u8"プレイヤー");
 
     return true;
@@ -119,52 +121,16 @@ bool Player::Init()
 void Player::Update()
 {
     __super::Update();
-    //if(auto hp = GetComponent<ComponentStatus>())
-    //{
-    //	//死亡で
-    //	if(hp->IsDead())
-    //	{
-    //		return;
-    //	}
-    //}
-    ////下キーを押しているかつジャンプをしていないなら
-    //if(!GetComponent<ComponentLiftable>()->IsLifted())
-    //{
-    //	if(CheckHitKey(KEY_INPUT_DOWN) && GetComponent<ComponentJump>()->IsJumping() == false)
-    //	{
-    //		//ジャンプをできない状態にする
-    //		GetComponent<ComponentJump>()->SetEnable();
-    //		//高さを半径にする
-    //		neutralpos_ = SQUAT_TOP_POINT_;
-    //	}
-    //	//右のシフトキーを押しているかつジャンプをしていないなら
-    //	else if(CheckHitKey(KEY_INPUT_RSHIFT) && GetComponent<ComponentJump>()->IsJumping() == false)
-    //	{
-    //		//ジャンプをできない状態にする
-    //		GetComponent<ComponentJump>()->SetEnable();
-    //		//高さを半径にする
-    //		neutralpos_ = FACE_DOWN_TOP_POINT_;
-    //		//しゃがんでいると返す
-    //		is_face_down_ = true;
-    //	}
-    //	//上の状態でなかったら
-    //	else
-    //	{
-    //		//高さを半径の3倍にする
-    //		neutralpos_ = TOP_POINT_;
-    //		//しゃがんでいないと返す
-    //		is_face_down_ = false;
-    //	}
-    //}
-    //else
-    //{
-    //	//高さを半径の3倍にする
-    //	neutralpos_ = TOP_POINT_;
-    //	//しゃがんでいないと返す
-    //	is_face_down_ = false;
-    //}
-    ////コリジョンの高さの設定
-    //GetComponent<ComponentCollisionCapsule>()->SetHeight(RADIUS_ + neutralpos_);
+
+    // スキル選択（上下左右キー）
+    if(IsKeyOn(KEY_INPUT_UP))
+        selected_skill_index_ = SKILL_FIREBALL;
+    if(IsKeyOn(KEY_INPUT_RIGHT))
+        selected_skill_index_ = SKILL_DASH;
+    if(IsKeyOn(KEY_INPUT_DOWN))
+        selected_skill_index_ = SKILL_POISON;
+    if(IsKeyOn(KEY_INPUT_LEFT))
+        selected_skill_index_ = SKILL_COMBO_ATTACK;
 }
 
 //---------------------------------------------------------------------------------
@@ -172,19 +138,6 @@ void Player::Update()
 //---------------------------------------------------------------------------------
 void Player::Draw()
 {
-    //float3 sphire_pos = float3(GetTranslate() + float3(0.0f, neutralpos_, 0.0f));
-    //DrawSphere3D(cast(sphire_pos), RADIUS_, 16, WHITE, WHITE, TRUE);
-    //float3 cone_top	   = float3(sphire_pos.xyz);
-    //float3 rot		   = GetRotationAxisXYZ();
-    //float3 cone_bottom = float3(sphire_pos.x + (-5 * sinf(D2R(rot.y))), sphire_pos.y, sphire_pos.z + (-5 * cosf(D2R(rot.y))));
-    //DrawCone3D(cast(cone_bottom), cast(cone_top), RADIUS_, 16, WHITE, WHITE, TRUE);
-
-    ////うつ伏せの状態ではなかったら
-    //if(!is_face_down_)
-    //{
-    //	//身体を表示する
-    //	DrawCone3D(cast(sphire_pos), cast(GetTranslate()), RADIUS_, 16, WHITE, WHITE, TRUE);
-    //}
     __super::Draw();
 }
 

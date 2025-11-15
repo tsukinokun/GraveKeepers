@@ -50,6 +50,11 @@ public:
     //反発係数の取得
     //! @retval 反発係数の値
     float GetRestitution() const;
+
+    //質量を設定する
+    //! @param mass [in] 質量の値
+    void SetMass(float mass);
+
     //! @}
 
 private:

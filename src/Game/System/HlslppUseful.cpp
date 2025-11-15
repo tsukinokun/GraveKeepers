@@ -43,6 +43,24 @@ bool CheckBoxPointHit(const float2& box_pos, const float2& box_size, const float
 }
 
 //---------------------------------------------------------------------------
+//! @brief 円形に配置した座標を返す関数
+//---------------------------------------------------------------------------
+float3 GetPointOnCircle(const float3& center, float radius, int divisions, int index)
+{
+    if(divisions <= 0)
+        return center;    // 安全対策
+    // インデックスに対応する角度を計算
+    float theta = 2.0f * PI * index / divisions;
+
+    // y軸を固定し、x-z平面に円を描く
+    float x = center.x + radius * std::cos(theta);
+    float y = center.y;
+    float z = center.z + radius * std::sin(theta);
+
+    return float3(x, y, z);
+}
+
+//---------------------------------------------------------------------------
 // 複数の点の中心を求める関数
 //---------------------------------------------------------------------------
 float3 CalculateCenter(const std::vector<float3>& points)

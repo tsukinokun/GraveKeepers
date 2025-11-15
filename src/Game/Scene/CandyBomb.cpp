@@ -26,6 +26,8 @@ bool CandyBomb::Init()
     //block_col->UseGravity();
     // コリジョンの半径を設定
     candy_col->SetRadius(RADUIS_);
+    // 当たり判定グループを設定
+    candy_col->SetCollisionGroup(ComponentCollision::CollisionGroup::ITEM);
     collision_component_ = candy_col;
 
     //---------------------------------------------------------------------------------

@@ -123,5 +123,13 @@ float ComponentRigidbody::GetRestitution() const
 {
     return restitution_;
 }
+
+//---------------------------------------------------------------------------
+//! @brief  質量を設定する
+//---------------------------------------------------------------------------
+void ComponentRigidbody::SetMass(float mass)
+{
+    mass_ = mass;
+}
 CEREAL_REGISTER_TYPE(ComponentRigidbody)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentRigidbody)
