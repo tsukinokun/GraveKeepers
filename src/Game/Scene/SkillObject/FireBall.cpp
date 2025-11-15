@@ -51,34 +51,33 @@ void FireBall::Update()
             effect_changed_ = true;
 
             // 当たり後は物理力の付与など不要なので早期リターン
+            hit_pos_ = GetTranslate();
             return;
         }
 
-        // 生成直後に重力を無効化する例
-        if(auto rb = GetComponent<ComponentRigidbody>())
-            rb->SetUseGravity(false);
+        //位置を当たった位置に固定する
+        SetTranslate(hit_pos_);
     }
     else {
-        ////前方向を取得
-        ////リジッドボディを取得
-        //auto col			   = GetComponent<ComponentCollisionSphere>();	   //コリジョンを取得
-        //auto body			   = GetComponent<ComponentRigidbody>();		  //リジッドボディを追加
-
-        //float3 throw_impulse  = float3(0.0f, THROW_VIRTICAL_POWER_, 0.0f);	  //投げる力の初期化
-        //direction_.y		   += 180.0f;										//座標系の関係でyを180度回転する、オブジェクトの背中が正面
-
-        //body->SetMass(6.0f);	//物体の質量を設定
-
-        ////オーナーのy軸回転から、throw_impulse_のxとzを設定
-        //throw_impulse.x = -THROW_HORIZONTAL_POWER_ * sinf(D2R(direction_.y));
-        //throw_impulse.z = -THROW_HORIZONTAL_POWER_ * cosf(D2R(direction_.y));
-
-        //body->AddImpulse(throw_impulse);	//投げる力を加える
-        //col->SetEnableFlag(true);			//コリジョンを有効にする
-        //col->UseGravity();					//重力を使用する
+        //進行方向に力を加える
+        //剛体を取得
+        auto lift_rb = GetComponent<ComponentRigidbody>();
+        //投げる力を計算
+        float3 throw_impulse = float3(0.0f, throw_virtical_power_, 0.0f);
+        //オーナーのy軸回転から、throw_impulse_のxとzを設定
+        throw_impulse.x = -throw_horizontal_power_ * sinf(D2R(direction_.y));
+        throw_impulse.z = -throw_horizontal_power_ * cosf(D2R(direction_.y));
+        lift_rb->AddImpulse(throw_impulse);
+        //コリジョンを有効化して重力を使うようにする
+        auto lift_col = GetComponent<ComponentCollision>();
+        lift_col->SetEnableFlag(true);
+        lift_col->UseGravity();
     }
 }
 
+//---------------------------------------------------------------------------
+//! @brief	進行方向を設定
+//!	---------------------------------------------------------------------------
 void FireBall::SetDirection(float3 direction)
 {
     direction_ = direction;

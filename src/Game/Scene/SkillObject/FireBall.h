@@ -30,7 +30,7 @@ public:
 
 private:
     std::weak_ptr<ComponentCollisionSphere> collision_component_;    //!< 衝突判定用カプセルコンポーネント
-    const int                               ATTACK_DAMAGE_ = 4;      //!< 攻撃力
+    const int                               ATTACK_DAMAGE_ = 10;     //!< 攻撃力
     const float                             RADUIS_        = 2.0f;
 
     bool  is_hit_ = false;    //!< 当たったかどうかのフラグ
@@ -38,8 +38,10 @@ private:
 
     bool effect_changed_ = false;    //!< エフェクト変更フラグ
 
-    float THROW_VIRTICAL_POWER_   = 100.0f;    //垂直方向に投げる力
-    float THROW_HORIZONTAL_POWER_ = 300.0f;    //水平方向に投げる力
+    float throw_virtical_power_   = -50.0f;    //垂直方向に投げる力
+    float throw_horizontal_power_ = 50.0f;     //水平方向に投げる力
 
     float3 direction_ = 0.0f;    //!< 進行方向
+
+    float3 hit_pos_ = 0.0f;    //!< 当たった位置
 };
