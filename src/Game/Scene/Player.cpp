@@ -45,14 +45,14 @@ bool Player::Init()
         lift_comp->SetConditionsForLifting(
             //ラムダ式を代入
             []() {
-                if(IsKeyOn(KEY_INPUT_Z)) {
+                if(IsKeyOn(KEY_INPUT_RETURN)) {
                     return true;
                 }
                 return false;
             });
         lift_comp->SetConditionsForThrow(    //ラムダ式を代入
             []() {
-                if(IsKeyOn(KEY_INPUT_Z)) {
+                if(IsKeyOn(KEY_INPUT_RETURN)) {
                     return true;
                 }
                 return false;
@@ -64,8 +64,8 @@ bool Player::Init()
     auto fireball_comp = chara->AddComponent<ComponentFireBall>();
     fireball_comp->SetConditionsForUseSkill(
         //ラムダ式を代入、xキーを押すとスキル仕様と割り当てる。
-        []() {
-            if(IsKeyOn(KEY_INPUT_X)) {
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_FIREBALL) {
                 return true;
             }
             return false;
@@ -77,8 +77,8 @@ bool Player::Init()
     auto dash_comp = chara->AddComponent<ComponentDash>();
     dash_comp->SetConditionsForUseSkill(
         //ラムダ式を代入、Bキーを押すとスキル仕様と割り当てる。
-        []() {
-            if(IsKeyOn(KEY_INPUT_B)) {
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_DASH) {
                 return true;
             }
             return false;
@@ -89,23 +89,27 @@ bool Player::Init()
     auto poison_comp = chara->AddComponent<ComponentPoison>();
     poison_comp->SetConditionsForUseSkill(
         //ラムダ式を代入、cキーを押すとスキル仕様と割り当てる。
-        []() {
-            if(IsKeyOn(KEY_INPUT_C)) {
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_POISON) {
                 return true;
             }
             return false;
         });
+    //----------------------------------------------
     //スキルコンポーネント(仮で連撃を付ける)の設定
     //----------------------------------------------
     auto combo_attack_comp = chara->AddComponent<ComponentComboAttack>();
     combo_attack_comp->SetConditionsForUseSkill(
         //ラムダ式を代入、vキーを押すとスキル仕様と割り当てる。
-        []() {
-            if(IsKeyOn(KEY_INPUT_V)) {
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_COMBO_ATTACK) {
                 return true;
             }
             return false;
         });
+
+    selected_skill_index_ = SKILL_FIREBALL;
+
     SetName(u8"プレイヤー");
 
     return true;
@@ -117,6 +121,16 @@ bool Player::Init()
 void Player::Update()
 {
     __super::Update();
+
+    // スキル選択（上下左右キー）
+    if(IsKeyOn(KEY_INPUT_UP))
+        selected_skill_index_ = SKILL_FIREBALL;
+    if(IsKeyOn(KEY_INPUT_RIGHT))
+        selected_skill_index_ = SKILL_DASH;
+    if(IsKeyOn(KEY_INPUT_DOWN))
+        selected_skill_index_ = SKILL_POISON;
+    if(IsKeyOn(KEY_INPUT_LEFT))
+        selected_skill_index_ = SKILL_COMBO_ATTACK;
 }
 
 //---------------------------------------------------------------------------------

@@ -33,4 +33,14 @@ private:
 
     //float neutralpos_				 = TOP_POINT_;	  //円の位置の高さ
     //bool  is_face_down_				 = false;		  //うつ伏せの状態かを確認する用の変数
+
+    int selected_skill_index_ = 0;
+
+    enum
+    {
+        SKILL_FIREBALL = 0,
+        SKILL_DASH,
+        SKILL_POISON,
+        SKILL_COMBO_ATTACK,
+    };
 };
