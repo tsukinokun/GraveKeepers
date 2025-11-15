@@ -22,7 +22,7 @@ bool SceneCharaSelect::Init()
         //座標と注視点の設定
         cam_comp->SetPositionAndTarget({0, 20, 30}, {0, 10, 0});
     }
-    std::vector<std::shared_ptr<Object>> characters;    // キャラクターオブジェクト格納用
+    std::vector<std::weak_ptr<Object>> characters;    // キャラクターオブジェクト格納用
     //---------------------------------------------------------------------------------
     // 各キャラクターを作成
     //---------------------------------------------------------------------------------
@@ -108,9 +108,12 @@ bool SceneCharaSelect::Init()
     for(int i = 0; i < characters.size(); i++) {
         float3 center    = float3(0.0f, 0.0f, 0.0f);    // 円の中心
         float  radius    = 10.0f;                       // 円の半径
-        float3 translate = GetPointOnCircle(center, radius, characters.size(), i);
-        characters[i]->SetTranslate(translate);
+        float3 translate = GetPointOnCircle(center, radius, characters.size(), i, rad_display_offset_);
+        if(auto chara = characters[i].lock()) {
+            chara->SetTranslate(translate);
+        }
     }
+    manage_characters_ = characters;    // 管理用に保存
     return true;
 }
 
@@ -120,6 +123,42 @@ bool SceneCharaSelect::Init()
 void SceneCharaSelect::Update()
 {
     __super::Update();
+    //---------------------------------------------------------------------------------
+    // 入力処理
+    //---------------------------------------------------------------------------------
+    //右キーで右へ
+    if(IsKeyOn(KEY_INPUT_RIGHT)) {
+        selected_character_index_++;    // 次のキャラクターへ
+        // インデックスが範囲外なら最初に戻す
+        if(selected_character_index_ >= manage_characters_.size()) {
+            selected_character_index_ = 0;
+        }
+        // 角度のオフセットを更新
+        rad_offset_ -= 360.0f / static_cast<float>(manage_characters_.size());
+    }
+    //左キーで左へ
+    if(IsKeyOn(KEY_INPUT_LEFT)) {
+        selected_character_index_--;    // 前のキャラクターへ
+        // インデックスが範囲外なら最後に戻す
+        if(selected_character_index_ < 0) {
+            selected_character_index_ = static_cast<int>(manage_characters_.size()) - 1;
+        }
+        // 角度のオフセットを更新
+        rad_offset_ += 360.0f / static_cast<float>(manage_characters_.size());
+    }
+    //角度を滑らかに補間
+    rad_display_offset_ += (rad_offset_ - rad_display_offset_) * 0.1f;
+    //---------------------------------------------------------------------------------
+    // キャラクターを円形に配置
+    //---------------------------------------------------------------------------------
+    for(int i = 0; i < manage_characters_.size(); i++) {
+        float3 center    = float3(0.0f, 0.0f, 0.0f);    // 円の中心
+        float  radius    = 10.0f;                       // 円の半径
+        float3 translate = GetPointOnCircle(center, radius, manage_characters_.size(), i, rad_display_offset_);
+        if(auto chara = manage_characters_[i].lock()) {
+            chara->SetTranslate(translate);
+        }
+    }
 }
 
 //---------------------------------------------------------------------------------

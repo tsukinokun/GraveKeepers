@@ -34,9 +34,10 @@ bool CheckBoxPointHit(const float2& box_pos, const float2& box_size, const float
 //! @params center 円の中心座標
 //! @params radius 円の半径
 //! @params divisions 円周上の分割数
+//! @params angleOffset 角度のオフセット（度数）
 //! @params index 取得したい点のインデックス（0からdivisions-1まで）
 //---------------------------------------------------------------------------
-float3 GetPointOnCircle(const float3& center, float radius, int divisions, int index);
+float3 GetPointOnCircle(const float3& center, float radius, int divisions, int index, float angle_offset = 0.0f);
 //---------------------------------------------------------------------------
 // 複数の点の中心を求める関数
 //! @param points [in] 座標のベクター
