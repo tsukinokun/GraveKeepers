@@ -13,9 +13,9 @@ bool GameResult::Init()
     __super::Init();
 
     // リザルト背景画像の読み込み
-    result_back_graph = LoadGraph("data/PoyPoy/Image/Result.png");
+    result_back_graph_ = LoadGraph("data/PoyPoy/Image/Result.png");
     // 蜘蛛の巣画像の読み込み
-    spider_web_graph = LoadGraph("data/PoyPoy/Image/SpiderWeb.png");
+    spider_web_graph_ = LoadGraph("data/PoyPoy/Image/SpiderWeb.png");
 
     return true;
 }
@@ -41,14 +41,14 @@ void GameResult::Draw()
     __super::Draw();
 
     // リザルト背景画像を画面全体に描画
-    if(result_back_graph != -1) {
-        DrawExtendGraph(0, 0, WINDOW_W, WINDOW_H, result_back_graph, TRUE);
+    if(result_back_graph_ != -1) {
+        DrawExtendGraph(0, 0, WINDOW_W, WINDOW_H, result_back_graph_, TRUE);
     }
 
     // 蜘蛛の巣画像を画面の四隅に描画
-    if(spider_web_graph != -1) {
-        DrawExtendGraph(0, 0, 200, 200, spider_web_graph, TRUE);                      // 左上
-        DrawExtendGraph(WINDOW_W - 200, 0, WINDOW_W, 200, spider_web_graph, TRUE);    // 右上
+    if(spider_web_graph_ != -1) {
+        DrawExtendGraph(0, 0, 200, 200, spider_web_graph_, TRUE);                      // 左上
+        DrawExtendGraph(WINDOW_W - 200, 0, WINDOW_W, 200, spider_web_graph_, TRUE);    // 右上
     }
 
     // 文字のサイズを設定
@@ -83,15 +83,15 @@ void GameResult::Exit()
     __super::Exit();
 
     // リザルト背景画像の解放
-    if(result_back_graph != -1) {
-        DeleteGraph(result_back_graph);
-        result_back_graph = -1;
+    if(result_back_graph_ != -1) {
+        DeleteGraph(result_back_graph_);
+        result_back_graph_ = -1;
     }
 
     // 蜘蛛の巣画像の解放
-    if(spider_web_graph != -1) {
-        DeleteGraph(spider_web_graph);
-        spider_web_graph = -1;
+    if(spider_web_graph_ != -1) {
+        DeleteGraph(spider_web_graph_);
+        spider_web_graph_ = -1;
     }
 }
 
