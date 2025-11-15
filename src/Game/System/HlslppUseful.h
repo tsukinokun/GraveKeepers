@@ -29,7 +29,14 @@ bool CheckBoxCenterHit(const float2& box_pos1, const float2& box_size1, const fl
 //! @retval 当たっているかどうか
 //---------------------------------------------------------------------------
 bool CheckBoxPointHit(const float2& box_pos, const float2& box_size, const float2& point);
-
+//---------------------------------------------------------------------------
+// 円形に配置した座標を返す関数
+//! @params center 円の中心座標
+//! @params radius 円の半径
+//! @params divisions 円周上の分割数
+//! @params index 取得したい点のインデックス（0からdivisions-1まで）
+//---------------------------------------------------------------------------
+float3 GetPointOnCircle(const float3& center, float radius, int divisions, int index);
 //---------------------------------------------------------------------------
 // 複数の点の中心を求める関数
 //! @param points [in] 座標のベクター
