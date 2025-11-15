@@ -6,6 +6,9 @@
 #include "Camera.h"
 #include <System/Component/ComponentModel.h>
 #include <Game/System/HlslppUseful.h>
+#include <Game/Scene/UIObject/UIText.h>
+#include <Game/Scene/ScenePlay.h>
+#include <Game/System/GameRepository.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -33,7 +36,7 @@ bool SceneCharaSelect::Init()
         auto zombie = Scene::Object::Create<Object>();
         zombie->SetTranslate(float3(0.0f, 0.0f, 0.0f));
         zombie->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));
-        zombie->SetName(u8"ゾンビ");
+        zombie->SetName(u8"Zombie");
         //---------------------------------------------------------------------------------
         //モデルコンポーネントの設定
         //---------------------------------------------------------------------------------
@@ -52,7 +55,7 @@ bool SceneCharaSelect::Init()
         auto wolf = Scene::Object::Create<Object>();
         wolf->SetTranslate(float3(0.0f, 0.0f, 0.0f));
         wolf->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));
-        wolf->SetName(u8"狼男");
+        wolf->SetName(u8"Werewolf");
         //---------------------------------------------------------------------------------
         //モデルコンポーネントの設定
         //---------------------------------------------------------------------------------
@@ -71,7 +74,7 @@ bool SceneCharaSelect::Init()
         auto pumpkin = Scene::Object::Create<Object>();
         pumpkin->SetTranslate(float3(0.0f, 0.0f, 0.0f));
         pumpkin->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));
-        pumpkin->SetName(u8"カボチャ野郎");
+        pumpkin->SetName(u8"Pumpking");
         //---------------------------------------------------------------------------------
         //モデルコンポーネントの設定
         //---------------------------------------------------------------------------------
@@ -90,7 +93,7 @@ bool SceneCharaSelect::Init()
         auto witch = Scene::Object::Create<Object>();
         witch->SetTranslate(float3(0.0f, 0.0f, 0.0f));
         witch->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));
-        witch->SetName(u8"魔女っ子");
+        witch->SetName(u8"Witch");
         //---------------------------------------------------------------------------------
         //モデルコンポーネントの設定
         //---------------------------------------------------------------------------------
@@ -114,6 +117,15 @@ bool SceneCharaSelect::Init()
         }
     }
     manage_characters_ = characters;    // 管理用に保存
+    //---------------------------------------------------------------------------------
+    // エンターキーを押して選択できる旨を表示
+    //---------------------------------------------------------------------------------
+    {
+        auto ui_text = Scene::Object::Create<UIText>();
+        ui_text->SetTranslate(float3(20.0f, 50.0f, 0.0f));
+        ui_text->SetText("← → キーでキャラクターを選択、Spaceキーで決定");
+        ui_text->SetFontSize(24);
+    }
     return true;
 }
 
@@ -158,6 +170,16 @@ void SceneCharaSelect::Update()
         if(auto chara = manage_characters_[i].lock()) {
             chara->SetTranslate(translate);
         }
+    }
+    //---------------------------------------------------------------------------------
+    // エンターキーで決定してゲーム開始
+    //---------------------------------------------------------------------------------
+    if(IsKeyOn(KEY_INPUT_SPACE)) {
+        // 選択されたキャラクター名をリポジトリに保存
+        if(auto selected_chara = manage_characters_[selected_character_index_].lock()) {
+            GameRepository::Instance().SetSelectedCharacterName(selected_chara->GetNameDefault().data());
+        }
+        Scene::Change(Scene::GetScene<ScenePlay>());    //シーンの変更を行う処理
     }
 }
 

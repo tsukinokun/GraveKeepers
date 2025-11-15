@@ -4,6 +4,9 @@
 //---------------------------------------------------------------------------
 #include "GameTitle.h"
 #include "ScenePlay.h"
+#include "SceneCharaSelect.h"
+#include <Game/Scene/Character/CharacterFactory.h>
+#include <Game/System/GameRepository.h>
 
 //---------------------------------------------------------------------------------
 //! 初期化
@@ -14,6 +17,10 @@ bool GameTitle::Init()
 
     //背景画像の読み込み
     title_back_graph = LoadGraph("data/PoyPoy/Image/Title.png");
+
+    //シングルトンのインスタンスを生成しておく
+    GameRepository::Instance();
+    CharacterFactory::Instance();
 
     return true;
 }
@@ -27,7 +34,7 @@ void GameTitle::Update()
 
     //SPACEキーが押されたらゲーム画面に移行
     if(CheckHitKey(KEY_INPUT_SPACE)) {
-        Scene::Change(Scene::GetScene<ScenePlay>());    //シーンの変更を行う処理
+        Scene::Change(Scene::GetScene<SceneCharaSelect>());    //シーンの変更を行う処理
     }
 }
 
