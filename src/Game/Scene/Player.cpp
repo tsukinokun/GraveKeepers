@@ -19,6 +19,8 @@
 #include <System/SkillComponent/ComponentDash.h>
 #include <System/SkillComponent/ComponentPoison.h>
 #include <System/SkillComponent/ComponentComboAttack.h>
+#include <Game/Scene/Character/CharacterFactory.h>
+#include <Game/System/GameRepository.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -26,7 +28,10 @@
 bool Player::Init()
 {
     __super::Init();
-    auto chara = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
+    //----------------------------------------------
+    // 選択したキャラクター生成
+    //----------------------------------------------
+    auto chara = CharacterFactory::Instance().CreateCharacter(GameRepository::Instance().GetSelectedCharacterName());
     chara->SetTranslate(float3(20.0f, 1.0f, 20.0f));
     auto controll_comp = chara->AddComponent<ComponentObjectController>();
     controll_comp->SetMoveSpeed(chara->GetComponent<ComponentStatus>()->GetSpeed());
