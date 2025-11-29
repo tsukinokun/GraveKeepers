@@ -21,12 +21,17 @@ bool Witch::Init()
     __super::Init();
     if(auto model_comp = model_component_.lock()) {
         model_comp->Load("data/PoyPoy/Model/Character/Witch/Witch.mv1");
+        model_comp->SetAnimation({
+            { "idle",                 "data/PoyPoy/Model/Character/Witch/Anims/Idle.mv1", 0, 1.0f},
+            { "walk",              "data/PoyPoy/Model/Character/Witch/Anims/Walking.mv1", 0, 1.0f},
+            {"death", "data/PoyPoy/Model/Character/Witch/Anims/Death From The Front.mv1", 0, 1.0f},
+        });
     }
     if(auto status_comp = status_component_.lock()) {
         status_comp->SetHitPoints(HP_MAX_);
         status_comp->SetSpeed(MOVE_SPEED_);
     }
-    SetName(u8"魔女");
+    //SetName(u8"魔女");
     return true;
 }
 

@@ -44,10 +44,10 @@ public:
 private:
     std::function<bool()> conditions_jump_ = []() { return false; };    //ジャンプ条件
 
-    int   jump_frame_max_   = 60;       //何フレームジャンプするか
-    int   jump_frame_count_ = 0;        //ジャンプ中のフレーム
-    float jump_force_       = 100.0;    //ジャンプで足す値
-    float translate_hight_  = 0;        //実際にmatrixに入れる値
+    int   jump_frame_max_   = 60;      //何フレームジャンプするか
+    int   jump_frame_count_ = 0;       //ジャンプ中のフレーム
+    float jump_force_       = 6.3f;    //ジャンプで足す値
+    float translate_hight_  = 0;       //実際にmatrixに入れる値
 
     bool set_enable_ = false;    //ジャンプをできるかどうかの変数
 

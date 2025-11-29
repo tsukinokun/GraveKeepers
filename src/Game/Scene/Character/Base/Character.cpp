@@ -139,7 +139,13 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
         if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>()) {
             //触ったオブジェクトの速度が少しでもあれば
             if(length(hit_rb->GetVelocity()) > float1(1.0f)) {
-                GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
+                float3 vel_dir   = normalize(hit_rb->GetVelocity());
+                float3 pos_dir   = normalize(GetTranslate() - hit_owner->GetTranslate());
+                float3 knock_dir = normalize(0.7f * vel_dir + 0.3f * pos_dir);
+                float3 impulse   = knock_dir * length(hit_rb->GetVelocity());
+                GetComponent<ComponentRigidbody>()->AddImpulse(impulse);
+
+                //GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
                 int damage = static_cast<int>(hit_rb->GetMass());       //ダメージは当たったオブジェクトの質量に比例
                 GetComponent<ComponentStatus>()->TakeDamage(damage);    //ダメージを受ける
             }
