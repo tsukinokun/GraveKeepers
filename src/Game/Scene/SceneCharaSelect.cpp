@@ -81,7 +81,7 @@ bool SceneCharaSelect::Init()
         auto model_comp = pumpkin->AddComponent<ComponentModel>();
         model_comp->Load("data/PoyPoy/Model/Character/Pumpking/Pumpking.mv1");
         model_comp->SetAnimation({
-            {"walk", "data/PoyPoy/Model/Character/Pumpking/Anims/Running.mv1", 1, 1.0f},
+            {"walk", "data/PoyPoy/Model/Character/Pumpking/Anims/Walk.mv1", 1, 1.0f},
         });
         model_comp->PlayAnimation("walk", true);
         characters.push_back(pumpkin);
