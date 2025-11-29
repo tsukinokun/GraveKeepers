@@ -58,18 +58,16 @@ public:
     //! @}
 
 private:
-    float damping_ratio_ = 0.9f;    //減衰率、この値で毎フレームvelocity_にスケールをすることで速度を減衰させる。
+    std::chrono::time_point<std::chrono::steady_clock> prev_time_    = std::chrono::high_resolution_clock::now();
+    std::chrono::time_point<std::chrono::steady_clock> current_time_ = std::chrono::high_resolution_clock::now();
 
-    std::chrono::time_point<std::chrono::steady_clock> prev_time_    = std::chrono::high_resolution_clock::now();    //前フレームの時間
-    std::chrono::time_point<std::chrono::steady_clock> current_time_ = std::chrono::high_resolution_clock::now();    //現在の時間
-    float                                              mass_         = 15.0f;                                        //質量
-    static float3                                      gravity_;
-    float3                                             acceleration_ = float3(0.0f, 0.0f, 0.0f);    //加速度
-    float3                                             velocity_     = float3(0.0f, 0.0f, 0.0f);    //速度
-    bool                                               use_gravity_  = true;                        //重力を使用するか否か
-    float                                              drag_         = 15.0f;                       //空気抵抗
-    float                                              angular_drag_ = 0.0f;                        //回転抵抗
-    float                                              restitution_  = 0.5f;                        //反発係数
+    float         mass_ = 15.0f;                   // 質量
+    static float3 gravity_;                        // 重力加速度
+    float3        acceleration_ = float3(0.0f);    // 加速度
+    float3        velocity_     = float3(0.0f);    // 速度
+    bool          use_gravity_  = true;            // 重力を使用するか
+    float         drag_         = 1.0f;            // 空気抵抗係数
+    float         restitution_  = 0.5f;            // 反発係数
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

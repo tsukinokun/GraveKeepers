@@ -112,12 +112,18 @@ void FireBall::OnHit(const ComponentCollision::HitInfo& hit_info)
         //ヒットした相手方の剛体に力を加える
         if(auto other = hit_info.hit_collision_->GetOwner()) {
             if(auto other_rb = other->GetComponent<ComponentRigidbody>()) {
-                //自分から相手への方向ベクトルを計算
-                float3 direction = other->GetTranslate() - GetTranslate();
-                direction        = normalize(direction);
-                //力を加える
-                const float force_strength = 400.0f;
-                other_rb->AddImpulse(direction * force_strength);
+                float3 dir  = other->GetTranslate() - GetTranslate();
+                float  dist = length(dir);
+                if(dist > 0.001f) {
+                    dir.y = 0.5f;    //少し上方向にも力を加える
+                    dir   = normalize(dir);
+                }
+                else {
+                    dir = float3(0, 1, 0);    // fallback
+                }
+
+                // ノックバック
+                other_rb->AddImpulse(dir * 100.0f);
             }
         }
     }
