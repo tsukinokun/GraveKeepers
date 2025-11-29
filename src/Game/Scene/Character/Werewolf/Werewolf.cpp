@@ -21,6 +21,17 @@ bool Werewolf::Init()
     __super::Init();
     if(auto model_comp = model_component_.lock()) {
         model_comp->Load("data/PoyPoy/Model/Character/Werewolf/Werewolf.mv1");
+        model_comp->SetAnimation({
+            {          "idle",           "data/PoyPoy/Model/Character/Werewolf/Anims/Idle.mv1", 0, 1.0f}, //待機
+            {          "walk",           "data/PoyPoy/Model/Character/Werewolf/Anims/Walk.mv1", 0, 1.0f}, //歩き
+            {           "run",            "data/PoyPoy/Model/Character/Werewolf/Anims/Run.mv1", 0, 1.0f}, //走り
+            {         "death", "data/PoyPoy/Model/Character/Werewolf/Anims/DeathMotionLay.mv1", 0, 1.0f}, //死亡
+            {          "jump",           "data/PoyPoy/Model/Character/Werewolf/Anims/Jump.mv1", 0, 1.0f}, //ジャンプ
+            {"crouching_idle",  "data/PoyPoy/Model/Character/Werewolf/Anims/CrouchingIdle.mv1", 0, 1.0f}, //しゃがみ待機
+            {"crouching_walk",  "data/PoyPoy/Model/Character/Werewolf/Anims/CrouchingWalk.mv1", 0, 1.0f}, //しゃがみ歩き
+            { "crouching_run",   "data/PoyPoy/Model/Character/Werewolf/Anims/CrouchingRun.mv1", 0, 1.0f}, //しゃがみ走り
+            {     "low_crawl",       "data/PoyPoy/Model/Character/Werewolf/Anims/LowCrawl.mv1", 0, 1.0f}, //這いずり移動
+        });
     }
     if(auto status_comp = status_component_.lock()) {
         status_comp->SetHitPoints(HP_MAX_);
