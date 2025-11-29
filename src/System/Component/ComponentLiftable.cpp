@@ -67,6 +67,5 @@ std::shared_ptr<Character> ComponentLiftable::GetLiftCharacter()
 {
     return lift_character_.lock();
 }
-
 CEREAL_REGISTER_TYPE(ComponentLiftable)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentLiftable)

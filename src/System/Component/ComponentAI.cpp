@@ -10,6 +10,7 @@
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/State/StateDeath.h>
+#include <Game/Scene/Character/Base/Character.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化処理
@@ -36,8 +37,25 @@ void ComponentAI::Update()
     }
     float3 rot  = owner->GetRotationAxisXYZ();
     rot.y      += 180.0f;    //座標系の違いの関係で180度回転させる
+
     //持ち上げコンポーネント処理
     if(auto lift_comp = owner->GetComponent<ComponentLift>()) {
+        //持ち上げたフレームの処理
+        if(lift_comp->IsJustLifted()) {
+            auto                                    chara_array = Scene::Object::GetArray<Character>();
+            std::vector<std::shared_ptr<Character>> alive_chara_vec;
+            for(const auto& chara : chara_array) {
+                if(!chara->GetComponent<StateDeath>()) {
+                    //生きているならベクターに追加
+                    alive_chara_vec.push_back(chara);
+                }
+            }
+            std::random_device                 rd;                                     // 疑似乱数のソース
+            std::mt19937                       mt(rd());                               // メルセンヌ・ツイスタの宣言と初期化
+            std::uniform_int_distribution<int> dist(0, alive_chara_vec.size() - 1);    // 1から100で整数の一様分布を作る
+            int                                index = dist(mt);                       // 乱数を生成
+            target_object_                           = alive_chara_vec[index];         //ターゲットオブジェクトをプレイヤーに設定
+        }
         float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
         float3 most_near_vec      = float3(0.0f, 0.0f, 0.0f);             //一番近いオブジェクトのベクトル
         //持ち上げ中でない場合の処理
@@ -46,19 +64,30 @@ void ComponentAI::Update()
 
             //オブジェクトを取得
             for(auto obj : Scene::Object::GetArray<Object>()) {
-                if(!obj->GetComponent<ComponentLiftable>()) {
-                    continue;    //持ち上げられないオブジェクトはコンティニュー
+                if(auto liftable_comp = obj->GetComponent<ComponentLiftable>()) {
+                    //現在持ち上げられているオブジェクトの場合はコンティニュー
+                    if(liftable_comp->IsLifted()) {
+                        continue;
+                    }
+                }
+                else {
+                    continue;    //そもそも持ち上げられないオブジェクトはコンティニュー
                 }
                 if(obj->GetComponent<ComponentLift>()) {
                     continue;    //操作オブジェクト以外はコンティニュー
                 }
+                auto obj_name = obj->GetName();
                 if(owner->GetName() == obj->GetName()) {
                     continue;    //自分はコンティニュー
                 }
                 //オブジェクトとオーナーのベクトルを取得
                 float3 vec_owner_to_obj = obj->GetTranslate() - owner->GetTranslate();
+                float1 distance         = length(vec_owner_to_obj);
+                if(obj->GetNameDefault() == u8"キャンディー爆弾") {
+                    distance - 20.0f;    //キャンディー爆弾は少し補正をかける(遠くても拾いに行く)
+                }
                 //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、長さとそのベクトルを代入する
-                if(length(vec_owner_to_obj) < most_near_distance) {
+                if(distance < most_near_distance) {
                     most_near_distance = length(vec_owner_to_obj);
                     most_near_vec      = vec_owner_to_obj;
                 }
@@ -68,23 +97,34 @@ void ComponentAI::Update()
             //持ち上げ中の処理
             lift_time_count_ += delta_time;    //持ち上げ中なので、デルタタイムを加算
             //オブジェクトを取得
-            for(auto obj : Scene::Object::GetArray<Object>()) {
-                if(!obj->GetComponent<ComponentLift>()) {
-                    continue;    //持ち上げオブジェクト以外はコンティニュー
-                }
-                if(obj->GetComponent<StateDeath>()) {
-                    continue;    //死亡状態ならコンティニュー
-                }
-                if(owner->GetName() == obj->GetName()) {
-                    continue;    //自分はコンティニュー
-                }
-                //オブジェクトとオーナーのベクトルを取得
-                float3 vec_owner_to_obj = obj->GetTranslate() - owner->GetTranslate();
-                //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、長さとそのベクトルを代入する
-                if(length(vec_owner_to_obj) < most_near_distance) {
-                    most_near_distance = length(vec_owner_to_obj);
-                    most_near_vec      = vec_owner_to_obj;
-                }
+            //for(auto obj : Scene::Object::GetArray<Object>())
+            //{
+            //	if(!obj->GetComponent<ComponentLift>())
+            //	{
+            //		continue;	 //持ち上げオブジェクト以外はコンティニュー
+            //	}
+            //	if(obj->GetComponent<StateDeath>())
+            //	{
+            //		continue;	 //死亡状態ならコンティニュー
+            //	}
+            //	if(owner->GetName() == obj->GetName())
+            //	{
+            //		continue;	 //自分はコンティニュー
+            //	}
+            //	//オブジェクトとオーナーのベクトルを取得
+            //	float3 vec_owner_to_obj = obj->GetTranslate() - owner->GetTranslate();
+            //	//ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、長さとそのベクトルを代入する
+            //	if(length(vec_owner_to_obj) < most_near_distance)
+            //	{
+            //		most_near_distance = length(vec_owner_to_obj);
+            //		most_near_vec	   = vec_owner_to_obj;
+            //	}
+            //}
+            //オブジェクトとオーナーのベクトルを取得
+            if(auto target = target_object_.lock()) {
+                float3 vec_owner_to_obj = target->GetTranslate() - owner->GetTranslate();
+                most_near_distance      = length(vec_owner_to_obj);
+                most_near_vec           = vec_owner_to_obj;
             }
         }
         //----------------------------------------------------------------------------------

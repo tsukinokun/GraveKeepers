@@ -4,6 +4,8 @@
 
 USING_PTR(ComponentAI);
 
+class Character;    // 前方宣言
+
 //! @brief ジャンプ機能コンポーネント
 class ComponentAI : public Component
 {
@@ -30,9 +32,9 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> current_time_    = std::chrono::high_resolution_clock::now();    //現在の時間
     float                                              move_speed_      = 0.2f;
     float                                              rot_speed_       = 5.0f;
-
-    float3 dir_         = float3(0.0f, 0.0f, 1.0f);    //!<内部の方向
-    float3 display_dir_ = float3(0.0f, 0.0f, 1.0f);    //!< 表示方向
+    std::weak_ptr<Character>                           target_object_;                             //ターゲットオブジェクト
+    float3                                             dir_         = float3(0.0f, 0.0f, 1.0f);    //!<内部の方向
+    float3                                             display_dir_ = float3(0.0f, 0.0f, 1.0f);    //!< 表示方向
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

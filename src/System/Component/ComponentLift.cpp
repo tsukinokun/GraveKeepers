@@ -25,7 +25,8 @@ void ComponentLift::Init()
 void ComponentLift::Update()
 {
     __super::Update();
-    auto owner = GetOwnerPtr();
+    is_just_lifted_ = false;    //持ち上げたフレームか否かのフラグを初期化
+    auto owner      = GetOwnerPtr();
     if(auto hp = owner->GetComponent<ComponentStatus>()) {
         //死亡で
         if(hp->IsDead()) {
@@ -124,7 +125,8 @@ void ComponentLift::Update()
                 //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、監視対象オブジェクトを代入して、長さも代入する
                 if(length(vec_owner_to_obj) < most_near_distance) {
                     most_near_distance = length(vec_owner_to_obj);
-                    lift_object_       = obj;    //持ち上げオブジェクトを代入
+                    is_just_lifted_    = true;    //持ち上げたフレームフラグを立てる
+                    lift_object_       = obj;     //持ち上げオブジェクトを代入
                 }
             }
             if(auto obj = lift_object_.lock()) {
@@ -204,6 +206,14 @@ bool ComponentLift::IsLifting()
         return true;
     }
     return false;
+}
+
+//--------------------------------------------------------------------
+//! @brief 持ち上げたフレームならtrueを返す関数
+//--------------------------------------------------------------------
+bool ComponentLift::IsJustLifted()
+{
+    return is_just_lifted_;
 }
 
 CEREAL_REGISTER_TYPE(ComponentLift)
