@@ -62,7 +62,7 @@ bool SceneCharaSelect::Init()
         auto model_comp = wolf->AddComponent<ComponentModel>();
         model_comp->Load("data/PoyPoy/Model/Character/Werewolf/Werewolf.mv1");
         model_comp->SetAnimation({
-            {"walk", "data/PoyPoy/Model/Character/Werewolf/Anims/Orc Walk.mv1", 0, 1.0f},
+            {"walk", "data/PoyPoy/Model/Character/Werewolf/Anims/Walk.mv1", 0, 1.0f},
         });
         model_comp->PlayAnimation("walk", true);
         characters.push_back(wolf);
