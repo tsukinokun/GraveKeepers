@@ -37,8 +37,8 @@ bool CandyBomb::Init()
 
     auto model = GetComponent<ComponentModel>();
     model->SetScaleAxisXYZ(SCALE_);    //サイズの設定
-    //位置の設定（-DISTANCE_RANGE_からDISTANCE_RANGE_の間に設置）
-    SetTranslate(float3(GetRandomRangeF(-DISTANCE_RANGE_, DISTANCE_RANGE_), 0.0f, GetRandomRangeF(-DISTANCE_RANGE_, DISTANCE_RANGE_)));
+                                       //位置の設定（-DISTANCE_RANGE_からDISTANCE_RANGE_の間に設置）
+    SetTranslate(float3(GetRandomRangeF(-DISTANCE_RANGE_X, DISTANCE_RANGE_X), 0.0f, GetRandomRangeF(-DISTANCE_RANGE_Z_MINUS, DISTANCE_RANGE_Z_PLUS)));
 
     //---------------------------------------------------------------------------------
     //	剛体コンポーネント

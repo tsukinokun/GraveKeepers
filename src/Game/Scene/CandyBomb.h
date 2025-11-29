@@ -24,8 +24,11 @@ public:
 private:
     std::weak_ptr<ComponentLiftable>        liftable_component_;     //持ち上げコンポーネントの弱参照
     std::weak_ptr<ComponentCollisionSphere> collision_component_;    //コリジョンコンポーネントの弱参照
-    const float                             RADUIS_          = 2.0f;
-    const float                             SCALE_           = 0.3f;
-    const float                             DISTANCE_RANGE_  = 25.0f;
-    bool                                    has_been_lifted_ = false;    //一度でも持ち上げられたことがあるかを保持する関数
+    const float                             RADUIS_                = 2.0f;
+    const float                             SCALE_                 = 0.3f;
+    const float                             DISTANCE_RANGE_X       = 40.0f;
+    const float                             DISTANCE_RANGE_Z_MINUS = 25.5f;                             //Z方向の設置範囲(かぼちゃ方面)
+    const float                             DISTANCE_RANGE_Z_PLUS  = DISTANCE_RANGE_Z_MINUS + 10.0f;    //Z方向の設置範囲(かぼちゃ方面)
+
+    bool has_been_lifted_ = false;    //一度でも持ち上げられたことがあるかを保持する関数
 };
