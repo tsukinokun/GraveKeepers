@@ -3,6 +3,7 @@
 //! @brief	突進のコンポーネント
 //---------------------------------------------------------------------------
 #include "ComponentDash.h"
+#include <Game/Scene/SkillObject/Dash.h>
 #include <System/Component/ComponentEffect.h>
 
 //---------------------------------------------------------------------------
@@ -53,16 +54,20 @@ std::shared_ptr<ComponentSkill> ComponentDash::UseSkill()
 {
     __super::UseSkill();
     auto owner = GetOwner();
-    //ファイルパス
-    const std::string eff_name = "data/PoyPoy/Effect/Dash/Simple_SpawnMethod1.efkefc";
-    //高さの値は仮、後に持ち上げているオブジェクトの位置に変更するはず。
-    const float3 pos    = owner->GetTranslate() + float3(0.0f, 10.0f, 0.0f);
-    auto         effect = ComponentEffect::Object::Create(eff_name, pos);
-    //大きさを変える
-    effect->SetScaleAxisXYZ(SCALE_);
 
+    //---------------------------------------------------------------------------
+    // スキルオブジェクトの生成
+    //---------------------------------------------------------------------------
+    auto dash = Scene::Object::Create<Dash>();    //突進オブジェクトを生成
+    dash->SetSkillOwnerName(owner->GetName());    //スキル使用者の名前を
+
+    //高さの値は仮、後に持ち上げているオブジェクトの位置に変更するはず。
+    const float3 pos = owner->GetTranslate() + float3(0.0f, 10.0f, 0.0f);
+    dash->SetTranslate(pos);
+    //大きさを変える
+    dash->SetScaleAxisXYZ(SCALE_);
     //プレイヤーの向きに合わせる
-    effect->SetRotationAxisXYZ(owner_->GetRotationAxisXYZ());
+    dash->SetRotationAxisXYZ(owner_->GetRotationAxisXYZ());
     //自身のポインタを変換
     return dynamic_pointer_cast<ComponentSkill>(shared_from_this());
 }
