@@ -111,12 +111,29 @@ void ScenePlay::Update()
     auto delta_time   = current_time - previous_time_;
     previous_time_    = current_time;
 
+    int allive_count = 0;
+    for(int i = 0; i < CHARACTER_ALL; i++) {
+        //キャラクター名からキャラを取得し、
+        std::string chara_name = "Character";
+        //二体目以降の命名規則
+        if(i != 0) {
+            chara_name += "_" + std::to_string(i);
+        }
+        if(auto chara = Scene::Object::Get<Object>(chara_name)) {
+            //chara->GetComponent<ComponentStatus>()->GetHitPoints();	   //キャラのHPをUIに反映
+
+            if(chara->GetComponent<ComponentStatus>()->IsDead() == false) {
+                allive_count++;
+            }
+        }
+    }
+
     //---------------------------------------------------------------------------------
     //	タイマー処理
     //---------------------------------------------------------------------------------
     // タイマーを減算（カウントダウン）
     TIMER_COUNT_ -= std::chrono::duration<float>(delta_time).count();
-    if(TIMER_COUNT_ < 0.0f) {
+    if(TIMER_COUNT_ < 0.0f || allive_count < 2) {
         TIMER_COUNT_ = 0.0f;
         Scene::Change(Scene::GetScene<GameResult>());    //シーンの変更を行う処理
     }
