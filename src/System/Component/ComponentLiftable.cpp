@@ -17,9 +17,9 @@ void ComponentLiftable::Init()
     // ラムダ式にヒット時のコールバックを
     //---------------------------------------------------------------------------
     OnHitComponentFunc = [this](const HitInfo& hit_info) {
-        auto hit_owner = hit_info.collision_->GetOwnerPtr();
+        auto hit_owner = hit_info.hit_collision_->GetOwner();
         //地面に当たったら
-        if(hit_owner->GetNameDefault() == "Field") {
+        if(hit_owner->GetNameDefault() == u8"Field") {
             can_be_lifted_ = true;    //もう一度持ち上げ可能にする
         }
     };

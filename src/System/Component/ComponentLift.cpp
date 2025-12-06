@@ -82,8 +82,8 @@ void ComponentLift::Update()
                 }
                 //持ち上げられ機能コンポーネントを取得
                 if(auto lift1able_comp = obj->GetComponent<ComponentLiftable>()) {
-                    //オブジェクトが持ち上げられ中ならコンティニュー
-                    if(obj->GetComponent<ComponentLiftable>()->CanBeLifted()) {
+                    //オブジェクトが利用できないならコンティニュー
+                    if(!obj->GetComponent<ComponentLiftable>()->CanBeLifted()) {
                         continue;
                     }
                 }
