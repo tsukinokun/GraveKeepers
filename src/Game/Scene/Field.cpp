@@ -14,9 +14,9 @@ bool Field::Init()
 {
     __super::Init();
     SetName(u8"Field");
-    //フィールドの読み込み（仮で山口先生の素材を入れている）
+    //フィールドの読み込み
     auto model_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/stage.mv1");
-    AddComponent<ComponentCollisionModel>()->AttachToModel();    //< GUIでの 「モデルにコリジョンを張り付ける」動作
+    AddComponent<ComponentCollisionModel>()->AttachToModel();
     //座標の設定
     SetTranslate({0, -1, 0});
     //回転
@@ -24,7 +24,9 @@ bool Field::Init()
     //モデルを１０倍している
     SetScaleAxisXYZ(1.0f);
     auto sky2_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/Background.mv1");
+    //座標を後ろに
     sky2_comp->SetTranslate({0, -400, 500});
+    //スケールの調整
     sky2_comp->SetScaleAxisXYZ(0.8f);
 
     return true;
