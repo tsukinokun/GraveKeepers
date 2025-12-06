@@ -20,6 +20,7 @@
 #include "Wall.h"
 #include "CandyBomb.h"
 #include "Sky.h"
+#include "GameResult.h"
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -117,6 +118,7 @@ void ScenePlay::Update()
     TIMER_COUNT_ -= std::chrono::duration<float>(delta_time).count();
     if(TIMER_COUNT_ < 0.0f) {
         TIMER_COUNT_ = 0.0f;
+        Scene::Change(Scene::GetScene<GameResult>());    //シーンの変更を行う処理
     }
     // 分と秒に変換（ゼロ埋め付き表示）
     int minutes = static_cast<int>(TIMER_COUNT_) / 60;
