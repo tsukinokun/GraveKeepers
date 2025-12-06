@@ -44,3 +44,10 @@ float3 GetPointOnCircle(const float3& center, float radius, int divisions, int i
 //! @retval 中心座標
 //---------------------------------------------------------------------------
 float3 CalculateCenter(const std::vector<float3>& points);
+
+//---------------------------------------------------------------------------
+// ワールド座標をスクリーン座標に変換する関数
+//! @param world_position [in] ワールド座標
+//! @retval スクリーン上のピクセルの座標
+//---------------------------------------------------------------------------
+float2 WorldPositionToScreenPosition(const float3& world_position);
