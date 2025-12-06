@@ -114,10 +114,21 @@ void ComponentLift::Update()
                 float obj_to_owner_dot = dot(owner_front, normalize_vec);
                 //内積から角度を求める
                 float rad = acosf(obj_to_owner_dot);
-                //角度が持ち上げ可能角度におさまっていなければ
-                if(rad > D2R(lift_angle_)) {
-                    continue;    //コンティニュー
+
+                // 真上・真下方向ベクトル
+                float3 up       = float3(0.0f, 1.0f, 0.0f);
+                float3 down     = float3(0.0f, -1.0f, 0.0f);
+                float  up_dot   = dot(up, normalize_vec);
+                float  down_dot = dot(down, normalize_vec);
+
+                // 真上・真下に近い場合は特別に許容
+                if(up_dot > 0.8f || down_dot > 0.8f) {
+                    //角度が持ち上げ可能角度におさまっていなければ
+                    if(rad > D2R(lift_angle_)) {
+                        continue;    //コンティニュー
+                    }
                 }
+
                 //ベクトルの長さが持ち上げられる範囲を超えていたら
                 if(length(vec_owner_to_obj) > float1(lift_distance_)) {
                     continue;    //コンティニュー
