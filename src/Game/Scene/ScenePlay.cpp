@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 //!	@file	ScenePlay.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
@@ -16,11 +16,11 @@
 #include "Camera.h"
 #include "Field.h"
 #include "Block.h"
-#include "UFO.h"
 #include "Wall.h"
-#include "CandyBomb.h"
 #include "Sky.h"
 #include "GameResult.h"
+#include "BombObject/CreateBomb.h"
+
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -50,13 +50,9 @@ bool ScenePlay::Init()
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
         auto block = Scene::Object::Create<Block>();
     }
-
-    for(int i = 0; i < CANDYBOMB_NUM_MAX_; i++) {
-        auto candybomb = Scene::Object::Create<CandyBomb>();
-    }
-
-    auto ufo = Scene::Object::Create<UFO>();
-
+  
+    auto candybomb = Scene::Object::Create<CreateBomb>();
+    
     auto camera = Scene::Object::Create<Camera>();
 
     //四方向に壁を生成
@@ -120,9 +116,7 @@ void ScenePlay::Update()
             chara_name += "_" + std::to_string(i);
         }
         if(auto chara = Scene::Object::Get<Object>(chara_name)) {
-            //chara->GetComponent<ComponentStatus>()->GetHitPoints();	   //キャラのHPをUIに反映
-
-            if(chara->GetComponent<ComponentStatus>()->IsDead() == false) {
+              if(chara->GetComponent<ComponentStatus>()->IsDead() == false) {
                 allive_count++;
             }
         }

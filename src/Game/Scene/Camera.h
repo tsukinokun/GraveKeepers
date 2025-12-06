@@ -14,4 +14,6 @@ public:
 
     //@}
     bool Init() override;    //!< 初期化
+
+private:
 };
