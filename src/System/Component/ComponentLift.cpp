@@ -149,9 +149,10 @@ void ComponentLift::Update()
                     liftable_comp->SetLiftCharacter(dynamic_pointer_cast<Character>(owner));    //持ち上げているキャラクターをセット
                     liftable_comp->SetCannotBeLifted();                                         //持ち上げ不可にしておく
                 }
-                auto lift_col = obj->GetComponent<ComponentCollision>();
-                lift_col->SetEnableFlag(false);
-                lift_col->UseGravity(false);
+                if(auto lift_col = obj->GetComponent<ComponentCollision>()) {
+                    lift_col->SetEnableFlag(false);
+                    lift_col->UseGravity(false);
+                }
             }
             return;
         }

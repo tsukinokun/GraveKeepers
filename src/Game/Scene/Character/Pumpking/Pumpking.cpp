@@ -37,6 +37,7 @@ bool Pumpking::Init()
     if(auto status_comp = status_component_.lock()) {
         status_comp->SetHitPoints(HP_MAX_);
         status_comp->SetSpeed(MOVE_SPEED_);
+        status_comp->SetAttackPoints(ATTACK_POWER_);
     }
     //SetName(u8"狼男");
     return true;
