@@ -17,6 +17,8 @@ public:
     //@
     bool Init() override;    //!< 初期化
 
+    void Update() override;    //!< 更新
+
     //当たり判定のコールバック関数
     //! @param hit_info [in] ヒットした相手側の情報
     void OnHit(const ComponentCollision::HitInfo& hit_info) override;
@@ -31,4 +33,6 @@ private:
     const float                             DISTANCE_RANGE_Z_PLUS  = DISTANCE_RANGE_Z_MINUS + 10.0f;    //Z方向の設置範囲(かぼちゃ方面)
 
     bool has_been_lifted_ = false;    //一度でも持ち上げられたことがあるかを保持する関数
+    //上昇する
+    bool is_rising_ = true;
 };

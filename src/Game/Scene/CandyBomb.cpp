@@ -19,16 +19,16 @@ bool CandyBomb::Init()
 
     SetName(u8"キャンディー爆弾");
 
-    //---------------------------------------------------------------------------------
-    //球のコリジョンをアタッチ（モデルの形通りにするとすり抜けたため形通りにはしていません）
-    //---------------------------------------------------------------------------------
-    auto candy_col = AddComponent<ComponentCollisionSphere>();
-    //block_col->UseGravity();
-    // コリジョンの半径を設定
-    candy_col->SetRadius(RADUIS_);
-    // 当たり判定グループを設定
-    candy_col->SetCollisionGroup(ComponentCollision::CollisionGroup::ITEM);
-    collision_component_ = candy_col;
+    ////---------------------------------------------------------------------------------
+    ////球のコリジョンをアタッチ（モデルの形通りにするとすり抜けたため形通りにはしていません）
+    ////---------------------------------------------------------------------------------
+    //auto candy_col = AddComponent<ComponentCollisionSphere>();
+    ////block_col->UseGravity();
+    //// コリジョンの半径を設定
+    //candy_col->SetRadius(RADUIS_);
+    //// 当たり判定グループを設定
+    //candy_col->SetCollisionGroup(ComponentCollision::CollisionGroup::ITEM);
+    //collision_component_ = candy_col;
 
     //---------------------------------------------------------------------------------
     //	モデルコンポーネント
@@ -38,12 +38,15 @@ bool CandyBomb::Init()
     auto model = GetComponent<ComponentModel>();
     model->SetScaleAxisXYZ(SCALE_);    //サイズの設定
                                        //位置の設定（-DISTANCE_RANGE_からDISTANCE_RANGE_の間に設置）
-    SetTranslate(float3(GetRandomRangeF(-DISTANCE_RANGE_X, DISTANCE_RANGE_X), 0.0f, GetRandomRangeF(-DISTANCE_RANGE_Z_MINUS, DISTANCE_RANGE_Z_PLUS)));
+    SetTranslate(float3(
+        GetRandomRangeF(-DISTANCE_RANGE_X, DISTANCE_RANGE_X), GetRandomRangeF(-5.0f, -2.0f), GetRandomRangeF(-DISTANCE_RANGE_Z_MINUS, DISTANCE_RANGE_Z_PLUS)));
 
     //---------------------------------------------------------------------------------
     //	剛体コンポーネント
     //---------------------------------------------------------------------------------
     auto rb = AddComponent<ComponentRigidbody>();
+
+    rb->SetUseGravity(false);    //重力を使用しない
     //---------------------------------------------------------------------------------
     //	持ち上げられ機能コンポーネント
     //---------------------------------------------------------------------------------
@@ -61,6 +64,38 @@ bool CandyBomb::Init()
     };
     SetProc("check_has_been_lifted", check_has_been_lifted, ProcTiming::Update, ProcPriority::NONE);
     return true;
+}
+
+void CandyBomb::Update()
+{
+    __super::Update();
+    auto pos = GetTranslate();
+    //一定の高さまで上昇
+    if(!is_rising_) {
+        return;
+    }
+    pos.y += 0.1f;
+
+    if(pos.y > 0.0f) {
+        pos.y = 0.0f;
+        //一定の高さまで行ったらストップ
+        is_rising_ = false;
+        //---------------------------------------------------------------------------------
+        //球のコリジョンをアタッチ（モデルの形通りにするとすり抜けたため形通りにはしていません）
+        //---------------------------------------------------------------------------------
+        auto candy_col = AddComponent<ComponentCollisionSphere>();
+        //block_col->UseGravity();
+        // コリジョンの半径を設定
+        candy_col->SetRadius(RADUIS_);
+        candy_col->SetTranslate(float3(0.0f, RADUIS_, 0.0f));    //コリジョンの位置を調整
+        // 当たり判定グループを設定
+        candy_col->SetCollisionGroup(ComponentCollision::CollisionGroup::ITEM);
+        collision_component_ = candy_col;
+
+        auto rb = GetComponent<ComponentRigidbody>();
+        rb->SetUseGravity(true);    //重力を使用する
+    }
+    SetTranslate(pos);
 }
 
 //---------------------------------------------------------------------------------
