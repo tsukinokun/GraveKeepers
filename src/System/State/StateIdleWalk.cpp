@@ -8,6 +8,7 @@
 #include <System/Component/ComponentSpringArm.h>
 #include <System/Component/ComponentModel.h>
 #include <System/Component/ComponentStatus.h>
+#include <System/Component/ComponentLiftable.h>
 
 void StateIdleWalk::Init()
 {
@@ -30,7 +31,20 @@ void StateIdleWalk::Update()
     float3 diff = curr_pos - prev_pos_;
     //前フレームから移動しているなら歩き状態
     if(float1(0.01f) < dot(diff, diff)) {
-        model->PlayAnimationNoSame("walk", true);
+        if(auto idle = owner->GetComponent<ComponentLiftable>()) {
+            //現在持ち上げられているオブジェクトの場合
+            if(idle->IsLifted()) {
+                //アイドル状態にする
+                model->PlayAnimationNoSame("idle", true);
+                owner->SetRotationAxisXYZ(90);    //回転
+            }
+            else {
+                model->PlayAnimationNoSame("walk", true);
+                owner->SetRotationAxisXYZ(0);    //回転をもとに戻す
+            }
+        }
+
+        //model->PlayAnimationNoSame("walk", true);
     }
     else {
         model->PlayAnimationNoSame("idle", true);
