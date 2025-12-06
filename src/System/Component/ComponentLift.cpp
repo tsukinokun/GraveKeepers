@@ -80,12 +80,15 @@ void ComponentLift::Update()
                 if(!CheckLiftObjName(def_name.data())) {
                     continue;
                 }
-                //ComponentLiftableがついていなかったらコンティニュー
-                if(!obj->GetComponent<ComponentLiftable>()) {
-                    continue;
+                //持ち上げられ機能コンポーネントを取得
+                if(auto lift1able_comp = obj->GetComponent<ComponentLiftable>()) {
+                    //オブジェクトが持ち上げられ中ならコンティニュー
+                    if(obj->GetComponent<ComponentLiftable>()->CanBeLifted()) {
+                        continue;
+                    }
                 }
-                //オブジェクトが持ち上げられ中ならコンティニュー
-                if(obj->GetComponent<ComponentLiftable>()->IsLifted()) {
+                else {
+                    //ComponentLiftableがついていなかったらコンティニュー
                     continue;
                 }
                 //オーナーが持ち上げられ中なら持ち上げない
@@ -142,8 +145,9 @@ void ComponentLift::Update()
             }
             if(auto obj = lift_object_.lock()) {
                 if(auto liftable_comp = obj->GetComponent<ComponentLiftable>()) {
-                    liftable_comp->SetLiftedFlag(true);
-                    liftable_comp->SetLiftCharacter(dynamic_pointer_cast<Character>(owner));
+                    liftable_comp->SetLiftedFlag(true);                                         //持ち上げ中にする
+                    liftable_comp->SetLiftCharacter(dynamic_pointer_cast<Character>(owner));    //持ち上げているキャラクターをセット
+                    liftable_comp->SetCannotBeLifted();                                         //持ち上げ不可にしておく
                 }
                 auto lift_col = obj->GetComponent<ComponentCollision>();
                 lift_col->SetEnableFlag(false);

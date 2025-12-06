@@ -20,6 +20,9 @@
 #include <sstream>
 #include <string>
 
+// ※シーン項目に追加する場合は更新が必要となります
+constexpr int SCENE_VERSION = 1;
+
 class Scene
 {
 public:
@@ -28,16 +31,18 @@ public:
     using BasePtrVec = std::vector<BasePtr>;
     using BasePtrMap = std::unordered_map<std::string, BasePtr>;
 
-    //---------------------------------------------------------------------------
-    //! シーンステータス
-    //---------------------------------------------------------------------------
-    enum struct StatusBit : u64
-    {
-        Initialized,            //!< 初期化済み
-        Serialized,             //!< シリアライズ済み.
-        AliveInAnotherScene,    //!< 別シーン移行でも終了しない
-    };
-
+#if 0
+	//---------------------------------------------------------------------------
+	//! シーンステータス
+	//---------------------------------------------------------------------------
+	enum struct StatusBit : u64
+	{
+		Initialized,			//!< 初期化済み
+		Serialized,				//!< シリアライズ済み.
+		AliveInAnotherScene,	//!< 別シーン移行でも終了しない
+		NoSerialize,			//!< シリアライズしない.
+	};
+#endif
     //---------------------------------------------------------------------------
     // シグナル
     //---------------------------------------------------------------------------
@@ -57,6 +62,12 @@ public:
         virtual ~Base();
 
         const std::string_view GetName() const { return typeInfo()->className(); }
+
+        const std::string GetGUIName() const
+        {
+            std::string name = "Scene : " + std::string(current_scene_->typeInfo()->className());
+            return name;
+        }
 
         //----------------------------------------------------------------------
         //! @name ユーザー処理
@@ -180,6 +191,7 @@ public:
             Initialized,            //!< 初期化済み
             Serialized,             //!< シリアライズ済み.
             AliveInAnotherScene,    //!< 別シーン移行でも終了しない
+            NoSerialize,            //!< シリアライズしない.
         };
 
         void SetStatus(StatusBit b, bool on) { on ? status_.on(b) : status_.off(b); }
@@ -242,6 +254,8 @@ public:
         ObjectPtrVec      pre_objects_;    //!< シーンに存在させるオブジェクト(仮登録)
         ObjectPtrVec      objects_;        //!< シーンに存在するオブジェクト
         Status<StatusBit> status_;         //!< 状態
+
+        int version_ = SCENE_VERSION;
 
         // プロセスタイミングによるシグナル (実行処理)
         std::array<SignalsDefault, static_cast<int>(ProcTiming::NUM)> signals_;
@@ -378,6 +392,12 @@ public:
 
         static void Release(ObjectPtr obj);
 
+        template <class T>
+        static void Release(std::vector<std::shared_ptr<T>> objs)
+        {
+            for(auto& obj : objs) Scene::Object::Release(obj);
+        }
+
         //! @brief オブジェクトサーチ&取得
         //! @tparam T 取得したいオブジェクトタイプ
         //! @param name 取得したいオブジェクトの名前
@@ -412,6 +432,7 @@ public:
     //! @param update 処理優先
     //! @param draw 描画優先
     template <class T>
+    [[deprecated("削除予定関数です　Scene::Object::Create() を利用してください")]]
     static std::shared_ptr<T>    //
     CreateObjectPtr(const std::string_view name         = u8"object",
                     bool                   no_transform = false,
@@ -427,6 +448,7 @@ public:
     //! @param update 処理優先
     //! @param draw 描画優先
     template <class T>
+    [[deprecated("削除予定関数です　Scene::Object::CreateDelayInitialize() を利用してください")]]
     static std::shared_ptr<T> CreateObjectDelayInitialize(const std::string_view name         = u8"object",
                                                           bool                   no_transform = false,
                                                           ProcPriority           update       = ProcPriority::NORMAL,
@@ -436,14 +458,17 @@ public:
     }
 
     template <class T>
+    [[deprecated("削除予定関数です　Scene::Object::Release() を利用してください")]]
     static void ReleaseObject()
     {
         auto obj = current_scene_->GetObjectPtr<T>();
         current_scene_->Unregister(obj);
     }
 
+    [[deprecated("削除予定関数です　Scene::Object::Release() を利用してください")]]
     static void ReleaseObject(std::string_view name = "");
 
+    [[deprecated("削除予定関数です　Scene::Object::Release() を利用してください")]]
     static void ReleaseObject(ObjectPtr obj);
 
     //@}
@@ -635,6 +660,9 @@ std::shared_ptr<T> Scene::Base::GetObjectPtr(const std::string_view name)
 {
     if(name.empty()) {
         for(auto& obj : objects_) {
+            if(!obj->GetStatus(::Object::StatusBit::Alive))
+                continue;
+
             auto cast = std::dynamic_pointer_cast<T>(obj);
 
             if(cast)
@@ -643,6 +671,9 @@ std::shared_ptr<T> Scene::Base::GetObjectPtr(const std::string_view name)
     }
     else {
         for(auto& obj : objects_) {
+            if(!obj->GetStatus(::Object::StatusBit::Alive))
+                continue;
+
             if(name.compare(obj->GetNameDefault()) == 0) {
                 auto cast = std::dynamic_pointer_cast<T>(obj);
 
@@ -651,6 +682,9 @@ std::shared_ptr<T> Scene::Base::GetObjectPtr(const std::string_view name)
             }
         }
         for(auto& obj : objects_) {
+            if(!obj->GetStatus(::Object::StatusBit::Alive))
+                continue;
+
             if(name.compare(obj->GetName()) == 0) {
                 auto cast = std::dynamic_pointer_cast<T>(obj);
 
@@ -661,6 +695,9 @@ std::shared_ptr<T> Scene::Base::GetObjectPtr(const std::string_view name)
 
         // 作成前Objectも検査する
         for(auto& obj : pre_objects_) {
+            if(!obj->GetStatus(::Object::StatusBit::Alive))
+                continue;
+
             if(name.compare(obj->GetNameDefault()) == 0) {
                 auto cast = std::dynamic_pointer_cast<T>(obj);
 
@@ -669,6 +706,9 @@ std::shared_ptr<T> Scene::Base::GetObjectPtr(const std::string_view name)
             }
         }
         for(auto& obj : pre_objects_) {
+            if(!obj->GetStatus(::Object::StatusBit::Alive))
+                continue;
+
             if(name.compare(obj->GetName()) == 0) {
                 auto cast = std::dynamic_pointer_cast<T>(obj);
 
@@ -691,6 +731,9 @@ std::vector<std::shared_ptr<T>> Scene::Base::GetObjectsPtr(const std::string_vie
 
     if(name == "") {
         for(auto& obj : objects_) {
+            if(!obj->GetStatus(::Object::StatusBit::Alive))
+                continue;
+
             auto cast = std::dynamic_pointer_cast<T>(obj);
             if(cast)
                 objects.push_back(cast);
@@ -698,6 +741,9 @@ std::vector<std::shared_ptr<T>> Scene::Base::GetObjectsPtr(const std::string_vie
     }
     else {
         for(auto& obj : objects_) {
+            if(!obj->GetStatus(::Object::StatusBit::Alive))
+                continue;
+
             if(obj->GetNameDefault() == name) {
                 auto cast = std::dynamic_pointer_cast<T>(obj);
                 if(cast)
@@ -713,7 +759,7 @@ std::shared_ptr<T> Scene::Base::GetObjectPtrWithCreate(const std::string_view na
 {
     std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(Scene::GetCurrentScene()->GetObjectPtr<T>(name));
     if(ptr == nullptr) {
-        ptr = std::dynamic_pointer_cast<T>(Scene::CreateObjectPtr<T>()->SetName(std::string(name)));
+        ptr = std::dynamic_pointer_cast<T>(Scene::Object::Create<T>()->SetName(std::string(name)));
     }
     return ptr;
 }

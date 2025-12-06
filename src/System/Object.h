@@ -239,19 +239,21 @@ public:
     //! オブジェクトステータスビット
     enum struct StatusBit : u64
     {
-        Alive = 0,       //!< 生存状態
-        ChangePrio,      //!< プライオリティの変更中
-        ShowGUI,         //!< GUI表示中
-        Initialized,     //!< 初期化終了
-        NoUpdate,        //!< Updateしない
-        NoDraw,          //!< Drawしない
-        DisablePause,    //!< ポーズ不可
-        IsPause,         //!< ポーズ中
-        Exited,          //!< 終了呼び出し済み.
-        Serialized,      //!< シリアライズ済み.
-        CalledGUI,       //!< GUIが正しく呼ばれた.
-        Located,         //!< 配置されている.
-        TempRegistr,     //!< 仮登録状態.
+        Alive = 0,            //!< 生存状態
+        ChangePrio,           //!< プライオリティの変更中
+        ShowGUI,              //!< GUI表示中
+        Initialized,          //!< 初期化終了
+        NoUpdate,             //!< Updateしない
+        NoDraw,               //!< Drawしない
+        DisablePause,         //!< ポーズ不可
+        IsPause,              //!< ポーズ中
+        Exited,               //!< 終了呼び出し済み.
+        Serialized,           //!< シリアライズ済み.
+        CalledGUI,            //!< GUIが正しく呼ばれた.
+        Located,              //!< 配置されている.
+        TempRegistr,          //!< 仮登録状態.
+        NoSerialize,          //!< シリアライズしない.
+        OnHitAllComponent,    //!< コリジョン以外のコンポーネントすべてに当たりを返す
     };
 
     void SetStatus(StatusBit b, bool on);    //!< ステータスの設定
@@ -316,7 +318,7 @@ public:
     virtual void OnHit([[maybe_unused]] const ComponentCollision::HitInfo& hit_info)
     {
         if(auto cmp = GetComponent<ComponentTransform>()) {
-            cmp->AddTranslate(hit_info.push_);
+            cmp->AddTranslate(hit_info.push_, false, true);
         }
         // 地面に当たっている時
         // @todo 重力加速も初期化する
@@ -353,13 +355,13 @@ public:
     }
 
     /**
-     * @brief           プロセス設定
-     * @param proc_name プロセス名
-     * @param func      処理
-     * @param timing    タイミング
-     * @param prio      処理優先
-     * @return          プロセス
-    */
+	 * @brief           プロセス設定
+	 * @param proc_name プロセス名
+	 * @param func      処理
+	 * @param timing    タイミング
+	 * @param prio      処理優先
+	 * @return          プロセス
+	*/
     SlotProc& SetProc(const std::string& proc_name, ProcTimingFunc func, ProcTiming timing = ProcTiming::Update, ProcPriority prio = ProcPriority::NORMAL)
     {
         auto& proc = GetProc(proc_name, timing);
@@ -453,6 +455,7 @@ protected:
     std::string       name_{};            //!< オブジェクト名
     std::string       name_default_{};    //!< 番号なしのオブジェクト名
     Status<StatusBit> status_{};          //!< ステータス
+    Status<StatusBit> status_old_{};      //!< ステータス(OLD)
     ComponentPtrVec   pre_components_;    //!< コンポーネント(仮)
     ComponentPtrVec   components_;        //!< コンポーネント
     SlotProcs         proc_timings_;      //!< 登録処理
@@ -464,8 +467,6 @@ protected:
     std::string setUniqueName(const std::string& name);
 
     void toFormalComponent();
-
-    float update_delta_time_ = 0.0f;    //!< update以外で使用できるように
 
 private:
     //--------------------------------------------------------------------
@@ -530,6 +531,9 @@ std::shared_ptr<T> Object::GetComponent(const std::string_view& name)
     for(auto& component : components_) {
         auto cast = std::dynamic_pointer_cast<T>(component);
         if(cast) {
+            if(cast->status_.is(Component::StatusBit::Exited))
+                continue;
+
             if(name == "")
                 return cast;
             else if(name == cast->GetName())
@@ -540,6 +544,9 @@ std::shared_ptr<T> Object::GetComponent(const std::string_view& name)
     for(auto& component : pre_components_) {
         auto cast = std::dynamic_pointer_cast<T>(component);
         if(cast) {
+            if(cast->status_.is(Component::StatusBit::Exited))
+                continue;
+
             if(name == "")
                 return cast;
             else if(name == cast->GetName())
@@ -562,6 +569,9 @@ std::shared_ptr<T> Object::GetComponent(const std::string_view& name) const
     for(auto& component : components_) {
         auto cast = std::dynamic_pointer_cast<T>(component);
         if(cast) {
+            if(cast->status_.is(Component::StatusBit::Exited))
+                continue;
+
             if(name == "")
                 return cast;
             else if(name == cast->GetName())
@@ -572,6 +582,9 @@ std::shared_ptr<T> Object::GetComponent(const std::string_view& name) const
     for(auto& component : pre_components_) {
         auto cast = std::dynamic_pointer_cast<T>(component);
         if(cast) {
+            if(cast->status_.is(Component::StatusBit::Exited))
+                continue;
+
             if(name == "")
                 return cast;
             else if(name == cast->GetName())
@@ -592,14 +605,22 @@ std::vector<std::shared_ptr<T>> Object::GetComponents()
 
     for(auto& component : components_) {
         auto cmp = std::dynamic_pointer_cast<T>(component);
-        if(cmp)
+        if(cmp) {
+            if(cmp->status_.is(Component::StatusBit::Exited))
+                continue;
+
             cmps.push_back(cmp);
+        }
     }
 
     for(auto& component : pre_components_) {
         auto cmp = std::dynamic_pointer_cast<T>(component);
-        if(cmp)
+        if(cmp) {
+            if(cmp->status_.is(Component::StatusBit::Exited))
+                continue;
+
             cmps.push_back(cmp);
+        }
     }
 
     return cmps;
@@ -615,14 +636,22 @@ std::vector<std::shared_ptr<T>> Object::GetComponents() const
 
     for(auto& component : components_) {
         auto cmp = std::dynamic_pointer_cast<T>(component);
-        if(cmp)
+        if(cmp) {
+            if(cmp->status_.is(Component::StatusBit::Exited))
+                continue;
+
             cmps.push_back(cmp);
+        }
     }
 
     for(auto& component : pre_components_) {
         auto cmp = std::dynamic_pointer_cast<T>(component);
-        if(cmp)
+        if(cmp) {
+            if(cmp->status_.is(Component::StatusBit::Exited))
+                continue;
+
             cmps.push_back(cmp);
+        }
     }
 
     return cmps;
@@ -634,7 +663,7 @@ void Object::RemoveComponent()
     assert(this != nullptr && "実行しているオブジェクト(this)"
                               "がありません。「再試行」をおして、「呼び出し履歴」からどこでemptyになったのかを確認してください。");
 
-    for(int i = components_.size() - 1; i >= 0; --i) {
+    for(int i = static_cast<int>(components_.size()) - 1; i >= 0; --i) {
         auto& c = components_[i];
 
         if(std::dynamic_pointer_cast<_Type>(c)) {
@@ -643,7 +672,7 @@ void Object::RemoveComponent()
         }
     }
 
-    for(int i = pre_components_.size() - 1; i >= 0; --i) {
+    for(int i = static_cast<int>(pre_components_.size()) - 1; i >= 0; --i) {
         auto& c = pre_components_[i];
 
         if(std::dynamic_pointer_cast<_Type>(c)) {

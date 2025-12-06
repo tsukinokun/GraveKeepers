@@ -151,8 +151,6 @@ void Object::Update()
 //! @param delta 更新秒数
 void Object::LateUpdate()
 {
-    float delta_time   = GetDeltaTime();
-    update_delta_time_ = delta_time;
 }
 
 //! @brief 描画
@@ -330,7 +328,8 @@ void Object::RegisterCurrentScene(ObjectPtr obj)
 //! @param on 状態
 void Object::SetStatus(StatusBit b, bool on)
 {
-    on ? status_.on(b) : status_.off(b);
+    status_old_.set(b, status_.is(b));
+    status_.set(b, on);
 }
 
 //! @brief ステータス取得
@@ -542,7 +541,7 @@ bool Object::Load(std::string_view filename)
         {
 #if 1
             // 削除して再登録する必要がある
-            Scene::ReleaseObject(SharedThis());
+            Scene::Object::Release(SharedThis());
 
             ObjectPtr obj;
             i_archive(CEREAL_NVP(obj));

@@ -46,6 +46,12 @@ bool CheckFileExistence(std::string_view path);
 //! @retval false 作成しなかった場合(すでに存在)
 bool CreateFolder(std::string_view path);
 
+//! @brief 指定のファイルが指定日時より新しいかをチェック
+//! @param file_path ファイルパス
+//! @param date_str  時間 "2025-06-28" のように設定
+//! @return 新しいかどうか
+bool IsFileNewerThan(const std::filesystem::path& file_path, const std::string& date_str);
+
 }    // namespace HelperLib::File
 
 namespace HelperLib::String {
@@ -103,17 +109,17 @@ bool IsWindows10OrGreater();
 namespace HelperLib::Math {
 bool NearlyEqual(float f1, float f2);
 
-//! @brief ベクトルからMatrixを作成します
+//! @brief ベクトルからMatrixを作成します。(※基本モデルは-Zの方向で作成されているため注意が必要です)
 //! @param front 前ベクトル( Z-Vector )
 //! @param up 上ベクトル (仮 Y-Vector )
 //! @param upremake (上ベクトルを作り直すか?)
-//! @return マトリクス
+//! @return Z軸がフロントのマトリクス
 matrix CreateMatrixByFrontVector(float3 front, float3 up = float3{0, 1, 0}, bool upremake = true);
 
-//! @brief 自分からターゲットを見るマトリクスの作成
+//! @brief 自分からターゲットを見るマトリクスの作成(※基本モデルは-Zの方向で作成されているため注意が必要です)
 //! @param my_object_pos 自分の位置
 //! @param target_object_pos ターゲットの位置
-//! @return ターゲットのほうに向いているマトリクス
+//! @return Z軸がターゲットのほうに向いているマトリクス
 matrix LookAtMatrixForObject(float3 my_object_pos, float3 target_object_pos);
 
 //! @brief BPスカラー値からマトリクスへの変換を行います

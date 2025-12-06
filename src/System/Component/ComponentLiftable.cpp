@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 #include <System/Component/ComponentLiftable.h>
+#include <System/Component/ComponentHitInfo.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化
@@ -12,6 +13,16 @@
 void ComponentLiftable::Init()
 {
     __super::Init();
+    //---------------------------------------------------------------------------
+    // ラムダ式にヒット時のコールバックを
+    //---------------------------------------------------------------------------
+    OnHitComponentFunc = [this](const HitInfo& hit_info) {
+        auto hit_owner = hit_info.collision_->GetOwnerPtr();
+        //地面に当たったら
+        if(hit_owner->GetNameDefault() == "Field") {
+            can_be_lifted_ = true;    //もう一度持ち上げ可能にする
+        }
+    };
 }
 
 //---------------------------------------------------------------------------
@@ -66,6 +77,14 @@ void ComponentLiftable::SetLiftCharacter(const std::weak_ptr<Character>& charact
 bool ComponentLiftable::CanBeLifted() const
 {
     return can_be_lifted_;
+}
+
+//--------------------------------------------------------------------
+//! @brief 持ち上げ不可に変更する関数
+//--------------------------------------------------------------------
+void ComponentLiftable::SetCannotBeLifted()
+{
+    can_be_lifted_ = false;
 }
 
 //----------------------------------------------------------------

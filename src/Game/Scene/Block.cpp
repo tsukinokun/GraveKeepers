@@ -17,6 +17,7 @@ bool Block::Init()
     __super::Init();
 
     SetName(u8"ブロック");
+    SetStatus(Object::StatusBit::OnHitAllComponent, true);    //全てのコンポーネントに当たり判定を送る
 
     //球のコリジョンをアタッチ（モデルの形通りにするとすり抜けたため形通りにはしていません）
     auto block_col = AddComponent<ComponentCollisionSphere>();
