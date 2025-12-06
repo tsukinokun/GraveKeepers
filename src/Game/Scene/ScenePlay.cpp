@@ -16,10 +16,9 @@
 #include "Camera.h"
 #include "Field.h"
 #include "Block.h"
-#include "UFO.h"
 #include "Wall.h"
-#include "CandyBomb.h"
 #include "Sky.h"
+#include "BombObject/CreateBomb.h"
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -50,11 +49,9 @@ bool ScenePlay::Init()
         auto block = Scene::Object::Create<Block>();
     }
 
-    for(int i = 0; i < CANDYBOMB_NUM_MAX_; i++) {
-        auto candybomb = Scene::Object::Create<CandyBomb>();
-    }
-
-    auto ufo = Scene::Object::Create<UFO>();
+    //for(int i = 0; i < CANDYBOMB_NUM_MAX_; i++) {
+    auto candybomb = Scene::Object::Create<CreateBomb>();
+    //}
 
     auto camera = Scene::Object::Create<Camera>();
 
