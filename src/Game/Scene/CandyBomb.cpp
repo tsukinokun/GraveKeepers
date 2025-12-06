@@ -38,8 +38,9 @@ bool CandyBomb::Init()
     auto model = GetComponent<ComponentModel>();
     model->SetScaleAxisXYZ(SCALE_);    //サイズの設定
                                        //位置の設定（-DISTANCE_RANGE_からDISTANCE_RANGE_の間に設置）
-    SetTranslate(float3(
-        GetRandomRangeF(-DISTANCE_RANGE_X, DISTANCE_RANGE_X), GetRandomRangeF(-5.0f, -2.0f), GetRandomRangeF(-DISTANCE_RANGE_Z_MINUS, DISTANCE_RANGE_Z_PLUS)));
+    SetTranslate(float3(GetRandomRangeF(-DISTANCE_RANGE_X, DISTANCE_RANGE_X),
+                        GetRandomRangeF(POP_HEIGHT_MIN_, POP_HEIGHT_MAX_),
+                        GetRandomRangeF(-DISTANCE_RANGE_Z_MINUS, DISTANCE_RANGE_Z_PLUS)));
 
     //---------------------------------------------------------------------------------
     //	剛体コンポーネント
@@ -96,6 +97,11 @@ void CandyBomb::Update()
         rb->SetUseGravity(true);    //重力を使用する
     }
     SetTranslate(pos);
+
+    //座標が一定以下になったら削除
+    if(pos.y < -50.0f) {
+        Scene::Object::Release(shared_from_this());
+    }
 }
 
 //---------------------------------------------------------------------------------
