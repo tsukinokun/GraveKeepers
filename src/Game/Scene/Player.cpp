@@ -21,6 +21,9 @@
 #include <System/SkillComponent/ComponentComboAttack.h>
 #include <Game/Scene/Character/CharacterFactory.h>
 #include <Game/System/GameRepository.h>
+#include <Game/Scene/UIObject/UIImage.h>
+#include "../../src/Game/system/HlslppUseful.h"
+#include <Game/System/ImageBuffer.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -114,6 +117,28 @@ bool Player::Init()
         });
 
     selected_skill_index_ = SKILL_FIREBALL;
+
+    {
+        //画像を読み込む
+        auto test_image = Scene::Object::Create<UIImage>(u8"プレイヤー識別画像");
+        test_image->SetImage(ImageBuffer::GetImageHandle("star"));    // 画像ハンドルを設定
+
+        auto update_proc = [test_image, this, chara]() {
+            if(auto camera = Scene::GetCurrentCamera().lock()) {
+                //画像の位置を設定
+                test_image->SetTranslate(
+                    float3(WorldPositionToScreenPosition(chara->GetTranslate() + float3(0.0f, 20.0f, 0.0f)), 0.0f));    //ゲージの位置を設定
+
+                //画像の大きさを設定
+                test_image->SetScaleAxisXYZ(0.1f);
+            }
+            else {
+                //表示しない
+                test_image->SetScaleAxisXYZ(0.0f);
+            }
+        };
+        test_image->SetProc("update", update_proc);
+    }
 
     SetName(u8"プレイヤー");
 

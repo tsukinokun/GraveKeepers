@@ -99,6 +99,37 @@ bool CreateFolder(std::string_view path)
         return false;
     }
 }
+
+bool IsFileNewerThan(const fs::path& file_path, const std::string& date_str)
+{
+    // 入力例: "2025-06-28"
+    std::tm            tm = {};
+    std::istringstream ss(date_str);
+    ss >> std::get_time(&tm, "%Y-%m-%d");
+
+    if(ss.fail()) {
+        std::cerr << "日付の解析に失敗しました: " << date_str << '\n';
+        return false;
+    }
+
+    // 午前0時での time_point を作成
+    tm.tm_hour = 0;
+    tm.tm_min  = 0;
+    tm.tm_sec  = 0;
+
+    std::time_t targetTimeT = std::mktime(&tm);
+    auto        targetTime  = std::chrono::system_clock::from_time_t(targetTimeT);
+
+    try {
+        auto fileTime = std::chrono::clock_cast<std::chrono::system_clock>(fs::last_write_time(file_path));
+        return fileTime >= targetTime;
+    }
+    catch(const fs::filesystem_error& e) {
+        std::cerr << "ファイルエラー: " << e.what() << '\n';
+        return false;
+    }
+}
+
 }    // namespace HelperLib::File
 
 namespace HelperLib::String {

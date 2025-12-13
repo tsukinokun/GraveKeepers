@@ -14,6 +14,7 @@ void ImageBuffer::Init()
     image_buffer_.clear();                                                           // 画像ハンドルのバッファをクリア
     image_buffer_["test"]       = DxLib::LoadGraph("data/PoyPoy/Image/test.png");    // テスト画像
     image_buffer_["title_logo"] = DxLib::LoadGraph("data/PoyPoy/Image/logo.png");    // タイトルロゴ画像
+    image_buffer_["star"] = DxLib::LoadGraph("data/PoyPoy/Image/Star.png");    // 星画像
 }
 
 //---------------------------------------------------------------------------------

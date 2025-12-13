@@ -277,6 +277,8 @@ public:
         SameType,        //!< 同じタイプのコンポーネント可能
         Exited,          //!< 正しく終了が呼ばれている
         Serialized,      //!< シリアライズ済み.
+        NoSerialize,     //!< シリアライズしない.
+        Enable,          //!< 処理する or 処理しない(Update/Draw系なにもしない)
     };
 
     void SetStatus(StatusBit b, bool on);    //!< ステータスの設定
@@ -284,6 +286,19 @@ public:
 
     Component();
     virtual void Construct(ObjectPtr owner);
+
+    //! @brief 当たった情報はコールバックで送られてくる
+    //! @param hitInfo 当たった情報
+    //! @details 当たった回数分ここに来ます
+    struct HitInfo;
+    struct HitInfoPhysics;
+
+    virtual void OnHitComponent(const HitInfo& hit_info) {}
+
+    virtual void OnHitComponent(const HitInfoPhysics& hit_info) {}
+
+    std::function<void(const HitInfo& hit_info)>        OnHitComponentFunc;
+    std::function<void(const HitInfoPhysics& hit_info)> OnHitComponentPhysicsFunc;
 
 protected:
     ObjectPtr owner_ = nullptr;    //!< オーナー
@@ -294,7 +309,8 @@ protected:
     std::string name_;
 
 private:
-    Status<StatusBit> status_;    //!< コンポーネント状態
+    Status<StatusBit> status_;        //!< コンポーネント状態
+    Status<StatusBit> status_old_;    //!< セット前のコンポーネント状態
 
 private:
     //--------------------------------------------------------------------
