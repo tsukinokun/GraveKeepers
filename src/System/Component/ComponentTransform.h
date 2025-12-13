@@ -67,17 +67,21 @@ public:
     }
 
     //! @brief 現在の位置から移動させます
-    //! @param translate 移動させる量
+    //! @param translate 移動させたい量
+    //! @param local ローカル移動
+    //! @param direct FPSに関係なく移動させる
     //! @return 自分のSharedPtr
-    auto AddTranslate(float3 translate, bool local = false)
+    auto AddTranslate(float3 translate, bool local = false, bool direct = false)
     {
+        float delta = direct ? 1.0f : GetDeltaTime60();
+
         if(local) {
             float3 add = mul(float4(translate, 0), GetMatrix()).xyz;
-            SetTranslate(GetTranslate() + add * GetDeltaTime60());
+            SetTranslate(GetTranslate() + add * delta);
             return SharedThis();
         }
 
-        SetTranslate(GetTranslate() + translate * GetDeltaTime60());
+        SetTranslate(GetTranslate() + translate * delta);
 
         return SharedThis();
     }
@@ -164,9 +168,9 @@ public:
     auto SetRotationToPosition(float3 position, float3 up = {0, 1, 0}, bool up_change = false)
     {
         if(!up_change)
-            position.y = GetMatrix().translate().y;
+            position.y = GetWorldMatrix().translate().y;
 
-        float3 vec = position - GetMatrix().translate();
+        float3 vec = position - GetWorldMatrix().translate();
         return SetRotationToVectorOnParent(vec, up, up_change);
     }
 

@@ -150,18 +150,66 @@ public:
         return hit_status_[id];
     }
 
-    void SetOverlapCollision(u16 hit) { overlap_status_ = hit; }
+    inline void SetOverlapCollision(u16 hit) { overlap_status_ = hit; }
 
-    u16 GetOverlapCollision() { return overlap_status_; }
+    inline const u16 GetOverlapCollision() const { return overlap_status_; }
 
-    void SetCollisionType(ComponentPhysics::CollisionType col)
+    inline void SetCollisionType(ComponentPhysics::CollisionType col)
     {
         type_ = col;
         //if ( body_ )
         //	body_->setLayer( (u16)type_ );
     }
 
-    ComponentPhysics::CollisionType GetCollisionType() { return type_; }
+    inline const ComponentPhysics::CollisionType GetCollisionType() const { return type_; }
+
+    inline void SetGravityFactor(float fact) { gravity_factor_ = fact; }
+
+    inline const float GetGravityFactor() const { return gravity_factor_; }
+
+    //! @brief 摩擦力を設定します
+    //! @param friction 摩擦力(0.0f～)
+    inline void SetFriction(float friction)
+    {
+        if(body_)
+            body_->setFriction(friction);
+    }
+
+    //! @brief 摩擦力を取得します
+    //! @return 摩擦力(0.0f～)
+    inline const float GetFriction() const
+    {
+        if(body_)
+            return body_->friction();
+
+        return 0.0f;
+    }
+
+    //! @brief 跳返り係数を設定します
+    //! @param restitution (0.0～1.0)
+    inline void SetRestitution(float restitution)
+    {
+        if(body_)
+            body_->setRestitution(restitution);
+    }
+
+    //! @brief 跳返り係数を取得します
+    //! @return 跳返り係数
+    inline const float GetRestitution() const
+    {
+        if(body_)
+            return body_->restitution();
+
+        return 0.0f;
+    }
+
+    //! @brief 現実の物理にどれだけ近いかを設定する
+    //! @param pow [ほぼ重力と当たりのみ(0.0)]～[完全に物理のみを使用する(1.0)]
+    inline void SetPhysicsReal(float pow) { physics_real_ = pow; }
+
+    //! @brief 現実の物理にどれだけ近いかの設定の取得
+    //! @return [ほぼ重力と当たりのみ(0.0)]～[完全に物理のみを使用する(1.0)]
+    inline const float GetPhysicsReal() const { return physics_real_; }
 
     //@}
 
@@ -190,9 +238,16 @@ public:
     //! @param hit_info
     virtual void OnEndOverlap([[maybe_unused]] const ComponentPhysics::HitInfo& hit_info) {}
 
+    //! @brief ラムダ当たり処理実装
+    std::function<void(const HitInfo& hit_info)> OnHitFunc;
+
     //@}
 
+    void SetHitInfo(ComponentPhysics::HitInfo& info) { infos_.push_back(info); }
+
 private:
+    std::vector<ComponentPhysics::HitInfo> infos_;
+
     //! モデル用のトランスフォーム
     matrix physics_transform_     = matrix::scale(1.0f);
     matrix physics_transform_old_ = matrix::scale(1.0f);
@@ -203,7 +258,7 @@ private:
     matrix                              world_old_;
 
     // 重力係数
-    float gravity_factor_ = 10.0f;
+    float gravity_factor_ = 30.0f;
 
     // コリジョンのタイプ
     CollisionType type_ = CollisionType::ETC;
@@ -252,9 +307,11 @@ private:
             float cylinder_radius;
         };
 
-    } shape_data;
+    } shape_data{};
 
     f32 density_ = 1000.0f;
+
+    f32 physics_real_ = 0.0f;
 
 private:
     //--------------------------------------------------------------------

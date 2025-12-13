@@ -137,11 +137,21 @@ void ComponentTransform::PrePhysics()
             auto       body  = cmp_physics->GetRigidBody();
             if(std::isnan(trans.x) || std::isnan(trans.y) || std::isnan(trans.z))
                 return;
-
+#if 0
+			auto mz = body->worldMatrix();
+			float len = length( mz.translate() - trans );
+			if( len <= 0.01f )
+				return;
+#endif
             if(body) {
-                float3 v = {0, body->linearVelocity().y, 0};
+                float power = cmp_physics->GetPhysicsReal();
+                if(power >= 1.0f)
+                    return;
+
+                float3 v = {body->linearVelocity().x * power, body->linearVelocity().y, body->linearVelocity().z * power};
                 if(v.y > 0)
-                    v.y = 0;
+                    v.y = body->linearVelocity().y * power;
+
                 body->moveKinematic(trans, q, t);
                 body->addLinearVelocity(v);
             }

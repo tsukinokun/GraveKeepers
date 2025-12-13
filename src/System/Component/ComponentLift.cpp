@@ -35,27 +35,38 @@ void ComponentLift::Update()
     }
     //持ち上げる処理
     if(auto lift_obj = lift_object_.lock()) {
-        lift_obj->GetComponent<ComponentLiftable>()->SetLiftedFlag(true);
-        auto   owner_col  = owner->GetComponent<ComponentCollisionCapsule>();    //オーナーのコリジョンを取得
-        float3 end        = owner->GetTranslate();                               //高さ
-        end.y            += (owner_col->GetHeight() + 4.0f);                     //終点座標は頭なので、高さの半分を足す。
-        //持ち上げ対象を持ち上げる
-        lift_obj->SetTranslate(end);
+        //--------------------------------------------------------------------
+        // 持ち上げられ機能コンポーネントを取得して、持ち上げ中フラグを立てる
+        //--------------------------------------------------------------------
+        if(auto liftable_comp = lift_obj->GetComponent<ComponentLiftable>()) {
+            liftable_comp->SetLiftedFlag(true);
+        }
+        //--------------------------------------------------------------------
+        //オーナーのコリジョンを取得
+        //--------------------------------------------------------------------
+        if(auto owner_col = owner->GetComponent<ComponentCollisionCapsule>()) {
+            float3 end  = owner->GetTranslate();              //高さ
+            end.y      += (owner_col->GetHeight() + 4.0f);    //終点座標は頭なので、高さの半分を足す。
+            //持ち上げ対象を持ち上げる
+            lift_obj->SetTranslate(end);
+        }
 
         //投げる
         if(conditions_for_throw_()) {
             if(auto lift_obj = lift_object_.lock()) {
-                auto   lift_rb        = lift_obj->GetComponent<ComponentRigidbody>();
-                float3 throw_impulse  = float3(0.0f, throw_virtical_power_, 0.0f);
-                float3 owner_rot      = owner->GetRotationAxisXYZ();    //オーナーの向きを取得
-                owner_rot.y          += 180.0f;                         //座標系の関係でyを180度回転する、オブジェクトの背中が正面
-                //オーナーのy軸回転から、throw_impulse_のxとzを設定
-                throw_impulse.x = -throw_horizontal_power_ * sinf(D2R(owner_rot.y));
-                throw_impulse.z = -throw_horizontal_power_ * cosf(D2R(owner_rot.y));
-                lift_rb->AddImpulse(throw_impulse);
-                auto lift_col = lift_obj->GetComponent<ComponentCollision>();
-                lift_col->SetEnableFlag(true);
-                lift_col->UseGravity();
+                if(auto lift_rb = lift_obj->GetComponent<ComponentRigidbody>()) {
+                    float3 throw_impulse  = float3(0.0f, throw_virtical_power_, 0.0f);
+                    float3 owner_rot      = owner->GetRotationAxisXYZ();    //オーナーの向きを取得
+                    owner_rot.y          += 180.0f;                         //座標系の関係でyを180度回転する、オブジェクトの背中が正面
+                    //オーナーのy軸回転から、throw_impulse_のxとzを設定
+                    throw_impulse.x = -throw_horizontal_power_ * sinf(D2R(owner_rot.y));
+                    throw_impulse.z = -throw_horizontal_power_ * cosf(D2R(owner_rot.y));
+                    lift_rb->AddImpulse(throw_impulse);
+                    if(auto lift_col = lift_obj->GetComponent<ComponentCollision>()) {
+                        lift_col->SetEnableFlag(true);
+                        lift_col->UseGravity();
+                    }
+                }
             }
             lift_object_.reset();
             return;
@@ -80,16 +91,23 @@ void ComponentLift::Update()
                 if(!CheckLiftObjName(def_name.data())) {
                     continue;
                 }
-                //ComponentLiftableがついていなかったらコンティニュー
-                if(!obj->GetComponent<ComponentLiftable>()) {
-                    continue;
+                //持ち上げられ機能コンポーネントを取得
+                if(auto lift1able_comp = obj->GetComponent<ComponentLiftable>()) {
+                    //オブジェクトが利用できないならコンティニュー
+                    if(!obj->GetComponent<ComponentLiftable>()->CanBeLifted()) {
+                        continue;
+                    }
                 }
-                //オブジェクトが持ち上げられ中ならコンティニュー
-                if(obj->GetComponent<ComponentLiftable>()->IsLifted()) {
+                else {
+                    //ComponentLiftableがついていなかったらコンティニュー
                     continue;
                 }
                 //オーナーが持ち上げられ中なら持ち上げない
                 if(owner->GetComponent<ComponentLiftable>()->IsLifted()) {
+                    continue;
+                }
+                //コリジョンがないならコンティニュー(preobjectはコンティニュー)
+                if(!obj->GetComponent<ComponentCollision>()) {
                     continue;
                 }
                 //オブジェクトが持ち上げ中ならコンテニュー
@@ -114,10 +132,21 @@ void ComponentLift::Update()
                 float obj_to_owner_dot = dot(owner_front, normalize_vec);
                 //内積から角度を求める
                 float rad = acosf(obj_to_owner_dot);
-                //角度が持ち上げ可能角度におさまっていなければ
-                if(rad > D2R(lift_angle_)) {
-                    continue;    //コンティニュー
+
+                // 真上・真下方向ベクトル
+                float3 up       = float3(0.0f, 1.0f, 0.0f);
+                float3 down     = float3(0.0f, -1.0f, 0.0f);
+                float  up_dot   = dot(up, normalize_vec);
+                float  down_dot = dot(down, normalize_vec);
+
+                // 真上・真下に近い場合は特別に許容
+                if(up_dot > 0.8f || down_dot > 0.8f) {
+                    //角度が持ち上げ可能角度におさまっていなければ
+                    if(rad > D2R(lift_angle_)) {
+                        continue;    //コンティニュー
+                    }
                 }
+
                 //ベクトルの長さが持ち上げられる範囲を超えていたら
                 if(length(vec_owner_to_obj) > float1(lift_distance_)) {
                     continue;    //コンティニュー
@@ -131,8 +160,9 @@ void ComponentLift::Update()
             }
             if(auto obj = lift_object_.lock()) {
                 if(auto liftable_comp = obj->GetComponent<ComponentLiftable>()) {
-                    liftable_comp->SetLiftedFlag(true);
-                    liftable_comp->SetLiftCharacter(dynamic_pointer_cast<Character>(owner));
+                    liftable_comp->SetLiftedFlag(true);                                         //持ち上げ中にする
+                    liftable_comp->SetLiftCharacter(dynamic_pointer_cast<Character>(owner));    //持ち上げているキャラクターをセット
+                    liftable_comp->SetCannotBeLifted();                                         //持ち上げ不可にしておく
                 }
                 if(auto lift_col = obj->GetComponent<ComponentCollision>()) {
                     lift_col->SetEnableFlag(false);

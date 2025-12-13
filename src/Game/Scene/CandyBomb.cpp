@@ -18,17 +18,7 @@ bool CandyBomb::Init()
     __super::Init();
 
     SetName(u8"キャンディー爆弾");
-
-    ////---------------------------------------------------------------------------------
-    ////球のコリジョンをアタッチ（モデルの形通りにするとすり抜けたため形通りにはしていません）
-    ////---------------------------------------------------------------------------------
-    //auto candy_col = AddComponent<ComponentCollisionSphere>();
-    ////block_col->UseGravity();
-    //// コリジョンの半径を設定
-    //candy_col->SetRadius(RADUIS_);
-    //// 当たり判定グループを設定
-    //candy_col->SetCollisionGroup(ComponentCollision::CollisionGroup::ITEM);
-    //collision_component_ = candy_col;
+    SetStatus(Object::StatusBit::OnHitAllComponent, true);    //全てのコンポーネントに当たり判定を送る
 
     //---------------------------------------------------------------------------------
     //	モデルコンポーネント
