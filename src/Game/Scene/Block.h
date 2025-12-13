@@ -20,11 +20,17 @@ public:
     void GUI() override;       //!< GUI表示
 
 private:
-    const float RADUIS_ = 2.0f;
+    const float RADUIS_ = 2.0f;     //コリジョンの半径
+    const float HEIGHT_ = 10.0f;    //コリジョンの高さ
 
-    const float SCALE_ = 1.0f;
+    const float SCALE_ = 1.0f;    //サイズ
 
-    const float DISTANCE_RANGE_ = 25.0f;
+    const float DISTANCE_RANGE_ = 25.0f;    //設置範囲
+
+    const float POP_HEIGHT_MIN_ = -9.0f;    //生成時の最低高さ
+    const float POP_HEIGHT_MAX_ = -3.0f;    //生成時の最高高さ
+
+    bool is_rising_ = true;
 
     enum
     {

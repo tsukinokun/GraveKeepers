@@ -15,11 +15,11 @@
 #include "Enemy.h"
 #include "Camera.h"
 #include "Field.h"
-#include "Block.h"
 #include "Wall.h"
 #include "Sky.h"
 #include "GameResult.h"
 #include "BombObject/CreateBomb.h"
+#include "BlockObject/CreateBlock.h"
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -47,9 +47,7 @@ bool ScenePlay::Init()
 
     previous_time_ = std::chrono::high_resolution_clock::now();
 
-    for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
-        auto block = Scene::Object::Create<Block>();
-    }
+    auto block = Scene::Object::Create<CreateBlock>();
 
     auto candybomb = Scene::Object::Create<CreateBomb>();
 
