@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //!	@file	ScenePlay.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
@@ -21,7 +21,6 @@
 #include "GameResult.h"
 #include "BombObject/CreateBomb.h"
 
-
 //---------------------------------------------------------------------------------
 //!	初期化
 //---------------------------------------------------------------------------------
@@ -29,6 +28,7 @@ bool ScenePlay::Init()
 {
     // フォントを使用できるように登録（アプリ内限定）
     int result = AddFontResourceEx("data/PoyPoy/Font/Hyakki85_OTF/Hyakki85.otf", FR_PRIVATE, NULL);
+
     if(result == 0) {
         MessageBox(NULL, "フォント読み込み失敗", "エラー", MB_OK);
     }
@@ -50,9 +50,9 @@ bool ScenePlay::Init()
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
         auto block = Scene::Object::Create<Block>();
     }
-  
+
     auto candybomb = Scene::Object::Create<CreateBomb>();
-    
+
     auto camera = Scene::Object::Create<Camera>();
 
     //四方向に壁を生成
@@ -116,7 +116,7 @@ void ScenePlay::Update()
             chara_name += "_" + std::to_string(i);
         }
         if(auto chara = Scene::Object::Get<Object>(chara_name)) {
-              if(chara->GetComponent<ComponentStatus>()->IsDead() == false) {
+            if(chara->GetComponent<ComponentStatus>()->IsDead() == false) {
                 allive_count++;
             }
         }
