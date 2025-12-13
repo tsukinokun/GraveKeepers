@@ -134,9 +134,10 @@ void ComponentLift::Update()
                     liftable_comp->SetLiftedFlag(true);
                     liftable_comp->SetLiftCharacter(dynamic_pointer_cast<Character>(owner));
                 }
-                auto lift_col = obj->GetComponent<ComponentCollision>();
-                lift_col->SetEnableFlag(false);
-                lift_col->UseGravity(false);
+                if(auto lift_col = obj->GetComponent<ComponentCollision>()) {
+                    lift_col->SetEnableFlag(false);
+                    lift_col->UseGravity(false);
+                }
             }
             return;
         }

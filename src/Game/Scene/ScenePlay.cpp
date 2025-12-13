@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 //!	@file	ScenePlay.cpp
 //! @brief	ゲームメイン
 //---------------------------------------------------------------------------
@@ -16,10 +16,11 @@
 #include "Camera.h"
 #include "Field.h"
 #include "Block.h"
-#include "UFO.h"
 #include "Wall.h"
-#include "CandyBomb.h"
 #include "Sky.h"
+#include "GameResult.h"
+#include "BombObject/CreateBomb.h"
+
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -49,13 +50,9 @@ bool ScenePlay::Init()
     for(int i = 0; i < BLOCK_NUM_MAX_; i++) {
         auto block = Scene::Object::Create<Block>();
     }
-
-    for(int i = 0; i < CANDYBOMB_NUM_MAX_; i++) {
-        auto candybomb = Scene::Object::Create<CandyBomb>();
-    }
-
-    auto ufo = Scene::Object::Create<UFO>();
-
+  
+    auto candybomb = Scene::Object::Create<CreateBomb>();
+    
     auto camera = Scene::Object::Create<Camera>();
 
     //四方向に壁を生成
@@ -110,13 +107,29 @@ void ScenePlay::Update()
     auto delta_time   = current_time - previous_time_;
     previous_time_    = current_time;
 
+    int allive_count = 0;
+    for(int i = 0; i < CHARACTER_ALL; i++) {
+        //キャラクター名からキャラを取得し、
+        std::string chara_name = "Character";
+        //二体目以降の命名規則
+        if(i != 0) {
+            chara_name += "_" + std::to_string(i);
+        }
+        if(auto chara = Scene::Object::Get<Object>(chara_name)) {
+              if(chara->GetComponent<ComponentStatus>()->IsDead() == false) {
+                allive_count++;
+            }
+        }
+    }
+
     //---------------------------------------------------------------------------------
     //	タイマー処理
     //---------------------------------------------------------------------------------
     // タイマーを減算（カウントダウン）
     TIMER_COUNT_ -= std::chrono::duration<float>(delta_time).count();
-    if(TIMER_COUNT_ < 0.0f) {
+    if(TIMER_COUNT_ < 0.0f || allive_count < 2) {
         TIMER_COUNT_ = 0.0f;
+        Scene::Change(Scene::GetScene<GameResult>());    //シーンの変更を行う処理
     }
     // 分と秒に変換（ゼロ埋め付き表示）
     int minutes = static_cast<int>(TIMER_COUNT_) / 60;
