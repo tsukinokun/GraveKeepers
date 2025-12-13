@@ -7,8 +7,9 @@
 #include "SceneCharaSelect.h"
 #include <Game/Scene/Character/CharacterFactory.h>
 #include <Game/System/GameRepository.h>
-#include "UIObject/UIText.h"
+#include <Game/Scene/UIObject/UIImage.h>
 #include <System/Component/ComponentModel.h>
+#include <Game/System/ImageBuffer.h>
 
 //---------------------------------------------------------------------------------
 //! 初期化
@@ -24,6 +25,7 @@ bool GameTitle::Init()
     //---------------------------------------------------------------------------------
     GameRepository::Instance();
     CharacterFactory::Instance();
+    ImageBuffer::Init();    // 画像バッファの初期化
     //---------------------------------------------------------------------------------
     // カメラを作成
     //---------------------------------------------------------------------------------
@@ -37,13 +39,9 @@ bool GameTitle::Init()
     //---------------------------------------------------------------------------------
     //	タイトルのUIオブジェクト
     //---------------------------------------------------------------------------------
-    auto title_ui = Scene::Object::Create<UIText>(u8"タイトルUI");
-    title_ui->SetFontSize(64);
-    title_ui->SetText("グレイブキーパーズ");
-    title_ui->SetColor(GetColor(255, 255, 0));
-    title_ui->SetAlignment(ComponentTransformUI::Alignment::MiddleCenter);
-    title_ui->SetTranslate(float3(WINDOW_W * 0.05f, WINDOW_H * 0.05f, 0.0f));
-
+    auto title_ui = Scene::Object::Create<UIImage>(u8"タイトルUI");
+    title_ui->SetImage(ImageBuffer::GetImageHandle("title_logo"));
+    title_ui->SetTranslate(float3(WINDOW_W / 2, 300.0f, 0.0f));
     //---------------------------------------------------------------------------------
     // 各キャラクターを作成
     //---------------------------------------------------------------------------------
@@ -52,7 +50,7 @@ bool GameTitle::Init()
     //---------------------------------------------------------------------------------
     {
         auto zombie = Scene::Object::Create<Object>();
-        zombie->SetTranslate(float3(0.0f, 0.0f, 0.0f));
+        zombie->SetTranslate(float3(-19.0f, 0.0f, 0.0f));
         zombie->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));
         zombie->SetName(u8"Zombie");
         //---------------------------------------------------------------------------------
@@ -71,7 +69,7 @@ bool GameTitle::Init()
     //---------------------------------------------------------------------------------
     {
         auto wolf = Scene::Object::Create<Object>();
-        wolf->SetTranslate(float3(0.0f, 0.0f, 0.0f));
+        wolf->SetTranslate(float3(-13.0f, 0.0f, 0.0f));
         wolf->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));
         wolf->SetName(u8"Werewolf");
         //---------------------------------------------------------------------------------
@@ -90,7 +88,7 @@ bool GameTitle::Init()
     //---------------------------------------------------------------------------------
     {
         auto pumpkin = Scene::Object::Create<Object>();
-        pumpkin->SetTranslate(float3(0.0f, 0.0f, 0.0f));
+        pumpkin->SetTranslate(float3(13.0f, 0.0f, 0.0f));
         pumpkin->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));
         pumpkin->SetName(u8"Pumpking");
         //---------------------------------------------------------------------------------
@@ -109,7 +107,7 @@ bool GameTitle::Init()
     //---------------------------------------------------------------------------------
     {
         auto witch = Scene::Object::Create<Object>();
-        witch->SetTranslate(float3(0.0f, 0.0f, 0.0f));
+        witch->SetTranslate(float3(19.0f, 0.0f, 0.0f));
         witch->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));
         witch->SetName(u8"Witch");
         //---------------------------------------------------------------------------------
@@ -127,15 +125,17 @@ bool GameTitle::Init()
     // 座標を設定
     //---------------------------------------------------------------------------------
     //for文でループ
-    for(int i = 0; i < characters.size(); i++) {
-        //ロックしてstd::sharedを取る
-        if(auto chara_shared = characters.at(i).lock()) {
-            float most_left_x = -19.0f;    //一番左のキャラクターのx座標
-            float deff_x      = 13.0f;     //キャラクターがずれていく大きさ
-            float x           = most_left_x + deff_x * i;
-            chara_shared->SetTranslate(float3(x, 0.0f, 0.0f));
-        }
-    }
+    //for(int i = 0; i < characters.size(); i++)
+    //{
+    //	//ロックしてstd::sharedを取る
+    //	if(auto chara_shared = characters.at(i).lock())
+    //	{
+    //		float most_left_x = -19.0f;	   //一番左のキャラクターのx座標
+    //		float deff_x	  = 13.0f;	   //キャラクターがずれていく大きさ
+    //		float x			  = most_left_x + deff_x * i;
+    //		chara_shared->SetTranslate(float3(x, 0.0f, 0.0f));
+    //	}
+    //}
 
     return true;
 }
