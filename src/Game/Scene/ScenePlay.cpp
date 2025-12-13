@@ -33,7 +33,6 @@ bool ScenePlay::Init()
         MessageBox(NULL, "フォント読み込み失敗", "エラー", MB_OK);
     }
     __super::Init();
-    ImageBuffer::Init();    // 画像バッファの初期化
     //文字の回りに黒い縁を追加
     ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
 
