@@ -59,15 +59,6 @@ bool Character::Init()
             //---------------------------------------------------------------------------------
             //ワールド空間スクリーン空間に変換したい
             if(auto camera = Scene::GetCurrentCamera().lock()) {
-                //	float3 world_position	= GetTranslate();
-                //	matrix view_matrix		= camera->GetViewMatrix();								  //ビュー行列
-                //	matrix proj_matrix		= camera->GetProjectionMatrix();						  //投影行列
-                //	matrix view_proj_matrix = mul(view_matrix, proj_matrix);						  //二つの行列を合成
-                //	float4 screen_position	= mul(float4(world_position, 1.0f), view_proj_matrix);	  //スクリーン座標
-                //	screen_position.xyz		= screen_position.xyz / screen_position.w;				  //奥行を考慮
-                //	// スクリーン座標(-1～+1)→UV座標(0～1)
-                //	float2 uv			  = screen_position.xy * float2(0.5f, -0.5f) + 0.5f;	//描画のフォーマットに合わせて変換
-                //	float2 pixel_position = uv * float2(WINDOW_W, WINDOW_H);					// 画面サイズに合わせる
                 gauge->SetTranslate(float3(WorldPositionToScreenPosition(GetTranslate()), 0.0f));    //ゲージの位置を設定
             }
             //---------------------------------------------------------------------------------
