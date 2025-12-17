@@ -23,7 +23,7 @@ int WINAPI WinMain(_In_ [[maybe_unused]] HINSTANCE     hInstance,
     IniFileLib   ini("Game.ini");
     const bool   is_fullscreen     = ini.GetBool("System", "FullScreen");
     const float2 screen_size       = ini.GetFloat2("System", "ScreenSize", {WINDOW_W, WINDOW_H});
-    const auto   title_name        = ini.GetString("System", "Title", "BaseProject2025");
+    const auto   title_name        = ini.GetString("System", "Title", "GraveKeepers");
     const bool   use_keyboard      = ini.GetBool("System", "GUIUseKeyboard", false);
     const int    use_device_number = ini.GetInt("System", "DeviceNumber", 0);
 

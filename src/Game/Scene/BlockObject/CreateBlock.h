@@ -8,6 +8,7 @@
 #include <System/Scene.h>
 //前方宣言
 USING_PTR(CreateBlock);
+
 class CreateBlock : public Object
 {
 public:
