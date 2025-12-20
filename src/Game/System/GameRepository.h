@@ -5,6 +5,7 @@
 //! @author 山﨑愛
 //---------------------------------------------------------------------------
 #pragma once
+#include <array>
 
 class GameRepository
 {
@@ -39,5 +40,6 @@ public:
     std::string GetSelectedCharacterName() const;
 
 private:
-    std::string selected_character_name;    //!< 選択されたキャラクター名(Factoryで必要)
+    std::string        selected_character_name;    //!< 選択されたキャラクター名(Factoryで必要)
+    std::array<int, 4> rsult_datas_;               //!< 各キャラクターのモデルと順位(プレイヤー -> NPC1 -> NPC2 -> NPC3)
 };
