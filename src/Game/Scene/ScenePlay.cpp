@@ -20,6 +20,7 @@
 #include "GameResult.h"
 #include "BombObject/CreateBomb.h"
 #include "BlockObject/CreateBlock.h"
+#include <Game/System/GameRepository.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -39,9 +40,11 @@ bool ScenePlay::Init()
     auto field = Scene::Object::Create<Field>();
 
     auto player = Scene::Object::Create<Player>();
+    characters_.push_back(player->GetControllCharacter());    //キャラクターオブジェクトの配列に追加
 
     for(int i = 0; i < ENEMY_MAX_; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
+        characters_.push_back(enemy->GetControllCharacter());    //キャラクターオブジェクトの配列に追加
     }
 
     previous_time_ = std::chrono::high_resolution_clock::now();
@@ -105,28 +108,83 @@ void ScenePlay::Update()
     previous_time_    = current_time;
 
     int allive_count = 0;
-    for(int i = 0; i < CHARACTER_ALL; i++) {
-        //キャラクター名からキャラを取得し、
-        std::string chara_name = "Character";
-        //二体目以降の命名規則
-        if(i != 0) {
-            chara_name += "_" + std::to_string(i);
-        }
-        if(auto chara = Scene::Object::Get<Object>(chara_name)) {
+    //生存しているキャラクターの数をカウント
+    for(auto& weak_chara : characters_) {
+        if(auto chara = weak_chara.lock()) {
             if(chara->GetComponent<ComponentStatus>()->IsDead() == false) {
                 allive_count++;
             }
         }
     }
+    //---------------------------------------------------------------------------------
+    //	HPのUIオブジェクト
+    //---------------------------------------------------------------------------------
+    for(int i = 0; i < CHARACTER_ALL; i++) {
+        if(auto chara = characters_[i].lock()) {
+            if(auto status_comp = chara->GetComponent<ComponentStatus>()) {
+                if(result_datas_[i].rank_ == -1) {
+                    //順位が未設定の場合、生存しているキャラクターの数+1を順位として設定
+                    if(status_comp->IsDead()) {
+                        result_datas_[i].rank_       = allive_count + 1;           //順位を設定
+                        result_datas_[i].chara_name_ = chara->GetNameDefault();    //キャラの名前を設定
+                    }
+                }
 
+                std::string name  = "HP";                 //HPテキストオブジェクトの名前
+                name             += std::to_string(i);    //オブジェクト名をHP0、HP1、HP2、HP3とする
+                if(auto hp_ui = Scene::Object::Get<UIText>(name)) {
+                    hp_ui->SetText(std::to_string(status_comp->GetHitPoints()));    //キャラのHPをUIに反映
+                }
+            }
+        }
+    }
     //---------------------------------------------------------------------------------
     //	タイマー処理
     //---------------------------------------------------------------------------------
     // タイマーを減算（カウントダウン）
     TIMER_COUNT_ -= std::chrono::duration<float>(delta_time).count();
-    if(TIMER_COUNT_ < 0.0f || allive_count < 2) {
-        TIMER_COUNT_ = 0.0f;
-        Scene::Change(Scene::GetScene<GameResult>());    //シーンの変更を行う処理
+
+    //---------------------------------------------------------------------------------
+    // 	ゲーム終了判定
+    //---------------------------------------------------------------------------------
+    // 生存しているキャラクターが1人以下、またはタイマーが0以下になったらゲーム終了
+    if(allive_count <= 1) {
+        for(int i = 0; i < result_datas_.size(); i++) {
+            //順位が未設定のキャラクターに1位を設定
+            if(result_datas_[i].rank_ == -1) {
+                result_datas_[i].rank_ = 1;    //順位を設定
+            }
+        }
+        GameRepository::Instance().SetResultDatas(result_datas_);    //結果データをGameRepositoryに設定
+        Scene::Change(Scene::GetScene<GameResult>());                //シーンの変更を行う処理
+    }
+    else if(TIMER_COUNT_ < 0.0f) {
+        // 生存しているキャラクターを、HPの多い順に順位付け
+
+        std::vector<std::pair<int, int>> hp_ranks;    //キャラクターのインデックスとHPのペア配列
+        for(int i = 0; i < characters_.size(); i++) {
+            if(auto chara = characters_[i].lock()) {
+                if(auto status_comp = chara->GetComponent<ComponentStatus>()) {
+                    hp_ranks.push_back(std::make_pair(i, status_comp->GetHitPoints()));
+                }
+            }
+        }
+        // HPの多い順にソート
+        std::sort(hp_ranks.begin(), hp_ranks.end(), [](const std::pair<int, int>& a, const std::pair<int, int>& b) { return a.second < b.second; });
+        int current_rank = 4;    //4位から順位を設定
+        for(auto hp_rank : hp_ranks) {
+            int idx = hp_rank.first;
+            //順位が未設定のキャラクターに順位を設定
+            if(result_datas_[idx].rank_ == -1) {
+                result_datas_[idx].rank_ = current_rank;    //順位を設定
+                if(auto chara = characters_[idx].lock()) {
+                    result_datas_[idx].chara_name_ = chara->GetNameDefault();    //キャラの名前を設定
+                }
+                current_rank--;
+            }
+        }
+        GameRepository::Instance().SetResultDatas(result_datas_);    //結果データをGameRepositoryに設定
+        Scene::Change(Scene::GetScene<GameResult>());                //シーンの変更を行う処理
     }
     // 分と秒に変換（ゼロ埋め付き表示）
     int minutes = static_cast<int>(TIMER_COUNT_) / 60;
@@ -134,39 +192,6 @@ void ScenePlay::Update()
     //タイマーUIの更新
     if(auto timer_ui = Scene::Object::Get<UIText>(u8"タイマーUI")) {
         timer_ui->SetText(std::to_string(minutes) + ":" + std::to_string(seconds));
-    }
-
-    // ここにゲームの更新処理を追加
-    //プレイヤーのHPをカメラに与える
-    auto player = Scene::Object::Get<Player>(u8"プレイヤー");
-    auto camera = Scene::Object::Get<Camera>("Camera");
-
-    //camera->GetPlayerHP(player->GetComponent<ComponentStatus>()->GetHitPoints());
-    int enemy_num = 0;
-    //for(auto enemy : Scene::Object::GetArray<Enemy>())
-    //{
-    //	//エネミーのHPをカメラに与える
-    //	camera->GetEnemyHP(enemy->GetComponent<ComponentStatus>()->GetHitPoints(), enemy_num);
-    //	enemy_num++;
-    //}
-
-    //---------------------------------------------------------------------------------
-    //	HPのUIオブジェクト
-    //---------------------------------------------------------------------------------
-    for(int i = 0; i < CHARACTER_ALL; i++) {
-        std::string name  = "HP";                 //HPテキストオブジェクトの名前
-        name             += std::to_string(i);    //オブジェクト名をHP0、HP1、HP2、HP3とする
-        if(auto hp_ui = Scene::Object::Get<UIText>(name)) {
-            //キャラクター名からキャラを取得し、
-            std::string chara_name = "Character";
-            //二体目以降の命名規則
-            if(i != 0) {
-                chara_name += "_" + std::to_string(i);
-            }
-            if(auto chara = Scene::Object::Get<Object>(chara_name)) {
-                hp_ui->SetText(std::to_string(chara->GetComponent<ComponentStatus>()->GetHitPoints()));    //キャラのHPをUIに反映
-            }
-        }
     }
 }
 

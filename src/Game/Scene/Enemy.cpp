@@ -44,3 +44,11 @@ bool Enemy::Init()
 
     return true;
 }
+
+//---------------------------------------------------------------------------
+//! @brief コントロールしているキャラクターを取得
+//---------------------------------------------------------------------------
+std::weak_ptr<Character> Enemy::GetControllCharacter() const
+{
+    return controll_character_;
+}

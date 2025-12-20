@@ -36,3 +36,28 @@ std::string GameRepository::GetSelectedCharacterName() const
 {
     return selected_character_name;
 }
+
+//---------------------------------------------------------------------------
+//! @brief 結果を設定するメソッド
+//---------------------------------------------------------------------------
+void GameRepository::SetResultDatas(const std::array<ResultInfo, 4>& result_datas)
+{
+    rsult_datas_ = result_datas;
+}
+
+//---------------------------------------------------------------------------
+//! @brief 結果を取得するメソッド
+//---------------------------------------------------------------------------
+const std::array<ResultInfo, 4>& GameRepository::GetResultDatas() const
+{
+    return rsult_datas_;
+}
+
+//---------------------------------------------------------------------------
+//! @brief ゲームリポジトリをクリア(リセット)するメソッド
+//---------------------------------------------------------------------------
+void GameRepository::Clear()
+{
+    selected_character_name = "";
+    rsult_datas_            = {};
+}
