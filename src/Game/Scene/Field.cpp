@@ -22,7 +22,7 @@ bool Field::Init()
     //回転
     SetRotationAxisXYZ({0, 180, 0});
     //モデルを１０倍している
-    SetScaleAxisXYZ(1.0f);
+    SetScaleAxisXYZ(1.5f);
     auto sky2_comp = AddComponent<ComponentModel>("data/PoyPoy/Model/Stage/Background.mv1");
     //座標を後ろに
     sky2_comp->SetTranslate({0, -400, 500});
