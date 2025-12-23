@@ -23,16 +23,14 @@ public:
 
     void OnHit(const ComponentCollision::HitInfo& hit_info) override;
 
-private:
-    std::weak_ptr<Character> controll_character_;    //コントロールしているキャラクター
-                                                     //const float RADIUS_				 = 2.0f;		   //半径
-                                                     //const float TOP_POINT_			 = RADIUS_ * 3;	   //しゃがんでいない頭の位置
-                                                     //const float SQUAT_TOP_POINT_	 = RADIUS_ * 2;	   //しゃがんでいるときの頭の位置
-                                                     //const float FACE_DOWN_TOP_POINT_ = RADIUS_;		   //うつ伏せの時の頭の位置
-                                                     //const int	HP_MAX_				 = 200;			   //HPの最大値
+    //---------------------------------------------------------------------------
+    // コントロールしているキャラクターを取得
+    //! @return キャラクターのweak_ptr
+    //---------------------------------------------------------------------------
+    std::weak_ptr<Character> GetControllCharacter() const;
 
-    //float neutralpos_				 = TOP_POINT_;	  //円の位置の高さ
-    //bool  is_face_down_				 = false;		  //うつ伏せの状態かを確認する用の変数
+private:
+    std::weak_ptr<Character> controll_character_;
 
     int selected_skill_index_ = 0;
 

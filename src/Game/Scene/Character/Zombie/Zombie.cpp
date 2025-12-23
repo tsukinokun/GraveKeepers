@@ -33,7 +33,7 @@ bool Zombie::Init()
         status_comp->SetSpeed(MOVE_SPEED_);
         status_comp->SetAttackPoints(ATTACK_POWER_);
     }
-    //SetName(u8"ゾンビ");
+    SetName(u8"Zombie");
     return true;
 }
 

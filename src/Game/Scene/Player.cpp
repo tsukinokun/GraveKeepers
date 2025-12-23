@@ -205,3 +205,11 @@ void Player::OnHit(const ComponentCollision::HitInfo& hit_info)
         }
     }
 }
+
+//---------------------------------------------------------------------------
+//! @brief コントロールしているキャラクターを取得
+//---------------------------------------------------------------------------
+std::weak_ptr<Character> Player::GetControllCharacter() const
+{
+    return controll_character_;
+}

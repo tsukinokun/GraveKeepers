@@ -4,7 +4,9 @@
 //---------------------------------------------------------------------------
 #include "GameResult.h"
 #include "GameTitle.h"
-
+#include <Game/System/GameRepository.h>
+#include <Game/Scene/info/ResultInfo.h>
+#include <System/Component/ComponentModel.h>
 //---------------------------------------------------------------------------------
 //! 初期化
 //---------------------------------------------------------------------------------
@@ -13,9 +15,32 @@ bool GameResult::Init()
     __super::Init();
 
     // リザルト背景画像の読み込み
-    result_back_graph_ = LoadGraph("data/PoyPoy/Image/Result.png");
+    result_back_graph_ = LoadGraph("data/Po yPoy/Image/Result.png");
     // 蜘蛛の巣画像の読み込み
     spider_web_graph_ = LoadGraph("data/PoyPoy/Image/SpiderWeb.png");
+
+    //---------------------------------------------------------------------------------
+    // リポジトリ(シングルトン)の呼び出し
+    //---------------------------------------------------------------------------------
+    auto result_datas = GameRepository::Instance().GetResultDatas();
+
+    //---------------------------------------------------------------------------------
+    // キャラクターを表示(前から順に呼び出す)
+    //---------------------------------------------------------------------------------
+    for(const auto& result_data : result_datas) {
+        auto chara = Scene::Object::Create<Object>();
+        if(result_data.chara_name_ == "Zombie") {
+            // ゾンビキャラクターのモデルを追加
+            chara->AddComponent<ComponentModel>("data/PoyPoy/Model/Character/Zombie/Zombie.mv1");
+            //アニメーションも追加
+        }
+        else if(result_data.chara_name_ == "Werewolf") {
+            chara->AddComponent<ComponentModel>("data/PoyPoy/Model/Character/Werewolf/Werewolf.mv1");
+        }
+    }
+    //---------------------------------------------------------------------------------
+    // いい感じの位置に配置する処理を書く
+    //---------------------------------------------------------------------------------
 
     return true;
 }
