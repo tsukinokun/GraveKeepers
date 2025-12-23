@@ -24,11 +24,10 @@ public:
     void GUI() override;       //!< GUI表示
 
 private:
-    float                                          TIMER_COUNT_ = 5.0f;
+    float                                          TIMER_COUNT_ = 120.0f;
     const int                                      ENEMY_MAX_   = 3;
     std::chrono::high_resolution_clock::time_point previous_time_;
     const int                                      BLOCK_NUM_MAX_ = 10;
-    //const int                                      CANDYBOMB_NUM_MAX_ = 5;
 
     const std::array<float3, 4> WALL_POS_ = {float3(70.0f, 0.0f, 0.0f), float3(-70.0f, 0.0f, 0.0f), float3(0.0f, 0.0f, 70.0f), float3(0.0f, 0.0f, -70.0f)};
     std::vector<std::weak_ptr<Character>> characters_;      //!< キャラクターオブジェクトの配列
