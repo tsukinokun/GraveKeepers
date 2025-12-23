@@ -38,7 +38,7 @@ bool Werewolf::Init()
         status_comp->SetSpeed(MOVE_SPEED_);
         status_comp->SetAttackPoints(ATTACK_POWER_);
     }
-    //SetName(u8"狼男");
+    SetName(u8"Werewolf");
     return true;
 }
 

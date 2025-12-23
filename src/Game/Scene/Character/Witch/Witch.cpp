@@ -32,7 +32,7 @@ bool Witch::Init()
         status_comp->SetSpeed(MOVE_SPEED_);
         status_comp->SetAttackPoints(ATTACK_POWER_);
     }
-    //SetName(u8"魔女");
+    SetName(u8"Witch");
     return true;
 }
 
