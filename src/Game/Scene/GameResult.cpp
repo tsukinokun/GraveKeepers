@@ -7,6 +7,7 @@
 #include <Game/System/GameRepository.h>
 #include <Game/Scene/info/ResultInfo.h>
 #include <System/Component/ComponentModel.h>
+
 //---------------------------------------------------------------------------------
 //! 初期化
 //---------------------------------------------------------------------------------
