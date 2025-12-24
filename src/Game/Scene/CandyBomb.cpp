@@ -133,8 +133,10 @@ void CandyBomb::OnHit(const ComponentCollision::HitInfo& hit_info)
                     dir = float3(0, 1, 0);    // fallback
                 }
 
+                //速度をリセット
+                other_rb->SetVelocity(float3(0.0f, 0.0, 0.0f));
                 // ノックバック
-                other_rb->AddImpulse(dir * 100.0f);
+                other_rb->AddImpulse(dir * 10.0f);
             }
         }
     }

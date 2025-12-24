@@ -24,30 +24,27 @@ void StateIdleWalk::Update()
     auto owner = GetOwner();
 
     //アニメーション
-    auto model = owner->GetComponent<ComponentModel>();
-
+    auto   model    = owner->GetComponent<ComponentModel>();
     float3 curr_pos = owner->GetTranslate();    //現在の座標
     //前フレームとの差分ベクトルを求める
     float3 diff = curr_pos - prev_pos_;
-    //前フレームから移動しているなら歩き状態
-    if(float1(0.01f) < dot(diff, diff)) {
-        if(auto idle = owner->GetComponent<ComponentLiftable>()) {
-            //現在持ち上げられているオブジェクトの場合
-            if(idle->IsLifted()) {
-                //アイドル状態にする
-                model->PlayAnimationNoSame("idle", true);
-                owner->SetRotationAxisXYZ(90);    //回転
-            }
-            else {
-                model->PlayAnimationNoSame("walk", true);
-                owner->SetRotationAxisXYZ(0);    //回転をもとに戻す
-            }
+    //---------------------------------------------------------------------------
+    // 持ち上げられ中なら、idleにして、モデルも回転
+    //---------------------------------------------------------------------------
+    if(auto liftable_comp = owner->GetComponent<ComponentLiftable>()) {
+        if(liftable_comp->IsLifted()) {
+            model->PlayAnimationNoSame("idle", true);
+            model->SetRotationAxisXYZ(float3(0.0f, 0.0f, 90.0f));    //回転
         }
-
-        //model->PlayAnimationNoSame("walk", true);
+        else {
+            IdleWalkChange(model, diff);
+        }
     }
     else {
-        model->PlayAnimationNoSame("idle", true);
+        //---------------------------------------------------------------------------
+        // 通常処理
+        //---------------------------------------------------------------------------
+        IdleWalkChange(model, diff);
     }
     prev_pos_ = curr_pos;    //updateの末尾で、座標を保存しておく
 
@@ -58,6 +55,24 @@ void StateIdleWalk::Update()
         if(status->GetHitPoints() <= 0) {
             ChangeState<StateDeath>();
         }
+    }
+}
+
+//--------------------------------------------------------------------
+// 通常時の待機モーションと歩行モーションの切り替え処理
+//--------------------------------------------------------------------
+void StateIdleWalk::IdleWalkChange(std::shared_ptr<ComponentModel> model, float3 diff)
+{
+    //---------------------------------------------------------------------------
+    // 通常処理
+    //---------------------------------------------------------------------------
+    model->SetRotationAxisXYZ(float3(0.0f, 180.0f, 0.0f));    //回転
+    //前フレームから移動しているなら歩き状態
+    if(float1(0.01f) < dot(diff, diff)) {
+        model->PlayAnimationNoSame("walk", true);
+    }
+    else {
+        model->PlayAnimationNoSame("idle", true);
     }
 }
 

@@ -85,14 +85,6 @@ bool ScenePlay::Init()
         hp_ui->SetColor(GetColor(0, 255, 255));    //文字色は水色に
         hp_ui->SetTranslate(float3(HP_POS_X[i], HP_POS_Y, 0.0f));
     }
-    //---------------------------------------------------------------------------------
-    //	テスト画像
-    //---------------------------------------------------------------------------------
-    auto test_image = Scene::Object::Create<UIImage>(u8"テスト画像");
-    test_image->SetTranslate(float3(WINDOW_W / 2, WINDOW_H / 2, 0.0f));
-    test_image->SetAlignment(ComponentTransformUI::Alignment::MiddleCenter);
-    test_image->SetScaleAxisXYZ(0.1f);
-    test_image->SetImage(ImageBuffer::GetImageHandle("test"));    // 画像ハンドルを設定
     return true;
 }
 

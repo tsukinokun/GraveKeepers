@@ -35,6 +35,13 @@ void ComponentAI::Update()
     if(owner->GetComponent<StateDeath>()) {
         return;
     }
+    //持ち上げられないオブジェクトの場合はこれ以降の処理を行わない
+    if(auto liftable_comp = owner->GetComponent<ComponentLiftable>()) {
+        if(!liftable_comp->CanBeLifted()) {
+            //持ち上げられない状態ならこれ以降の処理を行わない
+            return;
+        }
+    }
     float3 rot  = owner->GetRotationAxisXYZ();
     rot.y      += 180.0f;    //座標系の違いの関係で180度回転させる
 
@@ -96,30 +103,6 @@ void ComponentAI::Update()
         else {
             //持ち上げ中の処理
             lift_time_count_ += delta_time;    //持ち上げ中なので、デルタタイムを加算
-            //オブジェクトを取得
-            //for(auto obj : Scene::Object::GetArray<Object>())
-            //{
-            //	if(!obj->GetComponent<ComponentLift>())
-            //	{
-            //		continue;	 //持ち上げオブジェクト以外はコンティニュー
-            //	}
-            //	if(obj->GetComponent<StateDeath>())
-            //	{
-            //		continue;	 //死亡状態ならコンティニュー
-            //	}
-            //	if(owner->GetName() == obj->GetName())
-            //	{
-            //		continue;	 //自分はコンティニュー
-            //	}
-            //	//オブジェクトとオーナーのベクトルを取得
-            //	float3 vec_owner_to_obj = obj->GetTranslate() - owner->GetTranslate();
-            //	//ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、長さとそのベクトルを代入する
-            //	if(length(vec_owner_to_obj) < most_near_distance)
-            //	{
-            //		most_near_distance = length(vec_owner_to_obj);
-            //		most_near_vec	   = vec_owner_to_obj;
-            //	}
-            //}
             //オブジェクトとオーナーのベクトルを取得
             if(auto target = target_object_.lock()) {
                 float3 vec_owner_to_obj = target->GetTranslate() - owner->GetTranslate();
