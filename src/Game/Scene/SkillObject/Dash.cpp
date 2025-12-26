@@ -54,7 +54,8 @@ void Dash::OnHit(const ComponentCollision::HitInfo& hit_info)
                 float3 direction = other->GetTranslate() - GetTranslate();
                 direction        = normalize(direction);
                 //力を加える
-                const float force_strength = 200.0f;
+                const float force_strength = 20.0f;
+                other_rb->SetVelocity(float3(0.0f, 0.0f, 0.0f));    //速度を一旦リセット
                 other_rb->AddImpulse(direction * force_strength);
             }
         }

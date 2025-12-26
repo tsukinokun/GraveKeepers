@@ -121,9 +121,9 @@ void FireBall::OnHit(const ComponentCollision::HitInfo& hit_info)
                 else {
                     dir = float3(0, 1, 0);    // fallback
                 }
-
+                other_rb->SetVelocity(float3(0.0f, 0.0f, 0.0f));
                 // ノックバック
-                other_rb->AddImpulse(dir * 100.0f);
+                other_rb->AddImpulse(dir * 20.0f);
             }
         }
     }
