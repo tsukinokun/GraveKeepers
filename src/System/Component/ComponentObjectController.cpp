@@ -3,6 +3,7 @@
 #include <System/Component/ComponentSpringArm.h>
 #include <System/Component/ComponentModel.h>
 #include <System/Component/ComponentStatus.h>
+#include <System/Component/ComponentLiftable.h>
 
 void ComponentObjectController::Init()
 {
@@ -19,6 +20,13 @@ void ComponentObjectController::Update()
     if(auto hp = owner->GetComponent<ComponentStatus>()) {
         //死亡で
         if(hp->IsDead()) {
+            return;
+        }
+    }
+    //持ち上げられないオブジェクトの場合はこれ以降の処理を行わない
+    if(auto liftable_comp = owner->GetComponent<ComponentLiftable>()) {
+        if(!liftable_comp->CanBeLifted()) {
+            //持ち上げられない状態ならこれ以降の処理を行わない
             return;
         }
     }

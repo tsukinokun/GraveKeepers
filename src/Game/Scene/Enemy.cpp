@@ -21,10 +21,10 @@ bool Enemy::Init()
     __super::Init();
     auto chara = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
     chara->AddComponent<ComponentAI>();
+    //chara->RemoveComponent<ComponentLift>();
     if(auto jump_comp = chara->GetComponent<ComponentJump>()) {
         jump_comp->SetConditionsJump([]() { return false; });
     }
-
     if(auto lift_comp = chara->GetComponent<ComponentLift>()) {
         lift_comp->SetConditionsForLifting(
             //ラムダ式を代入

@@ -64,49 +64,41 @@ void ComponentCollision::Construct(ObjectPtr owner)
 //! @details 当たった回数分ここに来ます
 void ComponentCollision::OnHit(const HitInfo& hitInfo)
 {
-    //有効でないならリターン
-    if(!enable_flag_) {
-        return;
-    }
     auto obj = GetOwner();
+#if 1
+    auto  contact_dir  = normalize(obj->GetTranslate() - obj->GetOldWorldMatrix().translate());
+    auto  gravity_dir  = normalize(now_gravity_);
+    float vertical_dot = dot(contact_dir, float3(0.0f, 1.0f, 0.0f));    // Y軸との一致度
 
+    if(hitInfo.hit_collision_->GetMass() < 0) {
+        const float contact_threshold = 0.7f;                            // Y軸方向にある程度近い接触のみ処理する
+        if(vertical_dot <= contact_threshold && gravity_dir.y < 0.0f)    // 下向き時のみ
+        {
+            now_gravity_ = float3(0.0f, 0.0f, 0.0f);
+            //prev_gravity_ = float3(0.0f, 0.0f, 0.0f);
+            GetOwner()->SetGravity(now_gravity_);
+        }
+    }
+#else
     // Staticな物質にぶつかった場合、gravity_を下げる
     if(hitInfo.hit_collision_->GetMass() < 0) {
         auto   vec = obj->GetTranslate() - obj->GetOldWorldMatrix().translate();
         float3 nvc = {0.0f, -1.0f, 0.0f};
         if(length(vec).x <= 0 || length(now_gravity_).x <= 0) {
-            now_gravity_  = 0.0f;
-            calc_gravity_ = 0.0f;
-            GetOwner()->SetGravity(calc_gravity_);
+            now_gravity_  = {0.0f, 0.0f, 0.0f};
+            prev_gravity_ = {0.0f, 0.0f, 0.0f};
+            GetOwner()->SetGravity(now_gravity_);
         }
         else {
             nvc           = normalize(vec);
             float d       = dot(normalize(now_gravity_), nvc);
             now_gravity_ *= ((1 - (d * d)) * 0.1f);
-            //GetOwner()->SetGravity( calc_gravity_ );
         }
     }
-
-    float3 hit_velocity = float3(0.0f, 0.0f, 0.0f);    //ヒットしたオブジェクトの速度
-    auto   hit_owner    = hitInfo.hit_collision_->GetOwner();
-
-    /*if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>())
-	{
-		hit_velocity = hit_rb->GetVelocity();
-	}*/
-
-    float3 velocity = float3(0.0f, 0.0f, 0.0f);    //自身の速度
-    if(auto rb = obj->GetComponent<ComponentRigidbody>()) {
-        velocity = rb->GetVelocity();
-        //床の場合だけxzの方向を保つ。
-        if(hit_owner->GetNameDefault() == "Field") {
-            velocity.x = -velocity.x;
-            velocity.z = -velocity.z;
-        }
-        rb->SetVelocity(-velocity * rb->GetRestitution());
-    }
-
+#endif
     obj->OnHit(hitInfo);
+    /*if(obj->OnHitFunc)
+		obj->OnHitFunc(hitInfo);*/
 }
 
 #if 0

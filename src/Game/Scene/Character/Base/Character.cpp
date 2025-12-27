@@ -136,7 +136,11 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
                 float3 pos_dir   = normalize(GetTranslate() - hit_owner->GetTranslate());
                 float3 knock_dir = normalize(0.7f * vel_dir + 0.3f * pos_dir);
                 float3 impulse   = knock_dir * length(hit_rb->GetVelocity());
-                GetComponent<ComponentRigidbody>()->AddImpulse(impulse);
+                //衝撃を与える
+                if(auto rb = GetComponent<ComponentRigidbody>()) {
+                    rb->SetVelocity(float3(0.0f, 0.0f, 0.0f));
+                    rb->AddImpulse(impulse);
+                }
 
                 //GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
                 int damage = static_cast<int>(hit_rb->GetMass());       //ダメージは当たったオブジェクトの質量に比例

@@ -3,6 +3,7 @@
 #include "StateBase.h"
 
 USING_PTR(StateIdleWalk);
+class ComponentModel;    //前方宣言
 
 class StateIdleWalk : public StateBase
 {
@@ -13,6 +14,12 @@ public:
 
     void Update() override;
     void GUI() override;
+
+private:
+    //--------------------------------------------------------------------
+    // 通常時の待機モーションと歩行モーションの切り替え処理
+    //--------------------------------------------------------------------
+    void IdleWalkChange(std::shared_ptr<ComponentModel> model, float3 diff);
 
 private:
     float3 prev_pos_ = float3(0.0f, 0.0f, 0.0f);    //前フレームの座標
