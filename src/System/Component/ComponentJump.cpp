@@ -9,6 +9,7 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/Component/ComponentHitInfo.h>
+#include <System/State/StateJump.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化処理
@@ -41,7 +42,7 @@ void ComponentJump::Init()
             }
         }
         //---------------------------------------------------------------------------
-        // ジャンプ処理
+        // ジャンプ開始処理
         //---------------------------------------------------------------------------
         //外部のジャンプ条件を満たした際に
         if(conditions_jump_()) {
@@ -49,9 +50,24 @@ void ComponentJump::Init()
             if(CanJump()) {
                 //ジャンプ処理
                 if(auto rb = owner->GetComponent<ComponentRigidbody>()) {
+                    is_jumping_          = true;
+                    is_jump_frame_       = true;              //ジャンプフレームにする
+                    impulse_frame_count_ = IMPULSE_FRAME_;    //フレームカウント開始
+                }
+            }
+        }
+        //---------------------------------------------------------------------------
+        // 実際にimpulseを加える処理
+        //---------------------------------------------------------------------------
+        impulse_frame_count_--;    //フレームカウントを減らす
+        //ピッタリカウントが0になったら
+        if(impulse_frame_count_ == 0) {
+            //オーナーにStateJumpがあるなら
+            if(owner->GetComponent<StateJump>()) {
+                //ジャンプ処理
+                if(auto rb = owner->GetComponent<ComponentRigidbody>()) {
                     rb->AddImpulse(float3(0.0f, jump_force_, 0.0f));
-                    is_jumping_    = true;
-                    is_jump_frame_ = true;    //ジャンプフレームにする
+                    impulse_frame_count_ = -1;    //明示的にカウント終了
                 }
             }
         }
@@ -148,6 +164,20 @@ bool ComponentJump::CanJump()
     //--------------------------------------------------------------------
     if(is_jumping_) {
         return false;
+    }
+    //--------------------------------------------------------------------
+    // フレームカウント中なら、二重でジャンプできない
+    //--------------------------------------------------------------------
+    if(impulse_frame_count_ > 0) {
+        return false;
+    }
+    //--------------------------------------------------------------------
+    // ジャンプ状態のStateがあるなら、ジャンプできない
+    //--------------------------------------------------------------------
+    if(auto owner = GetOwner()) {
+        if(owner->GetComponent<StateJump>()) {
+            return false;
+        }
     }
     //全ての条件を満たしているならtrueを返す
     return true;

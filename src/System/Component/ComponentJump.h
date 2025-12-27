@@ -65,11 +65,13 @@ private:
     bool CanJump();
 
 private:
-    std::function<bool()> conditions_jump_ = []() { return false; };    //ジャンプ条件
-    float                 jump_force_      = 6.3f;                      //ジャンプで足す値
-    bool                  set_enable_      = true;                      //ジャンプをできるかどうかの変数
-    bool                  is_jumping_      = false;                     //ジャンプをしているかの変数
-    bool                  is_jump_frame_   = false;                     //ジャンプしたフレームかどうか
+    std::function<bool()> conditions_jump_     = []() { return false; };    //ジャンプ条件
+    float                 jump_force_          = 15.0f;                     //ジャンプで足す値
+    bool                  set_enable_          = true;                      //ジャンプをできるかどうかの変数
+    bool                  is_jumping_          = false;                     //ジャンプをしているかの変数
+    bool                  is_jump_frame_       = false;                     //ジャンプしたフレームかどうか
+    int                   impulse_frame_count_ = -1;                        //実際にimpulseを加えるフレームを図る変数
+    const int             IMPULSE_FRAME_       = 5;                         //impulseを加えるフレーム数
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

@@ -11,6 +11,7 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentJump.h>
 #include <System/State/StateJump.h>
+
 void StateIdleWalk::Init()
 {
     __super::Init();
