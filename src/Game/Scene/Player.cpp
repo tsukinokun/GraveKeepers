@@ -47,8 +47,6 @@ bool Player::Init()
             return false;
         });
     }
-    //col_comp->SetCollisionGroup(ComponentCollision::CollisionGroup::PLAYER);	// 所属するグループを「PLAYER」とします
-    //auto lift_comp = AddComponent<ComponentLift>();								//持ち上げコンポーネント
     if(auto lift_comp = chara->GetComponent<ComponentLift>()) {
         lift_comp->SetConditionsForLifting(
             //ラムダ式を代入
