@@ -53,13 +53,37 @@ bool ScenePlay::Init()
     // シャッフルして上から3つを使う（候補が3未満ならある分だけ）
     std::random_device rd;
     std::mt19937       g(rd());
-    std::shuffle(names.begin(), names.end(), g);
 
-    int spawnCount = std::min<int>(3, static_cast<int>(names.size()));
+    int                      spawnCount = std::min<int>(3, static_cast<int>(names.size()));
+    std::vector<std::string> selected;
+
+    // 3人が同じ名前なら再抽選
+    while(true) {
+        std::shuffle(names.begin(), names.end(), g);
+
+        selected.clear();
+        for(int i = 0; i < spawnCount; i++) {
+            selected.push_back(names[i]);
+        }
+
+        // 全部同じなら再抽選
+        bool allSame = true;
+        for(int i = 1; i < spawnCount; i++) {
+            if(selected[i] != selected[0]) {
+                allSame = false;
+                break;
+            }
+        }
+
+        if(!allSame)
+            break;
+    }
+
+    // NPC生成
     for(int i = 0; i < spawnCount; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
-        enemy->SetDesiredCharacterName(names[i]);
-        characters_.push_back(enemy->GetControllCharacter());    //キャラクターオブジェクトの配列に追加
+        enemy->SetDesiredCharacterName(selected[i]);
+        characters_.push_back(enemy->GetControllCharacter());
     }
 
     previous_time_ = std::chrono::high_resolution_clock::now();
