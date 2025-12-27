@@ -22,6 +22,10 @@ public:
     //---------------------------------------------------------------------------
     std::weak_ptr<Character> GetControllCharacter() const;    //コントロールしているキャラクターを取得
 
+    void SetDesiredCharacterName(const std::string& name) { desired_character_name_ = name; }
+
 private:
     std::weak_ptr<Character> controll_character_;    //コントロールしているキャラクター
+
+    std::string desired_character_name_;    // 生成時に優先するキャラ名（空なら自動）
 };

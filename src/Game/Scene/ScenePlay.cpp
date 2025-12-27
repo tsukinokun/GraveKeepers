@@ -21,6 +21,9 @@
 #include "BombObject/CreateBomb.h"
 #include "BlockObject/CreateBlock.h"
 #include <Game/System/GameRepository.h>
+#include <Game/Scene/Character/CharacterFactory.h>
+#include <algorithm>
+#include <random>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -42,8 +45,20 @@ bool ScenePlay::Init()
     auto player = Scene::Object::Create<Player>();
     characters_.push_back(player->GetControllCharacter());    //キャラクターオブジェクトの配列に追加
 
-    for(int i = 0; i < ENEMY_MAX_; i++) {
+    // プレイヤーが選んだキャラを除いた候補を取得
+    auto names           = CharacterFactory::Instance().GetRegisteredCharacterNames();
+    auto player_selected = GameRepository::Instance().GetSelectedCharacterName();
+    names.erase(std::remove(names.begin(), names.end(), player_selected), names.end());
+
+    // シャッフルして上から3つを使う（候補が3未満ならある分だけ）
+    std::random_device rd;
+    std::mt19937       g(rd());
+    std::shuffle(names.begin(), names.end(), g);
+
+    int spawnCount = std::min<int>(3, static_cast<int>(names.size()));
+    for(int i = 0; i < spawnCount; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
+        enemy->SetDesiredCharacterName(names[i]);
         characters_.push_back(enemy->GetControllCharacter());    //キャラクターオブジェクトの配列に追加
     }
 

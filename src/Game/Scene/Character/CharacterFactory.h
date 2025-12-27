@@ -34,6 +34,9 @@ public:
     //---------------------------------------------------------------------------
     std::shared_ptr<Character> CreateCharacter(const std::string& chara_name);
 
+    // 登録されているキャラクター名一覧を返す
+    std::vector<std::string> GetRegisteredCharacterNames() const;
+
 private:
     // 登録用マップ
     std::unordered_map<std::string, std::function<std::shared_ptr<Character>()>> chara_creators_;
