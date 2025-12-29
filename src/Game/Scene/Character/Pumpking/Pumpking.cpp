@@ -27,7 +27,7 @@ bool Pumpking::Init()
             {          "walk",           "data/PoyPoy/Model/Character/Pumpking/Anims/Walk.mv1", 1, 1.0f}, //歩き
             {           "run",            "data/PoyPoy/Model/Character/Pumpking/Anims/Run.mv1", 1, 1.0f}, //走り
             {         "death", "data/PoyPoy/Model/Character/Pumpking/Anims/DeathMotionLay.mv1", 1, 1.0f}, //死亡
-            {          "jump",           "data/PoyPoy/Model/Character/Pumpking/Anims/Jump.mv1", 1, 1.0f}, //ジャンプ
+            {          "jump",           "data/PoyPoy/Model/Character/Pumpking/Anims/Jump.mv1", 1, 0.7f}, //ジャンプ
             {"crouching_idle",  "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingIdle.mv1", 1, 1.0f}, //しゃがみ待機
             {"crouching_walk",  "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingWalk.mv1", 1, 1.0f}, //しゃがみ歩き
             { "crouching_run",   "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingRun.mv1", 1, 1.0f}, //しゃがみ走り

@@ -26,7 +26,7 @@ bool Werewolf::Init()
             {          "walk",           "data/PoyPoy/Model/Character/Werewolf/Anims/Walk.mv1", 0, 1.0f}, //歩き
             {           "run",            "data/PoyPoy/Model/Character/Werewolf/Anims/Run.mv1", 0, 1.0f}, //走り
             {         "death", "data/PoyPoy/Model/Character/Werewolf/Anims/DeathMotionLay.mv1", 0, 1.0f}, //死亡
-            {          "jump",           "data/PoyPoy/Model/Character/Werewolf/Anims/Jump.mv1", 0, 1.0f}, //ジャンプ
+            {          "jump",           "data/PoyPoy/Model/Character/Werewolf/Anims/Jump.mv1", 0, 0.7f}, //ジャンプ
             {"crouching_idle",  "data/PoyPoy/Model/Character/Werewolf/Anims/CrouchingIdle.mv1", 0, 1.0f}, //しゃがみ待機
             {"crouching_walk",  "data/PoyPoy/Model/Character/Werewolf/Anims/CrouchingWalk.mv1", 0, 1.0f}, //しゃがみ歩き
             { "crouching_run",   "data/PoyPoy/Model/Character/Werewolf/Anims/CrouchingRun.mv1", 0, 1.0f}, //しゃがみ走り
