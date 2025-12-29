@@ -12,6 +12,10 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/Component/ComponentAI.h>
+#include <Game/Scene/Character/CharacterFactory.h>
+#include <Game/System/GameRepository.h>
+#include <algorithm>
+#include <random>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -19,7 +23,36 @@
 bool Enemy::Init()
 {
     __super::Init();
-    auto chara = Scene::Object::Create<Zombie>();    //テスト、プレイヤーでゾンビを作成、後々選択したものに変更する。
+    // 生成するキャラ名を決定（desired_character_name_ がセットされていればそれを優先）
+    std::string create_name;
+
+    if(!desired_character_name_.empty()) {
+        create_name = desired_character_name_;
+    }
+    else {
+        // プレイヤーが選んだキャラを除外してランダム選択
+        auto names           = CharacterFactory::Instance().GetRegisteredCharacterNames();
+        auto player_selected = GameRepository::Instance().GetSelectedCharacterName();
+        names.erase(std::remove(names.begin(), names.end(), player_selected), names.end());
+
+        if(!names.empty()) {
+            std::random_device rd;
+            std::mt19937       gen(rd());
+            std::shuffle(names.begin(), names.end(), gen);
+            create_name = names.front();
+        }
+        else {
+            // 候補がない場合はフォールバック
+            create_name = "Zombie";
+        }
+    }
+
+    // キャラクター生成（Factory を使う。失敗時は Zombie）
+    auto chara = CharacterFactory::Instance().CreateCharacter(create_name);
+    if(!chara) {
+        chara = Scene::Object::Create<Zombie>();
+    }
+
     chara->AddComponent<ComponentAI>();
     //chara->RemoveComponent<ComponentLift>();
     if(auto jump_comp = chara->GetComponent<ComponentJump>()) {
@@ -36,6 +69,7 @@ bool Enemy::Init()
                         return ai->ThrowSignal();
                     }
                 }
+                return false;
             });
     }
     controll_character_ = chara;

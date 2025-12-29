@@ -45,3 +45,11 @@ std::shared_ptr<Character> CharacterFactory::CreateCharacter(const std::string& 
     // 登録されていない場合はnullptrを返す
     return nullptr;
 }
+
+std::vector<std::string> CharacterFactory::GetRegisteredCharacterNames() const
+{
+    std::vector<std::string> names;
+    names.reserve(chara_creators_.size());
+    for(const auto& kv : chara_creators_) names.push_back(kv.first);
+    return names;
+}
