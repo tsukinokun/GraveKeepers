@@ -124,6 +124,29 @@ bool ScenePlay::Init()
         hp_ui->SetText("888");                     //HPテキスト、三桁が最大
         hp_ui->SetColor(GetColor(0, 255, 255));    //文字色は水色に
         hp_ui->SetTranslate(float3(HP_POS_X[i], HP_POS_Y, 0.0f));
+
+        //HPの上に名前表示用UI
+        std::string label_name = "Label" + std::to_string(i);
+        auto        label_ui   = Scene::Object::Create<UIText>(label_name);
+
+        label_ui->SetFontSize(20);                      // HPより少し小さめ
+        label_ui->SetColor(GetColor(255, 255, 255));    // 名前は白
+
+        // HPの数値UIから少し上に配置
+        label_ui->SetTranslate(float3(HP_POS_X[i], HP_POS_Y - 30.0f, 0.0f));
+
+        // 最初の名前をセット（0番目はPlayer、それ以外はNPC）
+        if(i == 0) {
+            label_ui->SetText("Player");
+        }
+        else {
+            label_ui->SetText("NPC" + std::to_string(i));
+        }
+
+        // Alignmentを中央にする
+        if(auto trans = label_ui->GetComponent<ComponentTransformUI>()) {
+            trans->SetAlignment(static_cast<ComponentTransformUI::Alignment>(4));
+        }
     }
     return true;
 }
