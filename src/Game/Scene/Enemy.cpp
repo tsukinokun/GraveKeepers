@@ -16,6 +16,7 @@
 #include <Game/System/GameRepository.h>
 #include <algorithm>
 #include <random>
+#include <Game/System/HlslppUseful.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -76,6 +77,33 @@ bool Enemy::Init()
 
     SetName(u8"エネミー");
 
+    // ---------------------------------------------------------
+    // ★ NPC 名前表示 UI の生成
+    // ---------------------------------------------------------
+    name_ui_ = Scene::Object::Create<UIText>(u8"NPC名前UI");
+    name_ui_->SetText("NPC")->SetFontSize(24)->SetColor(GetColor(255, 255, 255), GetColor(0, 0, 0))->SetEdgeSize(2);
+
+    // UI の更新処理（NPC の頭上に追従）
+    auto update_proc = [this]() {
+        if(auto chara = controll_character_.lock()) {
+            if(auto camera = Scene::GetCurrentCamera().lock()) {
+                // NPC の頭上位置
+                float3 worldPos = chara->GetTranslate() + float3(7.0f, 23.0f, 0.0f);
+
+                // ワールド → スクリーン座標
+                float2 screenPos = WorldPositionToScreenPosition(worldPos);
+
+                // UI の位置を更新
+                name_ui_->SetTranslate(float3(screenPos, 0.0f));
+            }
+            else {
+                name_ui_->SetScaleAxisXYZ(0.0f);
+            }
+        }
+    };
+
+    name_ui_->SetProc("update", update_proc);
+
     return true;
 }
 
@@ -85,4 +113,10 @@ bool Enemy::Init()
 std::weak_ptr<Character> Enemy::GetControllCharacter() const
 {
     return controll_character_;
+}
+
+void Enemy::SetDisplayName(const std::string& name)
+{
+    if(name_ui_)
+        name_ui_->SetText(name);
 }

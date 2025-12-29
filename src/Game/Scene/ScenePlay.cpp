@@ -83,6 +83,7 @@ bool ScenePlay::Init()
     for(int i = 0; i < spawnCount; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
         enemy->SetDesiredCharacterName(selected[i]);
+        enemy->SetDisplayName("NPC" + std::to_string(i + 1));
         characters_.push_back(enemy->GetControllCharacter());
     }
 
