@@ -9,6 +9,8 @@
 #include <System/Component/ComponentModel.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/Component/ComponentLiftable.h>
+#include <System/Component/ComponentJump.h>
+#include <System/State/StateJump.h>
 
 void StateIdleWalk::Init()
 {
@@ -49,11 +51,20 @@ void StateIdleWalk::Update()
     prev_pos_ = curr_pos;    //updateの末尾で、座標を保存しておく
 
     //---------------------------------------------------------------------------
-    //HPが0で死亡
+    // HPが0で死亡
     //---------------------------------------------------------------------------
     if(auto status = owner->GetComponent<ComponentStatus>()) {
-        if(status->GetHitPoints() <= 0) {
+        if(status->IsDead()) {
             ChangeState<StateDeath>();
+        }
+    }
+    //---------------------------------------------------------------------------
+    // ジャンプしたフレームであるなら、ジャンプ状態へ
+    //---------------------------------------------------------------------------
+    if(auto jump_comp = owner->GetComponent<ComponentJump>()) {
+        //ジャンプしたフレームであるなら
+        if(jump_comp->IsJumpFrame()) {
+            ChangeState<StateJump>();    //ジャンプ状態へ
         }
     }
 }

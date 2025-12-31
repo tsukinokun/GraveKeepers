@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------------------
 //!	@file	ComponentJump.cpp
-//! @brief	ジャンプ機能コンポーネント
+//! @brief	ジャンプ機能コンポーネントの実装
 //! @auther 山﨑愛
 //---------------------------------------------------------------------------
 #pragma once
@@ -8,6 +8,8 @@
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
+#include <System/Component/ComponentHitInfo.h>
+#include <System/State/StateJump.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化処理
@@ -15,37 +17,73 @@
 void ComponentJump::Init()
 {
     __super::Init();
-}
-
-//---------------------------------------------------------------------------
-//! @brief	更新処理
-//---------------------------------------------------------------------------
-void ComponentJump::Update()
-{
-    __super::Update();
-    jump_frame_count_--;
-    auto owner = GetOwner();
-    if(auto hp = owner->GetComponent<ComponentStatus>()) {
-        //死亡で
-        if(hp->IsDead()) {
-            return;
+    //---------------------------------------------------------------------------
+    // 更新処理登録
+    //---------------------------------------------------------------------------
+    auto update_proc = [this]() {
+        is_jump_frame_ = false;         //ジャンプフレームではない状態へ
+        auto owner     = GetOwner();    //オーナー取得
+        //---------------------------------------------------------------------------
+        // 死亡状態なら無視する
+        //---------------------------------------------------------------------------
+        if(auto status_comp = owner->GetComponent<ComponentStatus>()) {
+            //死亡で
+            if(status_comp->IsDead()) {
+                //ジャンプ無効化
+                return;
+            }
         }
-    }
-    //オーナーが持ち上げられ状態なら、後の処理は行わない。
-    if(owner->GetComponent<ComponentLiftable>()->IsLifted())
-        return;
-    //スペースキー押下でジャンプ
-    if(conditions_jump_() && (jump_frame_count_ < 0) && set_enable_ == false) {
-        jump_frame_count_ = jump_frame_max_;
-        owner->GetComponent<ComponentRigidbody>()->AddImpulse(float3(0.0f, jump_force_, 0.0f));
-        is_jumping_ = true;
-    }
-    //ジャンプのカウントが0以下ならリターン(この後の処理を行わない)
-    if(jump_frame_count_ < 0) {
-        set_enable_ = false;
-        is_jumping_ = false;
-        return;
-    }
+        //---------------------------------------------------------------------------
+        // オーナーが持ち上げられ状態なら、後の処理は行わない。
+        //---------------------------------------------------------------------------
+        if(auto liftable_comp = owner->GetComponent<ComponentLiftable>()) {
+            if(liftable_comp->IsLifted()) {
+                return;
+            }
+        }
+        //---------------------------------------------------------------------------
+        // ジャンプ開始処理
+        //---------------------------------------------------------------------------
+        //外部のジャンプ条件を満たした際に
+        if(conditions_jump_()) {
+            //ジャンプ可能なら
+            if(CanJump()) {
+                //ジャンプ処理
+                if(auto rb = owner->GetComponent<ComponentRigidbody>()) {
+                    is_jumping_          = true;
+                    is_jump_frame_       = true;              //ジャンプフレームにする
+                    impulse_frame_count_ = IMPULSE_FRAME_;    //フレームカウント開始
+                }
+            }
+        }
+        //---------------------------------------------------------------------------
+        // 実際にimpulseを加える処理
+        //---------------------------------------------------------------------------
+        impulse_frame_count_--;    //フレームカウントを減らす
+        //ピッタリカウントが0になったら
+        if(impulse_frame_count_ == 0) {
+            //オーナーにStateJumpがあるなら
+            if(owner->GetComponent<StateJump>()) {
+                //ジャンプ処理
+                if(auto rb = owner->GetComponent<ComponentRigidbody>()) {
+                    rb->AddImpulse(float3(0.0f, jump_force_, 0.0f));
+                    impulse_frame_count_ = -1;    //明示的にカウント終了
+                }
+            }
+        }
+    };
+    SetProc("Update", update_proc, ProcTiming::Update, ProcPriority::NONE);
+
+    //---------------------------------------------------------------------------
+    // ヒット時のコールバックを登録
+    //---------------------------------------------------------------------------
+    OnHitComponentFunc = [this](const HitInfo& hit_info) {
+        auto hit_owner = hit_info.hit_collision_->GetOwner();
+        //地面に当たったら
+        if(hit_owner->GetNameDefault() == u8"Field") {
+            is_jumping_ = false;    //ジャンプしていない状態へ
+        }
+    };
 }
 
 //---------------------------------------------------------------------------
@@ -68,14 +106,6 @@ void ComponentJump::GUI()
         }
     }
     ImGui::End();
-}
-
-//---------------------------------------------------------------------------
-//! @brief	何フレームジャンプを行うかをセット
-//---------------------------------------------------------------------------
-void ComponentJump::SetJumpFrame(int value)
-{
-    jump_frame_max_ = value;
 }
 
 //---------------------------------------------------------------------------
@@ -108,6 +138,49 @@ bool ComponentJump::IsJumping()
 void ComponentJump::SetConditionsJump(std::function<bool()> condition)
 {
     conditions_jump_ = condition;
+}
+
+//--------------------------------------------------------------------
+//! @brief ジャンプしたフレームであることを返す関数
+//--------------------------------------------------------------------
+bool ComponentJump::IsJumpFrame()
+{
+    return is_jump_frame_;
+}
+
+//--------------------------------------------------------------------
+//! @brief ジャンプ可能かを判定する関数
+//--------------------------------------------------------------------
+bool ComponentJump::CanJump()
+{
+    //--------------------------------------------------------------------
+    // ジャンプが無効ならfalseを返す
+    //--------------------------------------------------------------------
+    if(!set_enable_) {
+        return false;
+    }
+    //--------------------------------------------------------------------
+    // ジャンプ中ならfalseを返す
+    //--------------------------------------------------------------------
+    if(is_jumping_) {
+        return false;
+    }
+    //--------------------------------------------------------------------
+    // フレームカウント中なら、二重でジャンプできない
+    //--------------------------------------------------------------------
+    if(impulse_frame_count_ > 0) {
+        return false;
+    }
+    //--------------------------------------------------------------------
+    // ジャンプ状態のStateがあるなら、ジャンプできない
+    //--------------------------------------------------------------------
+    if(auto owner = GetOwner()) {
+        if(owner->GetComponent<StateJump>()) {
+            return false;
+        }
+    }
+    //全ての条件を満たしているならtrueを返す
+    return true;
 }
 CEREAL_REGISTER_TYPE(ComponentJump)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentJump)

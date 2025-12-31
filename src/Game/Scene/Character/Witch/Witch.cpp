@@ -25,6 +25,7 @@ bool Witch::Init()
             { "idle",                 "data/PoyPoy/Model/Character/Witch/Anims/Idle.mv1", 0, 1.0f},
             { "walk",              "data/PoyPoy/Model/Character/Witch/Anims/Walking.mv1", 0, 1.0f},
             {"death", "data/PoyPoy/Model/Character/Witch/Anims/Death From The Front.mv1", 0, 1.0f},
+            { "jump",                 "data/PoyPoy/Model/Character/Witch/Anims/Jump.mv1", 0, 0.7f},
         });
     }
     if(auto status_comp = status_component_.lock()) {
