@@ -88,13 +88,13 @@ bool Enemy::Init()
         if(auto chara = controll_character_.lock()) {
             if(auto camera = Scene::GetCurrentCamera().lock()) {
                 // NPC の頭上位置
-                float3 worldPos = chara->GetTranslate() + float3(7.0f, 23.0f, 0.0f);
+                float3 world_pos = chara->GetTranslate() + float3(7.0f, 23.0f, 0.0f);
 
                 // ワールド → スクリーン座標
-                float2 screenPos = WorldPositionToScreenPosition(worldPos);
+                float2 screen_pos = WorldPositionToScreenPosition(world_pos);
 
                 // UI の位置を更新
-                name_ui_->SetTranslate(float3(screenPos, 0.0f));
+                name_ui_->SetTranslate(float3(screen_pos, 0.0f));
             }
             else {
                 name_ui_->SetScaleAxisXYZ(0.0f);

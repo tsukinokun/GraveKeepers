@@ -45,45 +45,34 @@ bool ScenePlay::Init()
     auto player = Scene::Object::Create<Player>();
     characters_.push_back(player->GetControllCharacter());    //キャラクターオブジェクトの配列に追加
 
-    // プレイヤーが選んだキャラを除いた候補を取得
+    // ------------------------------------------------------------
+    // NPC スポーン処理（最適版）
+    // ------------------------------------------------------------
     auto names           = CharacterFactory::Instance().GetRegisteredCharacterNames();
     auto player_selected = GameRepository::Instance().GetSelectedCharacterName();
+
+    // 1. プレイヤー選択キャラを除外
     names.erase(std::remove(names.begin(), names.end(), player_selected), names.end());
 
-    // シャッフルして上から3つを使う（候補が3未満ならある分だけ）
+    // 2. 重複排除（これで "3人同じ名前" 問題が完全に消える）
+    std::sort(names.begin(), names.end());
+    names.erase(std::unique(names.begin(), names.end()), names.end());
+
+    // 3. シャッフル
     std::random_device rd;
     std::mt19937       g(rd());
+    std::shuffle(names.begin(), names.end(), g);
 
-    int                      spawnCount = std::min<int>(3, static_cast<int>(names.size()));
-    std::vector<std::string> selected;
+    // 4. 最大3人分だけ抽出
+    int                      spawn_count = std::min<int>(3, names.size());
+    std::vector<std::string> selected(names.begin(), names.begin() + spawn_count);
 
-    // 3人が同じ名前なら再抽選
-    while(true) {
-        std::shuffle(names.begin(), names.end(), g);
-
-        selected.clear();
-        for(int i = 0; i < spawnCount; i++) {
-            selected.push_back(names[i]);
-        }
-
-        // 全部同じなら再抽選
-        bool allSame = true;
-        for(int i = 1; i < spawnCount; i++) {
-            if(selected[i] != selected[0]) {
-                allSame = false;
-                break;
-            }
-        }
-
-        if(!allSame)
-            break;
-    }
-
-    // NPC生成
-    for(int i = 0; i < spawnCount; i++) {
+    // 5. NPC 生成
+    for(int i = 0; i < spawn_count; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
         enemy->SetDesiredCharacterName(selected[i]);
         enemy->SetDisplayName("NPC" + std::to_string(i + 1));
+
         characters_.push_back(enemy->GetControllCharacter());
     }
 
