@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 #include <System/Component/ComponentStatus.h>
+#include <System/Component/ComponentEffect.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化処理
@@ -126,6 +127,14 @@ std::shared_ptr<ComponentStatus> ComponentStatus::TakeDamage(int damage)
     hp_                  -= damage;                 //ダメージを受けて
     hp_                   = std::max(0, hp_);       //0.0fより小さくならない
     invincibility_timer_  = INVINCIBILITY_TIME_;    //無敵時間分を代入
+
+    // ダメージを受けたらエフェクトを再生（ダメージが0より大きい場合のみ）
+    if(damage > 0) {
+        // 既存で使われているエフェクトを流用。必要ならパスを変更してください。
+        const std::string eff_name = "data/PoyPoy/Effect/Damage/Simple_Sprite_BillBoard.efkefc";
+        float3            pos      = GetOwner() ? GetOwner()->GetTranslate() : float3(0, 0, 0);
+        ComponentEffect::Object::Create(eff_name, pos);
+    }
     return dynamic_pointer_cast<ComponentStatus>(shared_from_this());
 }
 
