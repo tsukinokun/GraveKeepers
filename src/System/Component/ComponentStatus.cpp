@@ -131,9 +131,15 @@ std::shared_ptr<ComponentStatus> ComponentStatus::TakeDamage(int damage)
     // ダメージを受けたらエフェクトを再生（ダメージが0より大きい場合のみ）
     if(damage > 0) {
         // 既存で使われているエフェクトを流用。必要ならパスを変更してください。
-        const std::string eff_name = "data/PoyPoy/Effect/Damage/Simple_Sprite_BillBoard.efkefc";
+        const std::string eff_name = "data/PoyPoy/Effect/Damage/damage.efkefc";
         float3            pos      = GetOwner() ? GetOwner()->GetTranslate() : float3(0, 0, 0);
-        ComponentEffect::Object::Create(eff_name, pos);
+        // エフェクト生成
+        auto effectObj = ComponentEffect::Object::Create(eff_name, pos);
+
+        // 再生速度を2倍にする
+        if(effectObj) {
+            effectObj->GetComponent<ComponentEffect>()->SetPlaySpeed(4.0f);
+        }
     }
 
     return dynamic_pointer_cast<ComponentStatus>(shared_from_this());
