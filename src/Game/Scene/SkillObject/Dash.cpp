@@ -15,15 +15,14 @@ bool Dash::Init()
     __super::Init();
 
     SetName(u8"突進");
-    SetEffect(u8"data/PoyPoy/Effect/Dash/Simple_SpawnMethod1.efkefc");
     //---------------------------------------------------------------------------------
     // コリジョンを追加する
     //---------------------------------------------------------------------------------
     auto col_comp = AddComponent<ComponentCollisionSphere>();
-    col_comp->SetRadius(3.0f);
+    col_comp->SetRadius(5.0f);
     col_comp->SetCollisionGroup(ComponentCollision::CollisionGroup::SKILL);                          // 所属するグループを「SKILL」とします
     col_comp->SetHitCollisionGroup(static_cast<u32>(ComponentCollision::CollisionGroup::PLAYER));    //PLAYERにのみ当たるように設定
-    col_comp->SetOverlapCollisionGroup(0xffffffff);    //すべてオーバーラップ(押し戻さないが、OnHitにコールバックは行うように)するように設定
+    col_comp->SetOverlapCollisionGroup(0xffffffff);    //すべてオーバーラップ(押し戻さないが、OnHitにコールバックは行うように)するように設
     collision_component_ = col_comp;
 
     return true;
