@@ -15,6 +15,7 @@
 #include <System/State/StateIdleWalk.h>
 #include <Game/Scene/UIObject/UIGauge.h>
 #include "../../src/Game/system/HlslppUseful.h"
+#include <System/Component/ComponentEffect.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -145,6 +146,22 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
                 //GetComponent<ComponentRigidbody>()->AddImpulse(hit_rb->GetVelocity());
                 int damage = static_cast<int>(hit_rb->GetMass());       //ダメージは当たったオブジェクトの質量に比例
                 GetComponent<ComponentStatus>()->TakeDamage(damage);    //ダメージを受ける
+
+                float3 hit_pos = hit_info.hit_position_;
+                // ダメージを受けたらエフェクトを再生（ダメージが0より大きい場合のみ）
+                if(damage > 0) {
+                    // 既存で使われているエフェクトを流用。必要ならパスを変更してください。
+                    const std::string eff_name = "data/PoyPoy/Effect/Damage/hit.efkefc";
+                    float3            pos      = hit_pos;
+                    // エフェクト生成
+                    auto effectObj = ComponentEffect::Object::Create(eff_name, pos);
+
+                    // 再生速度を2倍にする, スケールを変更
+                    if(effectObj) {
+                        effectObj->GetComponent<ComponentEffect>()->SetPlaySpeed(1.0f);
+                        effectObj->GetComponent<ComponentEffect>()->SetScaleAxisXYZ(0.5f);
+                    }
+                }
             }
         }
     }
