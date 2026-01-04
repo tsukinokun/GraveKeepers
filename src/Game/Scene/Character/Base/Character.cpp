@@ -13,7 +13,6 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/State/StateIdleWalk.h>
-#include <Game/Scene/UIObject/UIGauge.h>
 #include "../../src/Game/system/HlslppUseful.h"
 
 //---------------------------------------------------------------------------------
@@ -49,29 +48,6 @@ bool Character::Init()
     // 状態コンポーネントをつける
     //---------------------------------------------------------------------------------
     AddComponent<StateIdleWalk>();
-    //---------------------------------------------------------------------------------
-    // オブジェクトの頭の上にゲージを表示させる
-    //---------------------------------------------------------------------------------
-    {
-        auto gauge       = Scene::Object::Create<UIGauge>();
-        auto update_proc = [gauge, this]() {
-            //---------------------------------------------------------------------------------
-            // ゲージの位置をキャラクターの頭の上に設定する処理
-            //---------------------------------------------------------------------------------
-            //ワールド空間スクリーン空間に変換したい
-            if(auto camera = Scene::GetCurrentCamera().lock()) {
-                gauge->SetTranslate(float3(WorldPositionToScreenPosition(GetTranslate()), 0.0f));    //ゲージの位置を設定
-            }
-            //---------------------------------------------------------------------------------
-            // ゲージの割合を設定する処理
-            //---------------------------------------------------------------------------------
-            if(auto status = GetComponent<ComponentStatus>()) {
-                float hp_rate = static_cast<float>(status->GetHitPoints()) / static_cast<float>(status->GetMaxHitPoints());
-                gauge->SetGaugeRate(hp_rate);    //ゲージの割合を設定
-            }
-        };
-        gauge->SetProc("update", update_proc);
-    }
     SetName(u8"Character");
 
     return true;
