@@ -45,12 +45,20 @@ bool ScenePlay::Init()
     auto player = Scene::Object::Create<Player>();
     characters_.push_back(player->GetControllCharacter());    //キャラクターオブジェクトの配列に追加
 
-    // プレイヤーが選んだキャラを除いた候補を取得
+    // ------------------------------------------------------------
+    // NPC スポーン処理（最適版）
+    // ------------------------------------------------------------
     auto names           = CharacterFactory::Instance().GetRegisteredCharacterNames();
     auto player_selected = GameRepository::Instance().GetSelectedCharacterName();
+
+    // 1. プレイヤー選択キャラを除外
     names.erase(std::remove(names.begin(), names.end(), player_selected), names.end());
 
-    // シャッフルして上から3つを使う（候補が3未満ならある分だけ）
+    // 2. 重複排除（これで "3人同じ名前" 問題が完全に消える）
+    std::sort(names.begin(), names.end());
+    names.erase(std::unique(names.begin(), names.end()), names.end());
+
+    // 3. シャッフル
     std::random_device rd;
     std::mt19937       g(rd());
 
@@ -62,10 +70,10 @@ bool ScenePlay::Init()
     std::shuffle(names.begin(), names.end(), g);
 
     // 3. 必要な数（最大3つ）を決定
-    int spawnCount = std::min<int>(3, static_cast<int>(names.size()));
+    int spawn_count = std::min<int>(3, static_cast<int>(names.size()));
 
-    // NPC生成
-    for(int i = 0; i < spawnCount; i++) {
+    // 5. NPC 生成
+    for(int i = 0; i < spawn_count; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
         enemy->SetDesiredCharacterName(names[i]);
         characters_.push_back(enemy->GetControllCharacter());
@@ -108,6 +116,29 @@ bool ScenePlay::Init()
         hp_ui->SetText("888");                     //HPテキスト、三桁が最大
         hp_ui->SetColor(GetColor(0, 255, 255));    //文字色は水色に
         hp_ui->SetTranslate(float3(HP_POS_X[i], HP_POS_Y, 0.0f));
+
+        //HPの上に名前表示用UI
+        std::string label_name = "Label" + std::to_string(i);
+        auto        label_ui   = Scene::Object::Create<UIText>(label_name);
+
+        label_ui->SetFontSize(20);                      // HPより少し小さめ
+        label_ui->SetColor(GetColor(255, 255, 255));    // 名前は白
+
+        // HPの数値UIから少し上に配置
+        label_ui->SetTranslate(float3(HP_POS_X[i], HP_POS_Y - 30.0f, 0.0f));
+
+        // 最初の名前をセット（0番目はPlayer、それ以外はNPC）
+        if(i == 0) {
+            label_ui->SetText("Player");
+        }
+        else {
+            label_ui->SetText("NPC" + std::to_string(i));
+        }
+
+        // Alignmentを中央にする
+        if(auto trans = label_ui->GetComponent<ComponentTransformUI>()) {
+            trans->SetAlignment(static_cast<ComponentTransformUI::Alignment>(4));
+        }
     }
     return true;
 }
