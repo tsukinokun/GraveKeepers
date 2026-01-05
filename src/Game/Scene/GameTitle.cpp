@@ -148,7 +148,7 @@ void GameTitle::Update()
     __super::Update();
 
     //SPACEキーが押されたらゲーム画面に移行
-    if(CheckHitKey(KEY_INPUT_SPACE)) {
+    if(IsKeyOn(KEY_INPUT_SPACE)) {
         Scene::Change(Scene::GetScene<SceneCharaSelect>());    //シーンの変更を行う処理
     }
 }

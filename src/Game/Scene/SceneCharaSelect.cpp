@@ -7,7 +7,7 @@
 #include <System/Component/ComponentModel.h>
 #include <Game/System/HlslppUseful.h>
 #include <Game/Scene/UIObject/UIText.h>
-#include <Game/Scene/ScenePlay.h>
+#include <Game/Scene/SceneSkillSelect.h>
 #include <Game/System/GameRepository.h>
 
 //---------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ void SceneCharaSelect::Update()
         if(auto selected_chara = manage_characters_[selected_character_index_].lock()) {
             GameRepository::Instance().SetSelectedCharacterName(selected_chara->GetNameDefault().data());
         }
-        Scene::Change(Scene::GetScene<ScenePlay>());    //シーンの変更を行う処理
+        Scene::Change(Scene::GetScene<SceneSkillSelect>());    //シーンの変更を行う処理
     }
 }
 

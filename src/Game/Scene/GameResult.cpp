@@ -54,7 +54,7 @@ void GameResult::Update()
     __super::Update();
 
     //SPACEキーが押されたらタイトル画面に移行
-    if(CheckHitKey(KEY_INPUT_SPACE)) {
+    if(IsKeyOn(KEY_INPUT_SPACE)) {
         Scene::Change(Scene::GetScene<GameTitle>());    //シーンの変更を行う処理
     }
 }

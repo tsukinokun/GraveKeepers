@@ -41,6 +41,18 @@ public:
     std::string GetSelectedCharacterName() const;
 
     //---------------------------------------------------------------------------
+    //スキル名を設定するメソッド
+    //! @param[in] skill_name スキル名
+    //---------------------------------------------------------------------------
+    void SetSelectedSkillName(const std::string& skill_name);
+
+    //---------------------------------------------------------------------------
+    // 選択されたスキル名を取得するメソッド
+    //! @return 選択されたスキル名
+    //---------------------------------------------------------------------------
+    std::string GetSelectedSkillName() const;
+
+    //---------------------------------------------------------------------------
     // 結果を設定するメソッド
     //! @param [in] result_datas 各キャラクターの名前と順位
     //---------------------------------------------------------------------------
@@ -58,6 +70,7 @@ public:
     void Clear();
 
 private:
-    std::string               selected_character_name;    //!< 選択されたキャラクター名(Factoryで必要)
-    std::array<ResultInfo, 4> rsult_datas_;               //!< 各キャラクターのモデルと順位(プレイヤー -> NPC1 -> NPC2 -> NPC3)
+    std::string               selected_character_name_;    //!< 選択されたキャラクター名(Factoryで必要)
+    std::array<ResultInfo, 4> rsult_datas_;                //!< 各キャラクターのモデルと順位(プレイヤー -> NPC1 -> NPC2 -> NPC3)
+    std::string               selected_skill_name_;        //!< 選択されたスキル名(Factoryで必要)
 };

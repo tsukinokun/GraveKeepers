@@ -26,7 +26,7 @@ GameRepository& GameRepository::Instance()
 //---------------------------------------------------------------------------
 void GameRepository::SetSelectedCharacterName(const std::string& chara_name)
 {
-    selected_character_name = chara_name;
+    selected_character_name_ = chara_name;
 }
 
 //---------------------------------------------------------------------------
@@ -34,7 +34,23 @@ void GameRepository::SetSelectedCharacterName(const std::string& chara_name)
 //---------------------------------------------------------------------------
 std::string GameRepository::GetSelectedCharacterName() const
 {
-    return selected_character_name;
+    return selected_character_name_;
+}
+
+//---------------------------------------------------------------------------
+//! @brief スキル名を設定するメソッド
+//---------------------------------------------------------------------------
+void GameRepository::SetSelectedSkillName(const std::string& skill_name)
+{
+    selected_skill_name_ = skill_name;
+}
+
+//---------------------------------------------------------------------------
+//! @brief 選択されたスキル名を取得するメソッド
+//---------------------------------------------------------------------------
+std::string GameRepository::GetSelectedSkillName() const
+{
+    return selected_skill_name_;
 }
 
 //---------------------------------------------------------------------------
@@ -58,6 +74,7 @@ const std::array<ResultInfo, 4>& GameRepository::GetResultDatas() const
 //---------------------------------------------------------------------------
 void GameRepository::Clear()
 {
-    selected_character_name = "";
-    rsult_datas_            = {};
+    selected_character_name_ = "";
+    selected_skill_name_     = "";
+    rsult_datas_             = {};
 }

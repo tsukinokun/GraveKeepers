@@ -58,7 +58,7 @@ std::shared_ptr<ComponentSkill> ComponentFireBall::UseSkill()
     //---------------------------------------------------------------------------
     // スキルオブジェクトの生成
     //---------------------------------------------------------------------------
-    auto fire_ball  = Scene::Object::Create<FireBall>();    //ポイズンオブジェクトを生成
+    auto fire_ball  = Scene::Object::Create<FireBall>();    //ファイヤーボールオブジェクトを生成
     auto rotate     = owner->GetRotationAxisXYZ();
     rotate.y       += 180.0f;           //座標系の関係でyを180度回転する、オブジェクトの背中が正面
     fire_ball->SetDirection(rotate);    // 進行方向を設定
