@@ -61,18 +61,21 @@ bool ScenePlay::Init()
     // 3. シャッフル
     std::random_device rd;
     std::mt19937       g(rd());
+
+    // 1. まず候補リスト（names）自体の重複を消して、完全にユニークなリストにする
+    std::sort(names.begin(), names.end());
+    names.erase(std::unique(names.begin(), names.end()), names.end());
+
+    // 2. そのリストをシャッフルする
     std::shuffle(names.begin(), names.end(), g);
 
-    // 4. 最大3人分だけ抽出
-    int                      spawn_count = std::min<int>(3, names.size());
-    std::vector<std::string> selected(names.begin(), names.begin() + spawn_count);
+    // 3. 必要な数（最大3つ）を決定
+    int spawn_count = std::min<int>(3, static_cast<int>(names.size()));
 
     // 5. NPC 生成
     for(int i = 0; i < spawn_count; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
-        enemy->SetDesiredCharacterName(selected[i]);
-        enemy->SetDisplayName("NPC" + std::to_string(i + 1));
-
+        enemy->SetDesiredCharacterName(names[i]);
         characters_.push_back(enemy->GetControllCharacter());
     }
 

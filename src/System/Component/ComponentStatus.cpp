@@ -126,6 +126,7 @@ std::shared_ptr<ComponentStatus> ComponentStatus::TakeDamage(int damage)
     hp_                  -= damage;                 //ダメージを受けて
     hp_                   = std::max(0, hp_);       //0.0fより小さくならない
     invincibility_timer_  = INVINCIBILITY_TIME_;    //無敵時間分を代入
+
     return dynamic_pointer_cast<ComponentStatus>(shared_from_this());
 }
 
