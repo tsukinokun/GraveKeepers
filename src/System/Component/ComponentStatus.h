@@ -101,7 +101,7 @@ private:
     int   max_hp_              = 200;     //最大ヒットポイント
     int   hp_                  = 0;       //ヒットポイント
     int   attack_              = 0;       //攻撃力
-    float INVINCIBILITY_TIME_  = 2.0f;    //無敵時間
+    float INVINCIBILITY_TIME_  = 1.0f;    //無敵時間
     float invincibility_timer_ = 0.0f;    //無敵時間タイマー
     //スピード関連
     float move_speed_ = 0.2f;    //移動スピード

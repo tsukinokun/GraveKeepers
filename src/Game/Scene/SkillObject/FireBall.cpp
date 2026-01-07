@@ -98,7 +98,7 @@ void FireBall::OnHit(const ComponentCollision::HitInfo& hit_info)
         }
         //ステータスコンポーネントを取得
         if(auto status_comp = other_owner->GetComponent<ComponentStatus>()) {
-            //ダメージを与える(とりあえず4)
+            //ダメージを与える(とりあえず10)
             status_comp->TakeDamage(ATTACK_DAMAGE_);
         }
         //当たったフラグを立てる

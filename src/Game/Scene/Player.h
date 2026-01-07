@@ -31,14 +31,4 @@ public:
 
 private:
     std::weak_ptr<Character> controll_character_;
-
-    int selected_skill_index_ = 0;
-
-    enum
-    {
-        SKILL_FIREBALL = 0,
-        SKILL_DASH,
-        SKILL_POISON,
-        SKILL_COMBO_ATTACK,
-    };
 };

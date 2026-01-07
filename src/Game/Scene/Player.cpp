@@ -24,6 +24,7 @@
 #include <Game/Scene/UIObject/UIImage.h>
 #include "../../src/Game/system/HlslppUseful.h"
 #include <Game/System/ImageBuffer.h>
+#include <Game/Scene/SkillObject/SkillFactory.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -64,58 +65,39 @@ bool Player::Init()
                 return false;
             });
     }
-    //----------------------------------------------
-    //スキルコンポーネント(仮でファイアーボールを付ける)の設定
-    //----------------------------------------------
-    auto fireball_comp = chara->AddComponent<ComponentFireBall>();
-    fireball_comp->SetConditionsForUseSkill(
-        //ラムダ式を代入、xキーを押すとスキル仕様と割り当てる。
-        [&]() {
-            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_FIREBALL) {
-                return true;
-            }
-            return false;
-        });
 
     //----------------------------------------------
-    //スキルコンポーネント(仮で突進)の設定
+    // 選択したスキルを追加
     //----------------------------------------------
-    auto dash_comp = chara->AddComponent<ComponentDash>();
-    dash_comp->SetConditionsForUseSkill(
-        //ラムダ式を代入、Bキーを押すとスキル仕様と割り当てる。
-        [&]() {
-            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_DASH) {
-                return true;
-            }
-            return false;
-        });
-    //----------------------------------------------
-    //スキルコンポーネント(仮で毒設置アニメーション)の設定
-    //----------------------------------------------
-    auto poison_comp = chara->AddComponent<ComponentPoison>();
-    poison_comp->SetConditionsForUseSkill(
-        //ラムダ式を代入、cキーを押すとスキル仕様と割り当てる。
-        [&]() {
-            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_POISON) {
-                return true;
-            }
-            return false;
-        });
-    //----------------------------------------------
-    //スキルコンポーネント(仮で連撃を付ける)の設定
-    //----------------------------------------------
-    auto combo_attack_comp = chara->AddComponent<ComponentComboAttack>();
-    combo_attack_comp->SetConditionsForUseSkill(
-        //ラムダ式を代入、vキーを押すとスキル仕様と割り当てる。
-        [&]() {
-            if(IsKeyOn(KEY_INPUT_P) && selected_skill_index_ == SKILL_COMBO_ATTACK) {
-                return true;
-            }
-            return false;
-        });
+    std::string skill_name = GameRepository::Instance().GetSelectedSkillName();
+    auto        skill      = SkillFactory::Instance().CreateSkill(skill_name);
+    if(skill) {
+        //skillで取得した名前からスキルコンポーネントを追加
+        skill_name = GameRepository::Instance().GetSelectedSkillName();
+    }
 
-    selected_skill_index_ = SKILL_FIREBALL;
-
+    std::shared_ptr<ComponentSkill> skill_component;    //スキルコンポーネントを操作するためのポインタ
+    if(skill_name == "FireBall") {
+        skill_component = chara->AddComponent<ComponentFireBall>();
+    }
+    else if(skill_name == "Dash") {
+        skill_component = chara->AddComponent<ComponentDash>();
+    }
+    else if(skill_name == "Poison") {
+        skill_component = chara->AddComponent<ComponentPoison>();
+    }
+    else if(skill_name == "ComboAttack") {
+        skill_component = chara->AddComponent<ComponentComboAttack>();
+    }
+    //共通のスキル発動条件設定
+    skill_component->SetConditionsForUseSkill(
+        //ラムダ式を代入、Pキーを押すとスキル発動と割り当てる。
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P)) {
+                return true;
+            }
+            return false;
+        });
     {
         //画像を読み込む
         auto test_image = Scene::Object::Create<UIImage>(u8"プレイヤー識別画像");
@@ -149,16 +131,6 @@ bool Player::Init()
 void Player::Update()
 {
     __super::Update();
-
-    // スキル選択（上下左右キー）
-    if(IsKeyOn(KEY_INPUT_UP))
-        selected_skill_index_ = SKILL_FIREBALL;
-    if(IsKeyOn(KEY_INPUT_RIGHT))
-        selected_skill_index_ = SKILL_DASH;
-    if(IsKeyOn(KEY_INPUT_DOWN))
-        selected_skill_index_ = SKILL_POISON;
-    if(IsKeyOn(KEY_INPUT_LEFT))
-        selected_skill_index_ = SKILL_COMBO_ATTACK;
 }
 
 //---------------------------------------------------------------------------------
