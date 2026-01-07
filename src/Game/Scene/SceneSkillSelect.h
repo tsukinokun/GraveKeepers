@@ -23,6 +23,10 @@ private:
     float                              rad_offset_           = 90.0f;    //!< スキル配置の角度の実際のオフセット
     float                              rad_display_offset_   = 90.0f;    //!< 画面に表示されるスキル配置の角度のオフセット
     std::vector<std::weak_ptr<Object>> manage_skills_;                   //!< 管理しているスキルオブジェクトの配列
+    std::vector<std::weak_ptr<Object>> manage_books_;                    //!< 管理している本オブジェクトの配列
+
+    //スキルの説明文
+    std::string skill_description_ = "";
 
     ObjectPtr fireball_     = nullptr;
     ObjectPtr dash_         = nullptr;

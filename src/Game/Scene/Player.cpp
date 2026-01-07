@@ -69,58 +69,35 @@ bool Player::Init()
     //----------------------------------------------
     // 選択したスキルを追加
     //----------------------------------------------
-    auto skill = SkillFactory::Instance().CreateSkill(GameRepository::Instance().GetSelectedSkillName());
+    std::string skill_name = GameRepository::Instance().GetSelectedSkillName();
+    auto        skill      = SkillFactory::Instance().CreateSkill(skill_name);
     if(skill) {
         //skillで取得した名前からスキルコンポーネントを追加
-        skill_name_ = GameRepository::Instance().GetSelectedSkillName();
+        skill_name = GameRepository::Instance().GetSelectedSkillName();
     }
 
-    if(skill_name_ == "FireBall") {
-        auto fireball_comp = chara->AddComponent<ComponentFireBall>();
-        //Pボタンでスキル使用
-        fireball_comp->SetConditionsForUseSkill(
-            //ラムダ式を代入、Pキーを押すとスキル発動と割り当てる。
-            [&]() {
-                if(IsKeyOn(KEY_INPUT_P)) {
-                    return true;
-                }
-                return false;
-            });
+    std::shared_ptr<ComponentSkill> skill_component;    //スキルコンポーネントを操作するためのポインタ
+    if(skill_name == "FireBall") {
+        skill_component = chara->AddComponent<ComponentFireBall>();
     }
-    else if(skill_name_ == "Dash") {
-        auto dash_comp = chara->AddComponent<ComponentDash>();
-        dash_comp->SetConditionsForUseSkill(
-            //ラムダ式を代入、Pキーを押すとスキル発動と割り当てる。
-            [&]() {
-                if(IsKeyOn(KEY_INPUT_P)) {
-                    return true;
-                }
-                return false;
-            });
+    else if(skill_name == "Dash") {
+        skill_component = chara->AddComponent<ComponentDash>();
     }
-    else if(skill_name_ == "Poison") {
-        auto poison_comp = chara->AddComponent<ComponentPoison>();
-        poison_comp->SetConditionsForUseSkill(
-            //ラムダ式を代入、Pキーを押すとスキル発動と割り当てる。
-            [&]() {
-                if(IsKeyOn(KEY_INPUT_P)) {
-                    return true;
-                }
-                return false;
-            });
+    else if(skill_name == "Poison") {
+        skill_component = chara->AddComponent<ComponentPoison>();
     }
-    else if(skill_name_ == "ComboAttack") {
-        auto combo_attack_comp = chara->AddComponent<ComponentComboAttack>();
-        combo_attack_comp->SetConditionsForUseSkill(
-            //ラムダ式を代入、Pキーを押すとスキル発動と割り当てる。
-            [&]() {
-                if(IsKeyOn(KEY_INPUT_P)) {
-                    return true;
-                }
-                return false;
-            });
+    else if(skill_name == "ComboAttack") {
+        skill_component = chara->AddComponent<ComponentComboAttack>();
     }
-
+    //共通のスキル発動条件設定
+    skill_component->SetConditionsForUseSkill(
+        //ラムダ式を代入、Pキーを押すとスキル発動と割り当てる。
+        [&]() {
+            if(IsKeyOn(KEY_INPUT_P)) {
+                return true;
+            }
+            return false;
+        });
     {
         //画像を読み込む
         auto test_image = Scene::Object::Create<UIImage>(u8"プレイヤー識別画像");

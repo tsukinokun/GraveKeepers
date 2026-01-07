@@ -31,6 +31,4 @@ public:
 
 private:
     std::weak_ptr<Character> controll_character_;
-
-    std::string skill_name_;
 };

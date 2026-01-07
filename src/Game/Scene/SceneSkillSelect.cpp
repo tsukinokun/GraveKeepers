@@ -8,6 +8,7 @@
 #include "ScenePlay.h"
 #include <System/Component/ComponentModel.h>
 #include <System/Component/ComponentEffect.h>
+#include <Game/System/HlslppUseful.h>
 #include <Game/Scene/UIObject/UIImage.h>
 #include <Game/Scene/UIObject/UIText.h>
 #include <Game/System/ImageBuffer.h>
@@ -36,27 +37,34 @@ bool SceneSkillSelect::Init()
     // スペースキーを押して選択できる旨を表示
     //---------------------------------------------------------------------------------
     {
-        auto ui_text = Scene::Object::Create<UIText>();
-        ui_text->SetTranslate(float3(20.0f, 50.0f, 0.0f));
-        ui_text->SetText("← → キーでスキルを選択、Spaceキーで決定");
+        auto        ui_text = Scene::Object::Create<UIText>();
+        std::string string  = "どの魔法書を使用しますか？";
+
+        ui_text->SetTranslate(float3(300.0f, 50.0f, 0.0f));
+
+        ui_text->SetText(string);
         ui_text->SetFontSize(24);
         ui_text->SetName("SkillSelectText");
     }
-    //---------------------------------------------------------------------------------
-    // 本のモデルを表示
-    //---------------------------------------------------------------------------------
     {
-        auto model = Scene::Object::Create<Object>();
-        model->SetTranslate(float3(0.0f, 0.0f, 0.0f));
-        model->SetRotationAxisXYZ(float3(0.0f, 180, 0.0f));
-        model->SetScaleAxisXYZ(float3(2.0f, 2.0f, 2.0f));
-        model->SetName("BookModel");
+        auto        ui_text = Scene::Object::Create<UIText>();
+        std::string string  = "← → キーでスキルを選択、Spaceキーで決定";
 
-        //---------------------------------------------------------------------------------
-        //モデルコンポーネントの設定
-        //---------------------------------------------------------------------------------
-        auto model_comp = model->AddComponent<ComponentModel>();
-        model_comp->Load("data/PoyPoy/Model//Book/book.mv1");
+        ui_text->SetTranslate(float3(100.0f, 80.0f, 0.0f));
+
+        ui_text->SetText(string);
+        ui_text->SetFontSize(24);
+        ui_text->SetName("SkillSelectText");
+    }
+    {
+        auto ui_text       = Scene::Object::Create<UIText>();
+        skill_description_ = "・ファイヤーボール\n・攻撃力: 10";
+
+        ui_text->SetTranslate(float3(40.0f, 120.0f, 0.0f));
+
+        ui_text->SetText(skill_description_);
+        ui_text->SetFontSize(24);
+        ui_text->SetName("DescriptionText");
     }
 
     //---------------------------------------------------------------------------------
@@ -95,6 +103,7 @@ bool SceneSkillSelect::Init()
         poison_ = Scene::Object::Create<Object>();
         poison_->SetTranslate(float3(0.0f, 10.0f, 0.0f));
         poison_->SetName("Poison");
+        poison_->SetScaleAxisXYZ(float3(2.0f, 2.0f, 2.0f));
 
         auto effect_comp = poison_->AddComponent<ComponentEffect>();
         effect_comp->Load("data/PoyPoy/Effect/Poison/Poison.efkefc");
@@ -116,6 +125,26 @@ bool SceneSkillSelect::Init()
     }
     manage_skills_ = skills;    // スキルオブジェクトを管理配列に格納
 
+    //---------------------------------------------------------------------------------
+    // 本のUIを表示
+    //---------------------------------------------------------------------------------
+    for(int i = 0; i < manage_skills_.size(); i++) {
+        //---------------------------------------------------------------------------------
+        // 本のモデルを表示
+        //---------------------------------------------------------------------------------
+        auto model = Scene::Object::Create<Object>();
+        model->SetTranslate(float3(0.0f, 0.0f, 0.0f));
+        model->SetRotationAxisXYZ(float3(0.0f, 180, 0.0f));
+        model->SetName("BookModel");
+
+        //---------------------------------------------------------------------------------
+        //モデルコンポーネントの設定
+        //---------------------------------------------------------------------------------
+        auto model_comp = model->AddComponent<ComponentModel>();
+        model_comp->Load("data/PoyPoy/Model//Book/book.mv1");
+        manage_books_.push_back(model);
+    }
+
     return true;
 }
 
@@ -135,6 +164,9 @@ void SceneSkillSelect::Update()
         if(selected_skill_index_ >= manage_skills_.size()) {
             selected_skill_index_ = 0;
         }
+        // 角度のオフセットを更新
+        rad_offset_ -= 360.0f / static_cast<float>(manage_skills_.size());
+        skill_description_.clear();
     }
     //左キーで左へ
     if(IsKeyOn(KEY_INPUT_LEFT)) {
@@ -143,6 +175,9 @@ void SceneSkillSelect::Update()
         if(selected_skill_index_ < 0) {
             selected_skill_index_ = static_cast<int>(manage_skills_.size()) - 1;
         }
+        // 角度のオフセットを更新
+        rad_offset_ += 360.0f / static_cast<float>(manage_skills_.size());
+        skill_description_.clear();
     }
     //スキルの表示切り替え
     for(int i = 0; i < manage_skills_.size(); i++) {
@@ -164,6 +199,58 @@ void SceneSkillSelect::Update()
                 }
             }
         }
+    }
+    //角度を滑らかに補間
+    rad_display_offset_ += (rad_offset_ - rad_display_offset_) * 0.1f;
+    //---------------------------------------------------------------------------------
+    // スキルを円形に配置
+    //---------------------------------------------------------------------------------
+    for(int i = 0; i < manage_skills_.size(); i++) {
+        float3 center    = float3(0.0f, 15.0f, 0.0f);    // 円の中心
+        float  radius    = 10.0f;                        // 円の半径
+        float3 translate = GetPointOnCircle(center, radius, manage_skills_.size(), i, rad_display_offset_);
+        if(auto chara = manage_skills_[i].lock()) {
+            chara->SetTranslate(translate);
+        }
+    }
+    //---------------------------------------------------------------------------------
+    // 本のモデルを円形に配置
+    //---------------------------------------------------------------------------------
+    for(int i = 0; i < manage_books_.size(); i++) {
+        float3 center    = float3(0.0f, 5.0f, 0.0f);    // 円の中心
+        float  radius    = 12.0f;                       // 円の半径
+        float3 translate = GetPointOnCircle(center, radius, manage_books_.size(), i, rad_display_offset_);
+        if(auto book = manage_books_[i].lock()) {
+            book->SetTranslate(translate);
+            //角度を中心点が後ろ方向に向くように調整
+            float3 dir   = normalize(float3(0.0f, 0.0f, 0.0f) - translate);
+            float  angle = atan2f(dir.x, dir.z) * (180.0f / 3.14159f);
+            book->SetRotationAxisXYZ(float3(0.0f, angle, 0.0f));
+        }
+    }
+
+    // スキル説明文の更新
+    if(auto ui_text = Scene::Object::Get<UIText>("DescriptionText")) {
+        switch(selected_skill_index_) {
+        case 0:
+            skill_description_ = "・ファイヤーボール\n・攻撃力:10 ";
+            ui_text->SetTranslate(float3(40.0f, 150.0f, 0.0f));
+            break;
+        case 1:
+            skill_description_ = "・突進\n・攻撃力:20 ";
+            ui_text->SetTranslate(float3(76.0f, 150.0f, 0.0f));
+            break;
+        case 2:
+            skill_description_ = "・毒設置\n・攻撃力:1秒あたり4";
+            ui_text->SetTranslate(float3(33.0f, 150.0f, 0.0f));
+            break;
+        case 3:
+            skill_description_ = "・連撃\n・攻撃力:0.5秒あたり5 ";
+            ui_text->SetTranslate(float3(13.0f, 150.0f, 0.0f));
+            break;
+        }
+
+        ui_text->SetText(skill_description_);
     }
 
     //SPACEキーが押されたらゲーム画面に移行
