@@ -6,6 +6,8 @@
 #include <Game/Scene/SkillObject/Dash.h>
 #include <System/Component/ComponentEffect.h>
 #include <System/Component/ComponentRigidbody.h>
+#include <System/Component/ComponentStatus.h>
+#include <System/Component/ComponentHitInfo.h>
 #include <cmath>
 
 //---------------------------------------------------------------------------
@@ -72,37 +74,6 @@ std::shared_ptr<ComponentSkill> ComponentDash::UseSkill()
     dash->SetRotationAxisXYZ(owner_->GetRotationAxisXYZ());
 
     //---------------------------------------------------------------------------
-    // エフェクトをワールド固定で生成（Dash オブジェクトの元からついているエフェクトは削除）
-    //---------------------------------------------------------------------------
-    {
-        const std::string eff_path = "data/PoyPoy/Effect/Dash/Simple_SpawnMethod1.efkefc";
-        // ワールド固定のエフェクトオブジェクトを生成（pos に固定）
-        ComponentEffect::Object::Create(eff_path, pos, float3(0.0f), float3(1.0f));
-        // Dash に付与されている ComponentEffect があれば削除して追従を止める
-        if(dash->GetComponent<ComponentEffect>()) {
-            dash->RemoveComponent<ComponentEffect>();
-        }
-    }
-
-    //---------------------------------------------------------------------------
-    // 使用者に追従させる処理（当たり判定は使用者に追従）
-    //---------------------------------------------------------------------------
-    {
-        auto owner_sp    = owner;
-        auto follow_proc = [dash, owner_sp]() {
-            if(owner_sp) {
-                // 常にオーナーのワールド位置 + オフセットに追従（当たり判定を使用者に合わせる）
-                dash->SetTranslate(owner_sp->GetTranslate() + float3(0.0f, 10.0f, 0.0f));
-            }
-            else {
-                // オーナーが存在しなくなったらプロシージャ解除
-                dash->ResetProc("dash_follow_owner");
-            }
-        };
-        dash->SetProc("dash_follow_owner", follow_proc, ProcTiming::Update, ProcPriority::NORMAL);
-    }
-
-    //---------------------------------------------------------------------------
     // 物理的な突進（プレイヤー本体を前方に押し出す）
     //---------------------------------------------------------------------------
     // 前方ベクトルの計算（yaw が degree の想定）
@@ -120,13 +91,77 @@ std::shared_ptr<ComponentSkill> ComponentDash::UseSkill()
         rb->SetVelocity(float3(0.0f, 0.0f, 0.0f));    // 既存速度をリセットして瞬間的加速にする
         rb->AddImpulse(forward * -dash_strength);     // 前方に押し出す
     }
-    // ダッシュオブジェクトの寿命管理（一定時間で自動削除）
+
+    //---------------------------------------------------------------------------
+    // 衝突時のダメージ・ノックバック処理をこの Component に設定（有効時間中のみ）
+    //---------------------------------------------------------------------------
+    // 自身の shared_ptr / weak_ptr を準備
+    auto                         self_sp = std::dynamic_pointer_cast<ComponentDash>(shared_from_this());
+    std::weak_ptr<ComponentDash> self_wp = self_sp;
+
+    // 既存のコールバックを保存しておき、終了時に復帰させる
+    auto prev_onhit = self_sp->OnHitComponentFunc;
+
+    // ダメージ・ノックバック
+    const int   hit_damage         = 30;
+    const float hit_force_strength = 50.0f;
+
+    // オーナーと安全に参照するための weak_ptr
+    auto                  owner_sp = owner->shared_from_this();
+    std::weak_ptr<Object> owner_wp = owner_sp;
+
+    // コールバックを設定
+    self_sp->OnHitComponentFunc = [self_wp, owner_wp, hit_damage, hit_force_strength](const HitInfo& hit_info) {
+        // 安全参照の復元
+        auto self  = self_wp.lock();
+        auto owner = owner_wp.lock();
+        if(!self || !owner)
+            return;
+
+        // hit_info から当たった相手のオーナーを取得（当たり判定側のコリジョンが持つオーナー）
+        if(!hit_info.hit_collision_)
+            return;
+
+        auto other_owner = hit_info.hit_collision_->GetOwner();
+        if(!other_owner)
+            return;
+
+        // 自分自身には当たらないようにする
+        if(other_owner->GetName() == owner->GetName())
+            return;
+
+        //ステータスコンポーネントを取得
+        if(auto status_comp = other_owner->GetComponent<ComponentStatus>()) {
+            // ダメージ処理
+            status_comp->TakeDamage(hit_damage);
+        }
+
+        // ノックバック（当たった相手の剛体があれば力を加える）
+        if(auto other_rb = other_owner->GetComponent<ComponentRigidbody>()) {
+            // 自分から相手への方向
+            float3 direction = other_owner->GetTranslate() - owner->GetTranslate();
+            direction        = normalize(direction);
+            other_rb->SetVelocity(float3(0.0f, 0.0f, 0.0f));    // 速度をリセット
+            other_rb->AddImpulse(direction * hit_force_strength);
+        }
+    };
+
+    //---------------------------------------------------------------------------
+    // ダッシュ有効時間の管理（dash オブジェクトが生存している間にタイマーで解除）
+    //---------------------------------------------------------------------------
     auto timer     = std::make_shared<float>(0.0f);
-    auto dash_proc = [dash, timer, dash_duration]() mutable {
-        *timer += GetDeltaTime();    // 1秒間に 1.0 加算される関数
+    auto dash_proc = [dash, timer, dash_duration, self_wp, prev_onhit]() mutable {
+        *timer += GetDeltaTime();    // フレーム毎に経過時間を加算
         if(*timer >= dash_duration) {
-            // 解放前に follow プロシージャも解除しておく
+            // スキル時間終了：Component に設定した OnHitComponentFunc を元に戻す
+            if(auto self = self_wp.lock()) {
+                self->OnHitComponentFunc = prev_onhit;
+            }
+
+            // 念のため follow 用プロシージャ名を解除（存在していても安全）
             dash->ResetProc("dash_follow_owner");
+
+            // エフェクト用オブジェクトを破棄
             Scene::Object::Release(dash);
         }
     };
