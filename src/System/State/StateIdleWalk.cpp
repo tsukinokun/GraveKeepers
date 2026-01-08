@@ -31,15 +31,16 @@ void StateIdleWalk::Update()
     //前フレームとの差分ベクトルを求める
     float3 diff = curr_pos - prev_pos_;
     //---------------------------------------------------------------------------
-    // 持ち上げられ中なら、idleにして、モデルも回転
+    // 持ち上げられ中なら、liftableにして、モデルも回転
     //---------------------------------------------------------------------------
     if(auto liftable_comp = owner->GetComponent<ComponentLiftable>()) {
         if(liftable_comp->IsLifted()) {
-            model->PlayAnimationNoSame("idle", true);
-            model->SetRotationAxisXYZ(float3(0.0f, 0.0f, 90.0f));    //回転
+            model->PlayAnimationNoSame("liftable", true);
+            model->SetTranslate(float3(0.0f, -10.0f, 0.0f));    //持ち上げられ中は少し上に表示
         }
         else {
             IdleWalkChange(model, diff);
+            model->SetTranslate(float3(0.0f, 0.0f, 0.0f));    //通常位置に戻す
         }
     }
     else {
