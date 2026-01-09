@@ -22,10 +22,11 @@ bool Witch::Init()
     if(auto model_comp = model_component_.lock()) {
         model_comp->Load("data/PoyPoy/Model/Character/Witch/Witch.mv1");
         model_comp->SetAnimation({
-            { "idle",                 "data/PoyPoy/Model/Character/Witch/Anims/Idle.mv1", 0, 1.0f},
-            { "walk",              "data/PoyPoy/Model/Character/Witch/Anims/Walking.mv1", 0, 1.0f},
-            {"death", "data/PoyPoy/Model/Character/Witch/Anims/Death From The Front.mv1", 0, 1.0f},
-            { "jump",                 "data/PoyPoy/Model/Character/Witch/Anims/Jump.mv1", 0, 0.7f},
+            {    "idle",                 "data/PoyPoy/Model/Character/Witch/Anims/Idle.mv1", 0, 1.0f},
+            {    "walk",              "data/PoyPoy/Model/Character/Witch/Anims/Walking.mv1", 0, 1.0f},
+            {   "death", "data/PoyPoy/Model/Character/Witch/Anims/Death From The Front.mv1", 0, 1.0f},
+            {    "jump",                 "data/PoyPoy/Model/Character/Witch/Anims/Jump.mv1", 0, 0.7f},
+            {"liftable",             "data/PoyPoy/Model/Character/Witch/Anims/Liftable.mv1", 0, 1.0f}
         });
     }
     if(auto status_comp = status_component_.lock()) {

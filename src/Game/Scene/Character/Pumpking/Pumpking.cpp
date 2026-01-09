@@ -32,6 +32,7 @@ bool Pumpking::Init()
             {"crouching_walk",  "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingWalk.mv1", 1, 1.0f}, //しゃがみ歩き
             { "crouching_run",   "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingRun.mv1", 1, 1.0f}, //しゃがみ走り
             {     "low_crawl",       "data/PoyPoy/Model/Character/Pumpking/Anims/LowCrawl.mv1", 1, 1.0f}, //這いずり移動
+            {      "liftable",       "data/PoyPoy/Model/Character/Pumpking/Anims/Liftable.mv1", 1, 1.0f}
         });
     }
     if(auto status_comp = status_component_.lock()) {
