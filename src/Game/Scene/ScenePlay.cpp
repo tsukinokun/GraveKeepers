@@ -98,6 +98,20 @@ bool ScenePlay::Init()
 
     auto sky = Scene::Object::Create<Sky>();
 
+    std::vector<float3> character_translates;
+    float               difference = 60.0f;    // 中心座標からの距離
+    float               hight      = 5.0f;     // 初期の高さ
+    character_translates.push_back(float3(difference, hight, difference));
+    character_translates.push_back(float3(-difference, hight, difference));
+    character_translates.push_back(float3(difference, hight, -difference));
+    character_translates.push_back(float3(-difference, hight, -difference));
+
+    for(int i = 0; i < characters_.size(); i++) {
+        if(auto chara = characters_[i].lock()) {
+            chara->SetTranslate(character_translates.at(i));
+        }
+    }
+
     //---------------------------------------------------------------------------------
     //	時間UIオブジェクトの設定
     //---------------------------------------------------------------------------------
@@ -140,6 +154,7 @@ bool ScenePlay::Init()
             trans->SetAlignment(static_cast<ComponentTransformUI::Alignment>(4));
         }
     }
+
     return true;
 }
 
