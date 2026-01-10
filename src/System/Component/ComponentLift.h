@@ -61,13 +61,16 @@ private:
 
     const std::vector<std::string> IGNORE_NAMES_ = {"Camera", "Field", "UFO", "DebugCamera", "Wall"};    //チェックする名前
 
-    float throw_virtical_power_   = 14.0f;    //垂直方向に投げる力
-    float throw_horizontal_power_ = 18.0f;    //水平方向に投げる力
+    float throw_virtical_power_   = 18.0f;    //垂直方向に投げる力
+    float throw_horizontal_power_ = 25.0f;    //水平方向に投げる力
 
     float lift_angle_    = 40.0f;    //オブジェクトを持ち上げられる角度
     float lift_distance_ = 15.0f;    //オブジェクトを持ち上げることが可能な距離
 
     bool is_just_lifted_ = false;    //このフレームに持ち上げたか否か
+
+    float       cool_time_     = 0.0f;    //持ち上げ後のクールタイム
+    const float COOL_TIME_MAX_ = 1.0f;    //クールタイム最大値
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

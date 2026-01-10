@@ -121,21 +121,6 @@ bool GameTitle::Init()
         model_comp->PlayAnimation("walk", true);
         characters.push_back(witch);
     }
-    //---------------------------------------------------------------------------------
-    // 座標を設定
-    //---------------------------------------------------------------------------------
-    //for文でループ
-    //for(int i = 0; i < characters.size(); i++)
-    //{
-    //	//ロックしてstd::sharedを取る
-    //	if(auto chara_shared = characters.at(i).lock())
-    //	{
-    //		float most_left_x = -19.0f;	   //一番左のキャラクターのx座標
-    //		float deff_x	  = 13.0f;	   //キャラクターがずれていく大きさ
-    //		float x			  = most_left_x + deff_x * i;
-    //		chara_shared->SetTranslate(float3(x, 0.0f, 0.0f));
-    //	}
-    //}
 
     return true;
 }
