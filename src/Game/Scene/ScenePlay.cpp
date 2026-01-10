@@ -75,7 +75,9 @@ bool ScenePlay::Init()
     // 5. NPC 生成
     for(int i = 0; i < spawn_count; i++) {
         auto enemy = Scene::Object::Create<Enemy>();
-        enemy->SetDesiredCharacterName(names[i]);
+        // ここで名前を渡して、内部でキャラを作らせる
+        enemy->CreateCharacter(names[i]);
+
         characters_.push_back(enemy->GetControllCharacter());
     }
 
