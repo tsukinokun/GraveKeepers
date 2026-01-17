@@ -160,10 +160,9 @@ void GameTitle::Draw()
 {
     __super::Draw();
 
-    // 背景画像の描画（ウィンドウ全体にフィット）
-    if(title_back_graph != -1) {
-        DrawExtendGraph(0, 0, WINDOW_W, WINDOW_H, title_back_graph, TRUE);
-    }
+    // 画面全体にタイトルの背景画像の描画
+    int title_back_graph = ImageBuffer::GetImageHandle("title");
+    DrawExtendGraph(0, 0, WINDOW_W, WINDOW_H, title_back_graph, TRUE);
 
     //---------------------------------------------------------------------------------
     //	各キャラクターの描画
@@ -176,12 +175,6 @@ void GameTitle::Draw()
 void GameTitle::Exit()
 {
     __super::Exit();
-
-    //　背景画像の削除
-    if(title_back_graph != -1) {
-        DeleteGraph(title_back_graph);
-        title_back_graph = -1;
-    }
 }
 
 //!GUI表示
