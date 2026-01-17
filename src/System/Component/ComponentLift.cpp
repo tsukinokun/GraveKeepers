@@ -40,6 +40,7 @@ void ComponentLift::Update()
         //--------------------------------------------------------------------
         if(auto liftable_comp = lift_obj->GetComponent<ComponentLiftable>()) {
             liftable_comp->SetLiftedFlag(true);
+            liftable_comp->SetThrownFlag(true);
         }
         //--------------------------------------------------------------------
         //オーナーのコリジョンを取得

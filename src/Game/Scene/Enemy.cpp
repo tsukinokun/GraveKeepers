@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <random>
 #include <Game/System/HlslppUseful.h>
+int Enemy::s_npc_counter = 0;
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -24,29 +25,31 @@
 bool Enemy::Init()
 {
     __super::Init();
+
+    // 生成されるたびにカウントアップして自身の番号にする
+    s_npc_counter++;
+    npc_index_ = s_npc_counter;
+    return true;
+}
+
+//---------------------------------------------------------------------------
+//! @brief コントロールしているキャラクターを取得
+//---------------------------------------------------------------------------
+std::weak_ptr<Character> Enemy::GetControllCharacter() const
+{
+    return controll_character_;
+}
+
+void Enemy::SetDisplayName(const std::string& name)
+{
+    if(name_ui_)
+        name_ui_->SetText(name);
+}
+
+void Enemy::CreateCharacter(const std::string& name)
+{
     // 生成するキャラ名を決定（desired_character_name_ がセットされていればそれを優先）
-    std::string create_name;
-
-    if(!desired_character_name_.empty()) {
-        create_name = desired_character_name_;
-    }
-    else {
-        // プレイヤーが選んだキャラを除外してランダム選択
-        auto names           = CharacterFactory::Instance().GetRegisteredCharacterNames();
-        auto player_selected = GameRepository::Instance().GetSelectedCharacterName();
-        names.erase(std::remove(names.begin(), names.end(), player_selected), names.end());
-
-        if(!names.empty()) {
-            std::random_device rd;
-            std::mt19937       gen(rd());
-            std::shuffle(names.begin(), names.end(), gen);
-            create_name = names.front();
-        }
-        else {
-            // 候補がない場合はフォールバック
-            create_name = "Zombie";
-        }
-    }
+    std::string create_name = name.empty() ? "Zombie" : name;
 
     // キャラクター生成（Factory を使う。失敗時は Zombie）
     auto chara = CharacterFactory::Instance().CreateCharacter(create_name);
@@ -81,7 +84,7 @@ bool Enemy::Init()
     // ★ NPC 名前表示 UI の生成
     // ---------------------------------------------------------
     name_ui_ = Scene::Object::Create<UIText>(u8"NPC名前UI");
-    name_ui_->SetText("NPC")->SetFontSize(24)->SetColor(GetColor(255, 255, 255), GetColor(0, 0, 0))->SetEdgeSize(2);
+    name_ui_->SetText("NPC" + std::to_string(npc_index_))->SetFontSize(24)->SetColor(GetColor(255, 255, 255), GetColor(0, 0, 0))->SetEdgeSize(2);
 
     // UI の更新処理（NPC の頭上に追従）
     auto update_proc = [this]() {
@@ -103,20 +106,4 @@ bool Enemy::Init()
     };
 
     name_ui_->SetProc("update", update_proc);
-
-    return true;
-}
-
-//---------------------------------------------------------------------------
-//! @brief コントロールしているキャラクターを取得
-//---------------------------------------------------------------------------
-std::weak_ptr<Character> Enemy::GetControllCharacter() const
-{
-    return controll_character_;
-}
-
-void Enemy::SetDisplayName(const std::string& name)
-{
-    if(name_ui_)
-        name_ui_->SetText(name);
 }
