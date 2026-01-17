@@ -30,7 +30,7 @@ bool Character::Init()
     liftable_component_  = AddComponent<ComponentLiftable>();     //持ち上げられ機能コンポーネント
     auto hp_comp         = AddComponent<ComponentStatus>();       //HP機能コンポーネント
     status_component_    = hp_comp;
-    SetTranslate({0, 2, 0});
+    //SetTranslate({0, 2, 0});
     //---------------------------------------------------------------------------------
     // コリジョン
     //---------------------------------------------------------------------------------
