@@ -21,6 +21,7 @@ public:
     void GUI() override;       //!< GUI表示
 
 private:
+    int                                image_handle              = -1;       //!< 背景画像のハンドル
     int                                selected_character_index_ = 0;        //!< 選択されたキャラクターのインデックス、はじめは0から
     float                              rad_offset_               = 90.0f;    //!< キャラクター配置の角度の実際のオフセット
     float                              rad_display_offset_       = 90.0f;    //!< 画面に表示されるキャラクター配置の角度のオフセット
