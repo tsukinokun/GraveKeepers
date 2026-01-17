@@ -41,6 +41,13 @@ void ComponentLift::Update()
                 lift_rb->AddImpulse(float3(0.0f, throw_virtical_power_, 0.0f));
             }
             lift_object_.reset();
+    cool_time_      -= GetDeltaTime();    //クールタイムを減算
+    is_just_lifted_  = false;             //持ち上げたフレームか否かのフラグを初期化
+    auto owner       = GetOwnerPtr();
+    if(auto hp = owner->GetComponent<ComponentStatus>()) {
+        //死亡で
+        if(hp->IsDead()) {
+            return;
         }
         //これ以降の処理を行わない
         return;
@@ -52,6 +59,7 @@ void ComponentLift::Update()
         //--------------------------------------------------------------------
         if(auto liftable_comp = lift_obj->GetComponent<ComponentLiftable>()) {
             liftable_comp->SetLiftedFlag(true);
+            liftable_comp->SetThrownFlag(true);
         }
         //--------------------------------------------------------------------
         //オーナーのコリジョンを取得
@@ -67,6 +75,7 @@ void ComponentLift::Update()
         if(conditions_for_throw_()) {
             if(auto lift_obj = lift_object_.lock()) {
                 if(auto lift_rb = lift_obj->GetComponent<ComponentRigidbody>()) {
+                    cool_time_            = COOL_TIME_MAX_;    //クールタイムをセット
                     float3 throw_impulse  = float3(0.0f, throw_virtical_power_, 0.0f);
                     float3 owner_rot      = owner->GetRotationAxisXYZ();    //オーナーの向きを取得
                     owner_rot.y          += 180.0f;                         //座標系の関係でyを180度回転する、オブジェクトの背中が正面
@@ -87,6 +96,10 @@ void ComponentLift::Update()
 
     //持ち上げ第一条件が満たされたら
     if(conditions_for_lifting_()) {
+        if(cool_time_ > 0.0f) {
+            //クールタイム中は持ち上げられない
+            return;
+        }
         //一番近いオブジェクトを取得する
         if(lift_object_.lock() == nullptr)    //監視対象が存在しなければループを回す
         {

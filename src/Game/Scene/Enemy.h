@@ -27,6 +27,8 @@ public:
 
     void SetDisplayName(const std::string& name);
 
+    void CreateCharacter(const std::string& name);
+
 private:
     std::weak_ptr<Character> controll_character_;    //コントロールしているキャラクター
 
@@ -34,4 +36,6 @@ private:
 
     std::shared_ptr<UIText> name_ui_;
     std::string             display_name_;
+    static int              s_npc_counter;     // クラス全体で共有するカウンタ
+    int                     npc_index_ = 0;    // NPC番号
 };

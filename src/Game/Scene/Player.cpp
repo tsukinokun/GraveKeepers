@@ -36,7 +36,7 @@ bool Player::Init()
     // 選択したキャラクター生成
     //----------------------------------------------
     auto chara = CharacterFactory::Instance().CreateCharacter(GameRepository::Instance().GetSelectedCharacterName());
-    chara->SetTranslate(float3(20.0f, 1.0f, 20.0f));
+    //chara->SetTranslate(float3(20.0f, 1.0f, 20.0f));
     auto controll_comp = chara->AddComponent<ComponentObjectController>();
     controll_comp->SetMoveSpeed(chara->GetComponent<ComponentStatus>()->GetSpeed());
     controll_comp->SetRotateSpeed(20.0f);

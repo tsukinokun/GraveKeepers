@@ -56,12 +56,17 @@ public:
     //--------------------------------------------------------------------
     void SetCannotBeLifted();
 
+    void SetThrownFlag(bool flg) { is_thrown_ = flg; }
+
+    bool IsThrown() const { return is_thrown_; }
+
     //! @}
 
 private:
     std::weak_ptr<Character> lift_character_;           //オブジェクトを持ち上げたキャラクターの弱参照
     bool                     is_lifted_     = false;    //持ち上げられているか否かを保持する変数
     bool                     can_be_lifted_ = true;     //このオブジェクトが持ち上げ可能かどうか
+    bool                     is_thrown_     = false;
 
     //--------------------------------------------------------------------
     //! @name Cereal処理

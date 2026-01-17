@@ -32,7 +32,7 @@ bool Character::Init()
     liftable_component_  = AddComponent<ComponentLiftable>();     //持ち上げられ機能コンポーネント
     auto hp_comp         = AddComponent<ComponentStatus>();       //HP機能コンポーネント
     status_component_    = hp_comp;
-    SetTranslate({0, 2, 0});
+    //SetTranslate({0, 2, 0});
     //---------------------------------------------------------------------------------
     // コリジョン
     //---------------------------------------------------------------------------------
@@ -96,54 +96,88 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
 {
     __super::OnHit(hit_info);
     auto hit_owner = hit_info.hit_collision_->GetOwner();
-    if(auto hit_liftable = hit_owner->GetComponent<ComponentLiftable>()) {
-        //持ち上げられ中(空中)でなければ
-        if(!hit_liftable->IsLifted()) {
-            return;    //早期リターン
-        }
-        //持ち上げていたオーナーが自分自身なら、早期リターンする
-        if(auto lift_chara = hit_liftable->GetLiftCharacter()) {
-            if(lift_chara->GetName() == GetName()) {
-                return;    //早期リターン
+
+    //-------------------------------------------------------------------------
+    // 1. 【自分が投げられた側】地面に激突してダメージを受ける処理
+    //-------------------------------------------------------------------------
+    if(auto my_liftable = liftable_component_.lock()) {
+        // 投げられた状態(IsThrown)かつ、当たった相手が地面(Field)なら
+        if(my_liftable->IsThrown() && hit_owner->GetNameDefault() == u8"Field") {
+            if(auto my_rb = rigidbody_component_.lock()) {
+                float speed = length(my_rb->GetVelocity());
+                // 一定以上の速度でぶつかったら
+                if(speed > 2.0f) {
+                    if(auto my_status = status_component_.lock()) {
+                        int g_damage = 10;    // 速度に応じた落下ダメージ
+                        my_status->TakeDamage(g_damage);
+                        // エフェクト再生
+                        ComponentEffect::Object::Create("data/PoyPoy/Effect/Damage/hit.efkefc", hit_info.hit_position_);
+                    }
+                    // 激突したので投げフラグを下ろす
+                    my_liftable->SetThrownFlag(false);
+                }
             }
         }
-        //剛体を取得
+    }
+
+    //-------------------------------------------------------------------------
+    // 2. 【相手が投げられた側】ぶつかってきた相手からダメージを受ける処理
+    //-------------------------------------------------------------------------
+    if(auto hit_liftable = hit_owner->GetComponent<ComponentLiftable>()) {
+        // 投げられた状態（空中・飛行中）でなければ早期リターン
+        // ※IsLiftedをIsThrownに変更するとより正確です
+        if(!hit_liftable->IsThrown()) {
+            return;
+        }
+
+        // 持ち上げていたオーナーが自分自身なら、早期リターンする（自爆防止）
+        if(auto lift_chara = hit_liftable->GetLiftCharacter()) {
+            if(lift_chara->GetName() == GetName()) {
+                return;
+            }
+        }
+
+        // 剛体を取得
         if(auto hit_rb = hit_owner->GetComponent<ComponentRigidbody>()) {
-            //触ったオブジェクトの速度が少しでもあれば
+            // 触ったオブジェクトの速度が少しでもあれば
             if(length(hit_rb->GetVelocity()) > float1(1.0f)) {
                 float3 vel_dir   = normalize(hit_rb->GetVelocity());
                 float3 pos_dir   = normalize(GetTranslate() - hit_owner->GetTranslate());
                 float3 knock_dir = normalize(0.7f * vel_dir + 0.3f * pos_dir);
                 float3 impulse   = knock_dir * length(hit_rb->GetVelocity());
-                //衝撃を与える
+
+                // 自分に衝撃を与える
                 if(auto rb = GetComponent<ComponentRigidbody>()) {
                     rb->SetVelocity(float3(0.0f, 0.0f, 0.0f));
                     rb->AddImpulse(impulse);
                 }
 
-                int damage = static_cast<int>(hit_rb->GetMass());    //ダメージは当たったオブジェクトの質量に比例
-                //ダメージを受ける
-                if(auto status_comp = GetComponent<ComponentStatus>()) {
+                // ダメージ計算（当たったオブジェクトの質量に比例）
+                int damage = static_cast<int>(hit_rb->GetMass());
+
+                // --- 自分がダメージを受ける ---
+                if(auto status_comp = status_component_.lock()) {
                     status_comp->TakeDamage(damage);
                 }
-                float3 hit_pos = hit_info.hit_position_;
-                // ダメージを受けたらエフェクトを再生（ダメージが0より大きい場合のみ）
-                if(damage > 0) {
-                    // 既存で使われているエフェクトを流用。必要ならパスを変更してください。
-                    const std::string eff_name = "data/PoyPoy/Effect/Damage/hit.efkefc";
-                    float3            pos      = hit_pos;
-                    // エフェクト生成
-                    auto effectObj = ComponentEffect::Object::Create(eff_name, pos);
 
-                    // エフェクト生成
-                    if(auto effect_obj = ComponentEffect::Object::Create(eff_name, pos)) {
-                        //コンポーネントを取得
+                // --- 【追加】投げられた相手側もぶつかってダメージを受ける ---
+                if(auto opponent_status = hit_owner->GetComponent<ComponentStatus>()) {
+                    opponent_status->TakeDamage(damage);
+                }
+
+                // ダメージを受けたらエフェクトを再生
+                if(damage > 0) {
+                    const std::string eff_name = "data/PoyPoy/Effect/Damage/hit.efkefc";
+                    if(auto effect_obj = ComponentEffect::Object::Create(eff_name, hit_info.hit_position_)) {
                         if(auto effect_comp = effect_obj->GetComponent<ComponentEffect>()) {
-                            effect_comp->SetPlaySpeed(1.0f);       //再生速度を設定
-                            effect_comp->SetScaleAxisXYZ(0.5f);    //スケールを設定
+                            effect_comp->SetPlaySpeed(1.0f);
+                            effect_comp->SetScaleAxisXYZ(0.5f);
                         }
                     }
                 }
+
+                // 衝突したので相手の投げフラグを折る（多重ヒット防止）
+                hit_liftable->SetThrownFlag(false);
             }
         }
     }
