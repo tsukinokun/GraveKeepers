@@ -101,7 +101,7 @@ bool ScenePlay::Init()
     auto sky = Scene::Object::Create<Sky>();
 
     std::vector<float3> character_translates;
-    float               difference = 60.0f;    // 中心座標からの距離
+    float               difference = 50.0f;    // 中心座標からの距離
     float               hight      = 5.0f;     // 初期の高さ
     character_translates.push_back(float3(difference, hight, difference));
     character_translates.push_back(float3(-difference, hight, difference));

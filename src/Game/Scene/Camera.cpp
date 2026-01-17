@@ -14,40 +14,67 @@
 bool Camera::Init()
 {
     __super::Init();
-    //---------------------------------------------------------------------------------
-    // カメラコンポーネントの追加と初期設定
-    //---------------------------------------------------------------------------------
+
+    // カメラコンポーネント作成
     auto cam_comp = AddComponent<ComponentCamera>();
     cam_comp->SetPositionAndTarget({0, 50, 100}, {0, 0, 0});
-    //オブジェクト名をセット
+
     SetName(u8"Camera");
-    //---------------------------------------------------------------------------------
-    // 更新処理の入れ込み
-    //---------------------------------------------------------------------------------
-    {
-        // 更新処理(ラムダ式)
-        auto update_proc = [cam_comp]() {
-            // キャラクター全員の位置を取得してベクターに格納
-            std::vector<float3> character_positions;
-            for(const auto& actor : Scene::Object::GetArray<Character>()) {
-                //キャラクターが死亡状態なら
-                if(!actor->IsAlive()) {
-                    //位置取得を格納する処理を行わない
-                    continue;
-                }
-                character_positions.push_back(actor->GetTranslate());
+
+    // 更新処理
+    auto update_proc = [cam_comp]() {
+        //------------------------------------------------------------
+        // 生存キャラクターの位置を収集
+        //------------------------------------------------------------
+        std::vector<float3> positions;
+        positions.reserve(16);
+
+        for(const auto& actor : Scene::Object::GetArray<Character>()) {
+            if(actor->IsAlive()) {
+                positions.push_back(actor->GetTranslate());
             }
-            // キャラクターの中心位置を取得
-            float3 center_position = CalculateCenter(character_positions);
-            //カメラのターゲットを取得
-            float3 prev_target = cam_comp->GetTarget();
-            // ターゲットをキャラクターの中心に少しずつ近づける
-            float3 curr_target = lerp(prev_target, center_position, 0.1f);
-            // カメラの視点をキャラクターの中心に設定
-            cam_comp->SetPositionAndTarget({0, 50, 100}, curr_target);
-        };
-        // カメラの更新処理処理登録
-        SetProc("update_proc", update_proc, ProcTiming::Update, ProcPriority::NONE);
-    }
+        }
+
+        if(positions.empty()) {
+            return;    // 生存キャラがいないなら何もしない
+        }
+
+        //------------------------------------------------------------
+        // 中心位置を計算
+        //------------------------------------------------------------
+        float3 center = CalculateCenter(positions);
+
+        //------------------------------------------------------------
+        // キャラの散らばり具合からズーム距離を決定
+        //------------------------------------------------------------
+        float max_dist = 0.0f;
+        for(const auto& p : positions) {
+            max_dist = std::max(max_dist, static_cast<float>(length(p - center)));
+        }
+
+        // 距離を 0〜50 の範囲で正規化
+        float t = std::clamp(max_dist / 50.0f, 0.0f, 1.0f);
+
+        // カメラ距離を補間（近い→40 / 遠い→150）
+        float target_distance = lerp(static_cast<float1>(40.0f), static_cast<float1>(150.0f), t);
+
+        //------------------------------------------------------------
+        // カメラ位置とターゲットをスムーズに補間
+        //------------------------------------------------------------
+        float3 prev_target = cam_comp->GetTarget();
+        float3 curr_target = lerp(prev_target, center, 0.1f);
+
+        float3 prev_pos    = cam_comp->GetPosition();
+        float3 desired_pos = float3(0, 50, target_distance);
+        float3 curr_pos    = lerp(prev_pos, desired_pos, 0.1f);
+
+        //------------------------------------------------------------
+        // カメラ更新
+        //------------------------------------------------------------
+        cam_comp->SetPositionAndTarget(curr_pos, curr_target);
+    };
+
+    SetProc("update_proc", update_proc, ProcTiming::Update, ProcPriority::NONE);
+
     return true;
 }
