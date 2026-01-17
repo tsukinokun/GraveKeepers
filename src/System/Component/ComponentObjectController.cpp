@@ -20,7 +20,7 @@ void ComponentObjectController::Update()
     // 処理されるときは必ずOwnerは存在しますので基本的にnullptrチェックは必要ありません
     auto owner = GetOwner();
     //オーナーが死亡かノックバック状態ならこれ以降の処理を行わない
-    if(owner->GetComponent<StateDeath>() && owner->GetComponent<StateKnockback>()) {
+    if(owner->GetComponent<StateDeath>() || owner->GetComponent<StateKnockback>()) {
         return;
     }
     //持ち上げられないオブジェクトの場合はこれ以降の処理を行わない

@@ -30,7 +30,7 @@ void ComponentLift::Update()
     is_just_lifted_ = false;    //持ち上げたフレームか否かのフラグを初期化
     auto owner      = GetOwnerPtr();
     //オーナーが死亡かノックバック状態なら
-    if(owner->GetComponent<StateDeath>() && owner->GetComponent<StateKnockback>()) {
+    if(owner->GetComponent<StateDeath>() || owner->GetComponent<StateKnockback>()) {
         //持ち上げ中のオブジェクトがあれば、投げる
         if(auto lift_obj = lift_object_.lock()) {
             if(auto lift_rb = lift_obj->GetComponent<ComponentRigidbody>()) {
@@ -41,17 +41,12 @@ void ComponentLift::Update()
                 lift_rb->AddImpulse(float3(0.0f, throw_virtical_power_, 0.0f));
             }
             lift_object_.reset();
-    cool_time_      -= GetDeltaTime();    //クールタイムを減算
-    is_just_lifted_  = false;             //持ち上げたフレームか否かのフラグを初期化
-    auto owner       = GetOwnerPtr();
-    if(auto hp = owner->GetComponent<ComponentStatus>()) {
-        //死亡で
-        if(hp->IsDead()) {
-            return;
         }
         //これ以降の処理を行わない
         return;
     }
+    cool_time_      -= GetDeltaTime();    //クールタイムを減算
+    is_just_lifted_  = false;             //持ち上げたフレームか否かのフラグを初期化
     //持ち上げる処理
     if(auto lift_obj = lift_object_.lock()) {
         //--------------------------------------------------------------------
@@ -202,7 +197,6 @@ void ComponentLift::Update()
 //---------------------------------------------------------------------------
 //! @brief	ImGui
 //---------------------------------------------------------------------------
-
 void ComponentLift::GUI()
 {
     __super::GUI();
