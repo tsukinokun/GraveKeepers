@@ -10,20 +10,6 @@
 #include <Game/Scene/SkillObject/ComboAttack.h>
 
 //---------------------------------------------------------------------------
-//! @brief コンストラクタ
-//---------------------------------------------------------------------------
-SkillFactory::SkillFactory()
-{
-    //---------------------------------------------------------------------------
-    // 登録用マップの初期化
-    //---------------------------------------------------------------------------
-    skill_creators_["FireBall"]    = []() { return Scene::Object::Create<FireBall>(); };       // 火球スキルの生成処理
-    skill_creators_["Dash"]        = []() { return Scene::Object::Create<Dash>(); };           // 突進スキルの生成処理
-    skill_creators_["Poison"]      = []() { return Scene::Object::Create<Poison>(); };         // 毒スキルの生成処理
-    skill_creators_["ComboAttack"] = []() { return Scene::Object::Create<ComboAttack>(); };    // 連撃スキルの生成処理
-}
-
-//---------------------------------------------------------------------------
 //! @brief SkillFactoryのインスタンスを取得する静的メソッド
 //---------------------------------------------------------------------------
 SkillFactory& SkillFactory::Instance()

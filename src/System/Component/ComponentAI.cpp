@@ -9,6 +9,7 @@
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentStatus.h>
+#include <System/Component/ComponentJump.h>
 #include <System/State/StateDeath.h>
 #include <Game/Scene/Character/Base/Character.h>
 
@@ -18,6 +19,17 @@
 void ComponentAI::Init()
 {
     __super::Init();
+    // 初期位置を記録
+    if(auto owner = GetOwner()) {
+        prev_position_ = owner->GetTranslate();
+        if(auto jump_comp = owner->GetComponent<ComponentJump>()) {
+            jump_comp->SetConditionsJump([&]() {
+                if(jamp_signal_)
+                    return true;
+                return false;
+            });
+        }
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -42,6 +54,34 @@ void ComponentAI::Update()
             return;
         }
     }
+
+    //----------------------------------------------------------------------------------
+    // 動けなくなった判定とジャンプ処理
+    //----------------------------------------------------------------------------------
+    float3 current_position = owner->GetTranslate();
+    float3 move_delta       = current_position - prev_position_;
+    move_delta.y            = 0.0f;    // Y軸（高さ）は無視
+    float move_distance     = length(move_delta);
+
+    // 移動距離が閾値以下なら動けていないと判定
+    if(move_distance < STUCK_DISTANCE_ * delta_time) {
+        stuck_time_ += delta_time;
+
+        // 一定時間動けなかったらジャンプ
+        if(stuck_time_ >= STUCK_TIME_THRESHOLD_) {
+            jamp_signal_ = true;    //ジャンプシグナルを立てる
+            stuck_time_  = 0.0f;    //カウンターリセット
+        }
+    }
+    else {
+        // 移動できているのでカウンターリセット
+        stuck_time_  = 0.0f;
+        jamp_signal_ = false;
+    }
+
+    // 現在位置を保存
+    prev_position_ = current_position;
+
     float3 rot  = owner->GetRotationAxisXYZ();
     rot.y      += 180.0f;    //座標系の違いの関係で180度回転させる
 
@@ -62,47 +102,148 @@ void ComponentAI::Update()
             std::uniform_int_distribution<int> dist(0, alive_chara_vec.size() - 1);    // 1から100で整数の一様分布を作る
             int                                index = dist(mt);                       // 乱数を生成
             target_object_                           = alive_chara_vec[index];         //ターゲットオブジェクトをプレイヤーに設定
+
+            //ブロックを持ち上げたのでタイムアウトをリセット
+            block_search_timeout_ = 0.0f;
+            target_block_.reset();
         }
-        float1 most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
+        float  most_near_distance = std::numeric_limits<float>::max();    //とりあえず大きい数で初期化
         float3 most_near_vec      = float3(0.0f, 0.0f, 0.0f);             //一番近いオブジェクトのベクトル
         //持ち上げ中でない場合の処理
         if(!lift_comp->IsLifting()) {
             lift_time_count_ = 0.0f;    //持ち上げ中でないので、0にする
 
-            //オブジェクトを取得
-            for(auto obj : Scene::Object::GetArray<Object>()) {
-                if(auto liftable_comp = obj->GetComponent<ComponentLiftable>()) {
-                    //現在持ち上げられているオブジェクトの場合はコンティニュー
+            //----------------------------------------------------------------------------------
+            // ブロック探索タイムアウトの更新
+            //----------------------------------------------------------------------------------
+            block_search_timeout_ += delta_time;
+
+            // タイムアウト時間を超えたら新しいターゲットを探す
+            bool force_new_target = (block_search_timeout_ >= BLOCK_SEARCH_TIME_);
+            if(force_new_target) {
+                target_block_.reset();           //ターゲットブロックをリセット
+                block_search_timeout_ = 0.0f;    //タイムアウトカウンターをリセット
+            }
+
+            //----------------------------------------------------------------------------------
+            // 近くに持ち上げ中のキャラがいるかチェック
+            //----------------------------------------------------------------------------------
+            const float detection_range              = 30.0f;    // 検出範囲
+            bool        has_nearby_lifting_character = false;
+
+            auto chara_array = Scene::Object::GetArray<Character>();
+            for(const auto& chara : chara_array) {
+                // 自分自身はスキップ
+                if(chara->GetName() == owner->GetName()) {
+                    continue;
+                }
+                // 死亡しているキャラはスキップ
+                if(chara->GetComponent<StateDeath>()) {
+                    continue;
+                }
+                // 持ち上げコンポーネントを持っているか確認
+                if(auto chara_lift_comp = chara->GetComponent<ComponentLift>()) {
+                    // 持ち上げ中かチェック
+                    if(chara_lift_comp->IsLifting()) {
+                        // 距離をチェック
+                        float3 vec_to_chara = chara->GetTranslate() - owner->GetTranslate();
+                        float  distance     = length(vec_to_chara);
+                        if(distance < detection_range) {
+                            has_nearby_lifting_character = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //----------------------------------------------------------------------------------
+            // ターゲットブロックが有効かつタイムアウトしていない場合は既存のターゲットを使用
+            //----------------------------------------------------------------------------------
+            std::shared_ptr<Object> target_block_ptr = target_block_.lock();
+            if(target_block_ptr && !force_new_target) {
+                // 既存のターゲットブロックが有効か確認
+                if(auto liftable_comp = target_block_ptr->GetComponent<ComponentLiftable>()) {
+                    // 既に持ち上げられている場合は新しいターゲットを探す
                     if(liftable_comp->IsLifted()) {
-                        continue;
+                        target_block_.reset();
+                        target_block_ptr = nullptr;
                     }
                 }
                 else {
-                    continue;    //そもそも持ち上げられないオブジェクトはコンティニュー
+                    target_block_.reset();
+                    target_block_ptr = nullptr;
                 }
-                if(obj->GetComponent<ComponentLift>()) {
-                    continue;    //操作オブジェクト以外はコンティニュー
+            }
+
+            //----------------------------------------------------------------------------------
+            // 新しいターゲットを探す必要がある場合
+            //----------------------------------------------------------------------------------
+            if(!target_block_ptr || force_new_target) {
+                // 近くに持ち上げ中のキャラがいる場合は遠いブロック、いない場合は近いブロックを探す
+                if(has_nearby_lifting_character) {
+                    // 遠くのブロックを取りに行く
+                    most_near_distance = 0.0f;    // 最も遠いものを探すので0で初期化
                 }
-                auto obj_name = obj->GetName();
-                if(owner->GetName() == obj->GetName()) {
-                    continue;    //自分はコンティニュー
+
+                //オブジェクトを取得
+                for(auto obj : Scene::Object::GetArray<Object>()) {
+                    if(auto liftable_comp = obj->GetComponent<ComponentLiftable>()) {
+                        //現在持ち上げられているオブジェクトの場合はコンティニュー
+                        if(liftable_comp->IsLifted()) {
+                            continue;
+                        }
+                    }
+                    else {
+                        continue;    //そもそも持ち上げられないオブジェクトはコンティニュー
+                    }
+                    if(obj->GetComponent<ComponentLift>()) {
+                        continue;    //操作オブジェクト以外はコンティニュー
+                    }
+                    auto obj_name = obj->GetName();
+                    if(owner->GetName() == obj->GetName()) {
+                        continue;    //自分はコンティニュー
+                    }
+                    //オブジェクトとオーナーのベクトルを取得
+                    float3 vec_owner_to_obj = obj->GetTranslate() - owner->GetTranslate();
+                    float  distance         = length(vec_owner_to_obj);
+                    if(obj->GetNameDefault() == u8"キャンディー爆弾") {
+                        distance - 20.0f;    //キャンディー爆弾は少し補正をかける(遠くても拾いに行く)
+                    }
+
+                    if(has_nearby_lifting_character) {
+                        // 遠くのブロックを探す
+                        if(distance > most_near_distance) {
+                            most_near_distance = distance;
+                            most_near_vec      = vec_owner_to_obj;
+                            target_block_      = obj;    //ターゲットブロックを更新
+                        }
+                    }
+                    else {
+                        // 近くのブロックを探す
+                        if(distance < most_near_distance) {
+                            most_near_distance = distance;
+                            most_near_vec      = vec_owner_to_obj;
+                            target_block_      = obj;    //ターゲットブロックを更新
+                        }
+                    }
                 }
-                //オブジェクトとオーナーのベクトルを取得
-                float3 vec_owner_to_obj = obj->GetTranslate() - owner->GetTranslate();
-                float1 distance         = length(vec_owner_to_obj);
-                if(obj->GetNameDefault() == u8"キャンディー爆弾") {
-                    distance - 20.0f;    //キャンディー爆弾は少し補正をかける(遠くても拾いに行く)
+
+                // 新しいターゲットが見つかったらタイムアウトをリセット
+                if(target_block_.lock()) {
+                    block_search_timeout_ = 0.0f;
                 }
-                //ベクトルの長さがこれまでに一番近かったオブジェクトよりも近いなら、長さとそのベクトルを代入する
-                if(distance < most_near_distance) {
-                    most_near_distance = length(vec_owner_to_obj);
-                    most_near_vec      = vec_owner_to_obj;
-                }
+            }
+            else {
+                // 既存のターゲットに向かう
+                float3 vec_owner_to_obj = target_block_ptr->GetTranslate() - owner->GetTranslate();
+                most_near_distance      = length(vec_owner_to_obj);
+                most_near_vec           = vec_owner_to_obj;
             }
         }
         else {
             //持ち上げ中の処理
-            lift_time_count_ += delta_time;    //持ち上げ中なので、デルタタイムを加算
+            lift_time_count_      += delta_time;    //持ち上げ中なので、デルタタイムを加算
+            block_search_timeout_  = 0.0f;          //持ち上げ中はタイムアウトをリセット
             //オブジェクトとオーナーのベクトルを取得
             if(auto target = target_object_.lock()) {
                 float3 vec_owner_to_obj = target->GetTranslate() - owner->GetTranslate();
@@ -143,6 +284,7 @@ void ComponentAI::Update()
             cross_dir = float3(0.0f, 1.0f, 0.0f);
         }
         {
+            //radianが大きい場合は少しずつ回転させる
             matrix mat_rot_y = matrix::rotateAxis(cross_dir, radian * 0.1f);
             display_dir_     = mul(float4(display_dir_, 0.0f), mat_rot_y).xyz;
         }
@@ -177,6 +319,9 @@ void ComponentAI::GUI()
         ImGui::Separator();
         if(ImGui::TreeNode(u8"AI")) {
             ImGui::DragFloat(u8"タイムカウント", &lift_time_count_, 0.01f, 0.0f, 10.0f);
+            ImGui::DragFloat(u8"探索タイムアウト", &block_search_timeout_, 0.01f, 0.0f, 10.0f);
+            ImGui::DragFloat(u8"動けない時間", &stuck_time_, 0.01f, 0.0f, 10.0f);
+            ImGui::Text(u8"ターゲットブロック: %s", target_block_.lock() ? "有効" : "無効");
             // GUI上でオーナーから自分(SampleObjectController)を削除します
             if(ImGui::Button(u8"削除"))
                 GetOwner()->RemoveComponent(shared_from_this());
@@ -193,8 +338,22 @@ void ComponentAI::GUI()
 bool ComponentAI::ThrowSignal()
 {
     //持ち上げている時間が5秒以上ならtrueを返す
+    //ターゲットとの距離が適切ならtrueを返す
     if(lift_time_count_ >= 1.0f) {
-        return true;
+        //オーナーを取得
+        if(auto owner = GetOwner()) {
+            //ターゲットオブジェクトを取得
+            if(auto target = target_object_.lock()) {
+                //オーナーとターゲットの距離を取得
+                float3 vec_owner_to_target = target->GetTranslate() - owner->GetTranslate();
+                //距離を計算
+                float distance = length(vec_owner_to_target);
+                //適切な距離ならtrueを返す
+                if(distance <= THROW_DISTANCE_) {
+                    return true;
+                }
+            }
+        }
     }
     return false;
 }

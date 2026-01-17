@@ -9,17 +9,6 @@ class SkillObjectBase;    //前方宣言
 
 class SkillFactory
 {
-private:
-    //---------------------------------------------------------------------------
-    // コンストラクタ
-    //! @note シングルトンパターンのためprivateにする
-    //---------------------------------------------------------------------------
-    SkillFactory();
-
-    // コピーを禁止する
-    SkillFactory(const SkillFactory&)            = delete;
-    SkillFactory& operator=(const SkillFactory&) = delete;
-
 public:
     //---------------------------------------------------------------------------
     // SkillFactoryのインスタンスを取得する静的メソッド
