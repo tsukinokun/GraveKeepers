@@ -10,6 +10,7 @@
 #include <System/Component/ComponentLift.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/State/StateDeath.h>
+#include <System/State/StateKnockback.h>
 #include <Game/Scene/Character/Base/Character.h>
 
 //---------------------------------------------------------------------------
@@ -31,8 +32,8 @@ void ComponentAI::Update()
     float delta_time = std::chrono::duration<float>(current_time_ - prev_time_).count();
     prev_time_       = current_time_;
     auto owner       = GetOwner();    //オーナーを取得
-    //オーナーが死亡状態ならこれ以降の処理を行わない
-    if(owner->GetComponent<StateDeath>()) {
+    //オーナーが死亡かノックバック状態ならこれ以降の処理を行わない
+    if(owner->GetComponent<StateDeath>() && owner->GetComponent<StateKnockback>()) {
         return;
     }
     //持ち上げられないオブジェクトの場合はこれ以降の処理を行わない

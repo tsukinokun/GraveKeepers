@@ -15,6 +15,8 @@
 #include <System/State/StateIdleWalk.h>
 #include "../../src/Game/system/HlslppUseful.h"
 #include <System/Component/ComponentEffect.h>
+#include <System/State/StateBase.h>
+#include <System/State/StateKnockback.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化

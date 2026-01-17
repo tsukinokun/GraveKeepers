@@ -36,6 +36,7 @@ void StateKnockback::Init()
             if(status->IsDead()) {
                 //死亡状態へ遷移
                 ChangeState<StateDeath>();
+                return;
             }
         }
         //---------------------------------------------------------------------------
@@ -46,6 +47,7 @@ void StateKnockback::Init()
             if(!model->IsPlaying()) {
                 //待機状態へ遷移
                 ChangeState<StateIdleWalk>();
+                return;
             }
         }
         //---------------------------------------------------------------------------
@@ -56,6 +58,7 @@ void StateKnockback::Init()
             if(liftable_comp->IsLifted()) {
                 //待機状態へ遷移
                 ChangeState<StateIdleWalk>();
+                return;
             }
         }
     };

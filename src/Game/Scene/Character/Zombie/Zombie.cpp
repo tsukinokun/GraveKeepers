@@ -22,11 +22,12 @@ bool Zombie::Init()
     if(auto model_comp = model_component_.lock()) {
         model_comp->Load("data/PoyPoy/Model/Character/Zombie/Zombie.mv1");
         model_comp->SetAnimation({
-            {    "idle",           "data/PoyPoy/Model/Character/Zombie/Anims/Idle.mv1", 0, 1.0f},
-            {    "walk",        "data/PoyPoy/Model/Character/Zombie/Anims/Walking.mv1", 0, 1.0f},
-            {   "death", "data/PoyPoy/Model/Character/Zombie/Anims/DeathMotionLay.mv1", 0, 1.0f},
-            {    "jump",           "data/PoyPoy/Model/Character/Zombie/Anims/Jump.mv1", 0, 0.7f},
-            {"liftable",       "data/PoyPoy/Model/Character/Zombie/Anims/Liftable.mv1", 0, 1.0f}
+            {     "idle",           "data/PoyPoy/Model/Character/Zombie/Anims/Idle.mv1", 0, 1.0f},
+            {     "walk",        "data/PoyPoy/Model/Character/Zombie/Anims/Walking.mv1", 0, 1.0f},
+            {    "death", "data/PoyPoy/Model/Character/Zombie/Anims/DeathMotionLay.mv1", 0, 1.0f},
+            {     "jump",           "data/PoyPoy/Model/Character/Zombie/Anims/Jump.mv1", 0, 0.7f},
+            { "liftable",       "data/PoyPoy/Model/Character/Zombie/Anims/Liftable.mv1", 0, 1.0f},
+            {"knockback",      "data/PoyPoy/Model/Character/Zombie/Anims/Knockback.mv1", 0, 1.0f},
         });
     }
     if(auto status_comp = status_component_.lock()) {

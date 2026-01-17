@@ -10,6 +10,8 @@
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentStatus.h>
 #include <Game/Scene/Character/Base/Character.h>
+#include <System/State/StateDeath.h>
+#include <System/State/StateKnockback.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化
@@ -27,11 +29,21 @@ void ComponentLift::Update()
     __super::Update();
     is_just_lifted_ = false;    //持ち上げたフレームか否かのフラグを初期化
     auto owner      = GetOwnerPtr();
-    if(auto hp = owner->GetComponent<ComponentStatus>()) {
-        //死亡で
-        if(hp->IsDead()) {
-            return;
+    //オーナーが死亡かノックバック状態なら
+    if(owner->GetComponent<StateDeath>() && owner->GetComponent<StateKnockback>()) {
+        //持ち上げ中のオブジェクトがあれば、投げる
+        if(auto lift_obj = lift_object_.lock()) {
+            if(auto lift_rb = lift_obj->GetComponent<ComponentRigidbody>()) {
+                if(auto lift_col = lift_obj->GetComponent<ComponentCollision>()) {
+                    lift_col->SetEnableFlag(true);
+                    lift_col->UseGravity();
+                }
+                lift_rb->AddImpulse(float3(0.0f, throw_virtical_power_, 0.0f));
+            }
+            lift_object_.reset();
         }
+        //これ以降の処理を行わない
+        return;
     }
     //持ち上げる処理
     if(auto lift_obj = lift_object_.lock()) {

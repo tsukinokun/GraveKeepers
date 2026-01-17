@@ -10,6 +10,7 @@
 #include <System/Component/ComponentStatus.h>
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentJump.h>
+#include <System/State/StateKnockback.h>
 #include <System/State/StateJump.h>
 
 void StateIdleWalk::Init()
@@ -57,6 +58,7 @@ void StateIdleWalk::Update()
     if(auto status = owner->GetComponent<ComponentStatus>()) {
         if(status->IsDead()) {
             ChangeState<StateDeath>();
+            return;
         }
     }
     //---------------------------------------------------------------------------
@@ -66,6 +68,16 @@ void StateIdleWalk::Update()
         //ジャンプしたフレームであるなら
         if(jump_comp->IsJumpFrame()) {
             ChangeState<StateJump>();    //ジャンプ状態へ
+            return;
+        }
+    }
+    //---------------------------------------------------------------------------
+    // HPが減ったらノックバック状態へ
+    //---------------------------------------------------------------------------
+    if(auto status = owner->GetComponent<ComponentStatus>()) {
+        if(status->IsDamaged()) {
+            ChangeState<StateKnockback>();
+            return;
         }
     }
 }

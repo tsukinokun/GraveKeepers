@@ -12,6 +12,11 @@
 void ComponentStatus::Init()
 {
     __super::Init();
+    //更新処理の後で、当たりを解除
+    auto post_update_proc = [this]() {
+        is_damaged_ = false;    //ダメージを受けたフラグをリセット
+    };
+    SetProc("post_update_proc", post_update_proc, ProcTiming::LateUpdate, ProcPriority::NORMAL);
 }
 
 //---------------------------------------------------------------------------
@@ -19,6 +24,7 @@ void ComponentStatus::Init()
 //---------------------------------------------------------------------------
 void ComponentStatus::Update()
 {
+    __super::Update();
     //時間の更新
     current_time_   = std::chrono::high_resolution_clock::now();
     auto delta_time = std::chrono::duration<float>(current_time_ - prev_time_).count();
@@ -33,8 +39,6 @@ void ComponentStatus::Update()
             // 無敵終了処理
         }
     }
-
-    __super::Update();
 }
 
 //---------------------------------------------------------------------------
@@ -126,6 +130,7 @@ std::shared_ptr<ComponentStatus> ComponentStatus::TakeDamage(int damage)
     hp_                  -= damage;                 //ダメージを受けて
     hp_                   = std::max(0, hp_);       //0.0fより小さくならない
     invincibility_timer_  = INVINCIBILITY_TIME_;    //無敵時間分を代入
+    is_damaged_           = true;                   //ダメージを受けたフラグを立てる
 
     return dynamic_pointer_cast<ComponentStatus>(shared_from_this());
 }
@@ -158,6 +163,17 @@ float ComponentStatus::GetSpeed() const
     return move_speed_;
 }
 
+//--------------------------------------------------------------------
+//! @brief ダメージを受けたかどうかを返す関数
+//--------------------------------------------------------------------
+bool ComponentStatus::IsDamaged() const
+{
+    return is_damaged_;
+}
+
+//--------------------------------------------------------------------
+//! @brief 無敵時間のセッタ
+//--------------------------------------------------------------------
 void ComponentStatus::SetInvincibilityTime(float time)
 {
     INVINCIBILITY_TIME_ = time;
