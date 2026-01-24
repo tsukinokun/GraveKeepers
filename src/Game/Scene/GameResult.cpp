@@ -63,6 +63,11 @@ void GameResult::Update()
     //SPACEキーが押されたらタイトル画面に移行
     if(IsKeyOn(KEY_INPUT_SPACE)) {
         Scene::Change(Scene::GetScene<GameTitle>());    //シーンの変更を行う処理
+
+        //音楽が流れていたら停止
+        int result_sound = SoundBuffer::GetSoundHandle("result");
+        StopSoundMem(result_sound);
+        is_played = false;
     }
 }
 
