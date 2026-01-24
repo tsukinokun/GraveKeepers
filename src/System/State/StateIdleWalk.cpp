@@ -12,6 +12,7 @@
 #include <System/Component/ComponentJump.h>
 #include <System/State/StateKnockback.h>
 #include <System/State/StateJump.h>
+#include <Game/Scene/Character/Base/Character.h>
 
 void StateIdleWalk::Init()
 {
@@ -23,8 +24,8 @@ void StateIdleWalk::Init()
 void StateIdleWalk::Update()
 {
     __super::Update();
-
-    auto owner = GetOwner();
+    //オーナーはキャラクターであることを保障
+    auto owner = dynamic_pointer_cast<Character>(GetOwnerPtr());
 
     //アニメーション
     auto   model    = owner->GetComponent<ComponentModel>();
@@ -57,9 +58,9 @@ void StateIdleWalk::Update()
     //---------------------------------------------------------------------------
     if(auto status = owner->GetComponent<ComponentStatus>()) {
         if(status->IsDead()) {
-          ChangeState<StateDeath>();
-          model->SetTranslate(float3(0.0f, 0.0f, 0.0f));    //通常位置に戻す
-          return;
+            ChangeState<StateDeath>();
+            model->SetTranslate(float3(0.0f, 0.0f, 0.0f));    //通常位置に戻す
+            return;
         }
     }
     //---------------------------------------------------------------------------
@@ -73,13 +74,11 @@ void StateIdleWalk::Update()
         }
     }
     //---------------------------------------------------------------------------
-    // HPが減ったらノックバック状態へ
+    // 投げでが減ったらノックバック状態へ
     //---------------------------------------------------------------------------
-    if(auto status = owner->GetComponent<ComponentStatus>()) {
-        if(status->IsDamaged()) {
-            ChangeState<StateKnockback>();
-            return;
-        }
+    if(owner->IsDamagedByThrownObject()) {
+        ChangeState<StateKnockback>();
+        return;
     }
 }
 

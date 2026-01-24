@@ -53,6 +53,12 @@ bool Character::Init()
     AddComponent<StateIdleWalk>();
     SetName(u8"Character");
 
+    //更新処理の後で、当った情報を解除
+    auto post_update_proc = [this]() {
+        damaged_by_thrown_object_ = false;    //ダメージを受けたフラグをリセット
+    };
+    SetProc("post_update_proc", post_update_proc, ProcTiming::LateUpdate, ProcPriority::NORMAL);
+
     return true;
 }
 
@@ -165,8 +171,11 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
                     opponent_status->TakeDamage(damage);
                 }
 
-                // ダメージを受けたらエフェクトを再生
+                // ダメージを受けたら
                 if(damage > 0) {
+                    //このタイミングで、このフレームにダメージを受けたフラグを立てる
+                    damaged_by_thrown_object_ = true;
+                    //エフェクトを再生
                     const std::string eff_name = "data/PoyPoy/Effect/Damage/hit.efkefc";
                     if(auto effect_obj = ComponentEffect::Object::Create(eff_name, hit_info.hit_position_)) {
                         if(auto effect_comp = effect_obj->GetComponent<ComponentEffect>()) {
@@ -184,7 +193,7 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
 }
 
 //---------------------------------------------------------------------------
-// 生存しているかどうかを返す関数
+//! @brief 生存しているかどうかを返す関数
 //---------------------------------------------------------------------------
 bool Character::IsAlive() const
 {
@@ -195,4 +204,12 @@ bool Character::IsAlive() const
     }
     //ステータスコンポーネントが無効なら生存していないと返す
     return false;
+}
+
+//---------------------------------------------------------------------------
+//! @brief 投げられたものでダメージを負ったかを返す関数
+//---------------------------------------------------------------------------
+bool Character::IsDamagedByThrownObject() const
+{
+    return damaged_by_thrown_object_;
 }
