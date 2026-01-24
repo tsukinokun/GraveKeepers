@@ -31,7 +31,8 @@ bool Werewolf::Init()
             {"crouching_walk",  "data/PoyPoy/Model/Character/Werewolf/Anims/CrouchingWalk.mv1", 0, 1.0f}, //しゃがみ歩き
             { "crouching_run",   "data/PoyPoy/Model/Character/Werewolf/Anims/CrouchingRun.mv1", 0, 1.0f}, //しゃがみ走り
             {     "low_crawl",       "data/PoyPoy/Model/Character/Werewolf/Anims/LowCrawl.mv1", 0, 1.0f}, //這いずり移動
-            {      "liftable",       "data/PoyPoy/Model/Character/Werewolf/Anims/Liftable.mv1", 0, 1.0f}
+            {      "liftable",       "data/PoyPoy/Model/Character/Werewolf/Anims/Liftable.mv1", 0, 1.0f}, //持ち上げられ
+            {     "knockback",      "data/PoyPoy/Model/Character/Werewolf/Anims/Knockback.mv1", 0, 0.7f}, //ノックバック
         });
     }
     if(auto status_comp = status_component_.lock()) {

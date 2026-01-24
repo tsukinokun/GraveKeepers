@@ -35,6 +35,12 @@ public:
     //---------------------------------------------------------------------------
     bool IsAlive() const;
 
+    //---------------------------------------------------------------------------
+    // 投げられたものでダメージを負ったかを返す関数
+    //! @retval オブジェクト衝突でダメージを負ったかどうか
+    //---------------------------------------------------------------------------
+    bool IsDamagedByThrownObject() const;
+
 protected:
     std::weak_ptr<ComponentLift>             lift_component_;         //持ち上げcomponent
     std::weak_ptr<ComponentLiftable>         liftable_component_;     // 持ち上げられcomponent
@@ -51,4 +57,6 @@ private:
     float neutralpos_ = TOP_POINT_;    //円の位置の高さ
 
     bool dead_ = false;    // 死んでいるかどうか
+
+    bool damaged_by_thrown_object_ = false;    // 投げられたものでダメージを負ったか
 };

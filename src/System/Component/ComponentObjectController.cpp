@@ -4,6 +4,8 @@
 #include <System/Component/ComponentModel.h>
 #include <System/Component/ComponentStatus.h>
 #include <System/Component/ComponentLiftable.h>
+#include <System/State/StateDeath.h>
+#include <System/State/StateKnockback.h>
 
 void ComponentObjectController::Init()
 {
@@ -17,11 +19,9 @@ void ComponentObjectController::Update()
     // オーナー(自分がAddComponentされたObject)を取得します
     // 処理されるときは必ずOwnerは存在しますので基本的にnullptrチェックは必要ありません
     auto owner = GetOwner();
-    if(auto hp = owner->GetComponent<ComponentStatus>()) {
-        //死亡で
-        if(hp->IsDead()) {
-            return;
-        }
+    //オーナーが死亡かノックバック状態ならこれ以降の処理を行わない
+    if(owner->GetComponent<StateDeath>() || owner->GetComponent<StateKnockback>()) {
+        return;
     }
     //持ち上げられないオブジェクトの場合はこれ以降の処理を行わない
     if(auto liftable_comp = owner->GetComponent<ComponentLiftable>()) {
