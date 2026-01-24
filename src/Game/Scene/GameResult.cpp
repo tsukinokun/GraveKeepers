@@ -55,7 +55,7 @@ void GameResult::Update()
     //  リザルト音声の再生
     static bool is_played = false;
     if(!is_played) {
-        int result_sound = SoundBuffer::GetSoundHandle("result");
+        int result_sound = SoundBuffer::GetBGMHandle("result");
         PlaySoundMem(result_sound, DX_PLAYTYPE_LOOP);
         is_played = true;
     }
@@ -63,6 +63,11 @@ void GameResult::Update()
     //SPACEキーが押されたらタイトル画面に移行
     if(IsKeyOn(KEY_INPUT_SPACE)) {
         Scene::Change(Scene::GetScene<GameTitle>());    //シーンの変更を行う処理
+
+        //音楽が流れていたら停止
+        int result_sound = SoundBuffer::GetBGMHandle("result");
+        StopSoundMem(result_sound);
+        is_played = false;
     }
 }
 
