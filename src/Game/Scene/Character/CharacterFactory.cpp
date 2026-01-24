@@ -23,6 +23,13 @@ CharacterFactory::CharacterFactory()
     chara_creators_["Witch"]    = []() { return Scene::Object::Create<Witch>(); };       // ウィッチちゃんの生成処理
 }
 
+CharacterFactory::~CharacterFactory()
+{
+    // デストラクタ
+    //解放
+    chara_creators_.clear();
+}
+
 //---------------------------------------------------------------------------
 //! @brief CharacterFactoryのインスタンスを取得する静的メソッド
 //---------------------------------------------------------------------------

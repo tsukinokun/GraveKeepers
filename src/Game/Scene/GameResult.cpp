@@ -5,6 +5,8 @@
 #include "GameResult.h"
 #include "GameTitle.h"
 #include <Game/System/GameRepository.h>
+#include <Game/System/ImageBuffer.h>
+#include <Game/System/SoundBuffer.h>
 #include <Game/Scene/info/ResultInfo.h>
 #include <System/Component/ComponentModel.h>
 
@@ -15,15 +17,12 @@ bool GameResult::Init()
 {
     __super::Init();
 
-    // リザルト背景画像の読み込み
-    result_back_graph_ = LoadGraph("data/Po yPoy/Image/Result.png");
-    // 蜘蛛の巣画像の読み込み
-    spider_web_graph_ = LoadGraph("data/PoyPoy/Image/SpiderWeb.png");
-
     //---------------------------------------------------------------------------------
     // リポジトリ(シングルトン)の呼び出し
     //---------------------------------------------------------------------------------
     auto result_datas = GameRepository::Instance().GetResultDatas();
+    ImageBuffer::Init();    // 画像バッファの初期化
+    SoundBuffer::Init();    // 音バッファの初期化
 
     //---------------------------------------------------------------------------------
     // キャラクターを表示(前から順に呼び出す)
@@ -53,6 +52,14 @@ void GameResult::Update()
 {
     __super::Update();
 
+    //  リザルト音声の再生
+    static bool is_played = false;
+    if(!is_played) {
+        int result_sound = SoundBuffer::GetSoundHandle("result");
+        PlaySoundMem(result_sound, DX_PLAYTYPE_LOOP);
+        is_played = true;
+    }
+
     //SPACEキーが押されたらタイトル画面に移行
     if(IsKeyOn(KEY_INPUT_SPACE)) {
         Scene::Change(Scene::GetScene<GameTitle>());    //シーンの変更を行う処理
@@ -66,16 +73,9 @@ void GameResult::Draw()
 {
     __super::Draw();
 
-    // リザルト背景画像を画面全体に描画
-    if(result_back_graph_ != -1) {
-        DrawExtendGraph(0, 0, WINDOW_W, WINDOW_H, result_back_graph_, TRUE);
-    }
-
-    // 蜘蛛の巣画像を画面の四隅に描画
-    if(spider_web_graph_ != -1) {
-        DrawExtendGraph(0, 0, 200, 200, spider_web_graph_, TRUE);                      // 左上
-        DrawExtendGraph(WINDOW_W - 200, 0, WINDOW_W, 200, spider_web_graph_, TRUE);    // 右上
-    }
+    // 画面全体にリザルト背景画像を描画
+    int result_back_graph = ImageBuffer::GetImageHandle("result");
+    DrawExtendGraph(0, 0, WINDOW_W, WINDOW_H, result_back_graph, TRUE);
 
     // 文字のサイズを設定
     SetFontSize(64);
@@ -107,18 +107,6 @@ void GameResult::Draw()
 void GameResult::Exit()
 {
     __super::Exit();
-
-    // リザルト背景画像の解放
-    if(result_back_graph_ != -1) {
-        DeleteGraph(result_back_graph_);
-        result_back_graph_ = -1;
-    }
-
-    // 蜘蛛の巣画像の解放
-    if(spider_web_graph_ != -1) {
-        DeleteGraph(spider_web_graph_);
-        spider_web_graph_ = -1;
-    }
 }
 
 //!GUI表示

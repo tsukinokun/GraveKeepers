@@ -15,6 +15,7 @@ private:
     //! @note シングルトンパターンのためprivateにする
     //---------------------------------------------------------------------------
     CharacterFactory();
+    ~CharacterFactory();
 
     // コピーを禁止する
     CharacterFactory(const CharacterFactory&)            = delete;

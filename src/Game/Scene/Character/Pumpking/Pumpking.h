@@ -16,6 +16,7 @@ public:
     //@
     bool Init() override;    //!< 初期化
     void GUI() override;     //!< GUI表示
+    void Exit() override;    //!< 終了
 
 private:
     const int   HP_MAX_       = 400;     //HPの最大値

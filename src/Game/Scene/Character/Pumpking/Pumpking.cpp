@@ -52,3 +52,8 @@ void Pumpking::GUI()
 {
     __super::GUI();
 }
+
+void Pumpking::Exit()
+{
+    __super::Exit();
+}
