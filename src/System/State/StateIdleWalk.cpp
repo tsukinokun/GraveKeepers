@@ -57,6 +57,7 @@ void StateIdleWalk::Update()
     if(auto status = owner->GetComponent<ComponentStatus>()) {
         if(status->IsDead()) {
             ChangeState<StateDeath>();
+            model->SetTranslate(float3(0.0f, 0.0f, 0.0f));    //通常位置に戻す
         }
     }
     //---------------------------------------------------------------------------

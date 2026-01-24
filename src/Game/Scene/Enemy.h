@@ -14,6 +14,7 @@ class Enemy : public Object
 public:
     BP_OBJECT_DECL(Enemy, u8"プレイシーンのエネミー")
 
+    ~Enemy();
     //@}
     bool Init() override;    //!< 初期化
 

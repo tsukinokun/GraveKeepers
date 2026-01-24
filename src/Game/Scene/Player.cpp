@@ -92,7 +92,7 @@ bool Player::Init()
     //共通のスキル発動条件設定
     skill_component->SetConditionsForUseSkill(
         //ラムダ式を代入、Pキーを押すとスキル発動と割り当てる。
-        [&]() {
+        []() {
             if(IsKeyOn(KEY_INPUT_P)) {
                 return true;
             }

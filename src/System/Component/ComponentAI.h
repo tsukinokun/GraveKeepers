@@ -32,9 +32,19 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> current_time_    = std::chrono::high_resolution_clock::now();    //現在の時間
     float                                              move_speed_      = 0.2f;
     float                                              rot_speed_       = 5.0f;
-    std::weak_ptr<Character>                           target_object_;                             //ターゲットオブジェクト
-    float3                                             dir_         = float3(0.0f, 0.0f, 1.0f);    //!<内部の方向
-    float3                                             display_dir_ = float3(0.0f, 0.0f, 1.0f);    //!< 表示方向
+    std::weak_ptr<Character>                           target_object_;                                        //ターゲットオブジェクト
+    float3                                             dir_         = float3(0.0f, 0.0f, 1.0f);               //!<内部の方向
+    float3                                             display_dir_ = float3(0.0f, 0.0f, 1.0f);               //!< 表示方向
+    std::weak_ptr<Object>                              target_block_;                                         //ターゲットブロック
+    float                                              block_search_timeout_   = 0.0f;                        //ブロック探索のタイムアウト
+    const float                                        BLOCK_SEARCH_TIME_      = 3.0f;                        //ブロック探索のタイムアウト時間(秒)
+    const float                                        THROW_DISTANCE_         = 50.0f;                       //投げる際の適切な距離
+    float3                                             prev_position_          = float3(0.0f, 0.0f, 0.0f);    //前フレームの位置
+    float                                              stuck_time_             = 0.0f;                        //動けない時間のカウント
+    const float                                        STUCK_TIME_THRESHOLD_   = 1.0f;                        //動けないと判定する時間(秒)
+    const float                                        STUCK_DISTANCE_         = 0.5f;                        //動けないと判定する移動距離
+    bool                                               jamp_signal_            = false;                       //ジャンプシグナル
+    const float                                        TARGET_CHANGE_DISTANCE_ = 50.0f;                       //ターゲット切り替え距離
 
     //--------------------------------------------------------------------
     //! @name Cereal処理
