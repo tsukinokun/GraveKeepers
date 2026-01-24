@@ -147,6 +147,23 @@ std::shared_ptr<ComponentSkill> ComponentDash::UseSkill()
     };
 
     //---------------------------------------------------------------------------
+    // 追従処理：dashオブジェクトを常にオーナーの位置に更新する
+    //---------------------------------------------------------------------------
+    auto owner_wp_follow = owner_wp;    // ラムダ用にコピー
+    auto follow_proc     = [dash, owner_wp_follow]() {
+        if(auto owner = owner_wp_follow.lock()) {
+            // オーナーの少し上にエフェクトを出す（高さ調整は適宜）
+            const float3 offset(0.0f, 1.0f, 0.0f);
+            dash->SetTranslate(owner->GetTranslate() + offset);
+
+            // 回転も同期させる場合
+            dash->SetRotationAxisXYZ(owner->GetRotationAxisXYZ());
+        }
+    };
+    // 毎フレームUpdateのタイミングで実行
+    dash->SetProc("dash_follow_owner", follow_proc, ProcTiming::Update, ProcPriority::LOWEST);
+
+    //---------------------------------------------------------------------------
     // ダッシュ有効時間の管理（dash オブジェクトが生存している間にタイマーで解除）
     //---------------------------------------------------------------------------
     auto timer     = std::make_shared<float>(0.0f);
