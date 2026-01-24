@@ -27,7 +27,7 @@ bool Witch::Init()
             {    "death", "data/PoyPoy/Model/Character/Witch/Anims/Death From The Front.mv1", 0, 1.0f},
             {     "jump",                 "data/PoyPoy/Model/Character/Witch/Anims/Jump.mv1", 0, 0.7f},
             { "liftable",             "data/PoyPoy/Model/Character/Witch/Anims/Liftable.mv1", 0, 1.0f},
-            {"knockback",            "data/PoyPoy/Model/Character/Witch/Anims/Knockback.mv1", 0, 1.0f},
+            {"knockback",            "data/PoyPoy/Model/Character/Witch/Anims/Knockback.mv1", 0, 0.7f},
         });
     }
     if(auto status_comp = status_component_.lock()) {

@@ -27,7 +27,7 @@ bool Zombie::Init()
             {    "death", "data/PoyPoy/Model/Character/Zombie/Anims/DeathMotionLay.mv1", 0, 1.0f},
             {     "jump",           "data/PoyPoy/Model/Character/Zombie/Anims/Jump.mv1", 0, 0.7f},
             { "liftable",       "data/PoyPoy/Model/Character/Zombie/Anims/Liftable.mv1", 0, 1.0f},
-            {"knockback",      "data/PoyPoy/Model/Character/Zombie/Anims/Knockback.mv1", 0, 1.0f},
+            {"knockback",      "data/PoyPoy/Model/Character/Zombie/Anims/Knockback.mv1", 0, 0.7f},
         });
     }
     if(auto status_comp = status_component_.lock()) {
