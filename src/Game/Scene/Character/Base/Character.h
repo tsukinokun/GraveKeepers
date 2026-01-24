@@ -41,6 +41,12 @@ public:
     //---------------------------------------------------------------------------
     bool IsDamagedByThrownObject() const;
 
+    //---------------------------------------------------------------------------
+    // リスポーンするかどうかを返す関数
+    //! @retval　リスポーンするかどうか
+    //---------------------------------------------------------------------------
+    bool IsRespawn();
+
 protected:
     std::weak_ptr<ComponentLift>             lift_component_;         //持ち上げcomponent
     std::weak_ptr<ComponentLiftable>         liftable_component_;     // 持ち上げられcomponent

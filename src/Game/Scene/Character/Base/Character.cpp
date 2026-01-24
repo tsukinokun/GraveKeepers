@@ -68,6 +68,15 @@ bool Character::Init()
 void Character::Update()
 {
     __super::Update();
+
+    //座標が一定以下になったら初期スポーン位置に戻す
+    if(IsRespawn()) {
+        SetTranslate(float3(0.0f, 10.0f, 0.0f));
+        if(auto rb = GetComponent<ComponentRigidbody>()) {
+            rb->SetVelocity(float3(0.0f, 0.0f, 0.0f));
+        }
+    }
+
     if(auto hp = GetComponent<ComponentStatus>()) {
         //死亡で
         if(hp->IsDead()) {
@@ -212,4 +221,15 @@ bool Character::IsAlive() const
 bool Character::IsDamagedByThrownObject() const
 {
     return damaged_by_thrown_object_;
+}
+
+//---------------------------------------------------------------------------
+//! @brief リスポーンするかどうかを返す関数
+//---------------------------------------------------------------------------
+bool Character::IsRespawn()
+{
+    if(GetTranslate().y < -10.0f) {
+        return true;
+    }
+    return false;
 }
