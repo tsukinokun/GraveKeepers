@@ -17,7 +17,6 @@ void ComponentText::Init()
     //  UI描画を登録
     //---------------------------------------------------------------------------
     auto draw_ui = [this]() {
-        DxLib::SetFontSize(font_size_);                                                                                          //フォントサイズに合わせる
         auto   owner       = GetOwner();                                                                                         //オーナーを取得
         float3 adjustment  = float3(0.0f, 0.0f, 0.0f);                                                                           // 調整値(Alignmentに合わせて)
         int    font_handle = FontBuffer::GetFontHandle(font_name_, font_size_, 1, DX_FONTTYPE_ANTIALIASING_EDGE, edge_size_);    //フォントのハンドルを取得
@@ -35,6 +34,7 @@ void ComponentText::Init()
             }
             else {
                 //存在していないなら
+                DxLib::SetFontSize(font_size_);    //フォントサイズに合わせる
                 //配置位置(縦)
                 hight = static_cast<float>(GetFontSizeToHandle(font_handle));    //フォントサイズを取得(=高さ)
                 //配置位置(横)
@@ -74,8 +74,8 @@ void ComponentText::Init()
         else {
             //存在しない
             DrawString(pos.x, pos.y, str_.data(), text_color_, edge_color_);
+            DxLib::SetFontSize(DEFAULT_FONT_SIZE);    //フォントサイズを元に戻す
         }
-        DxLib::SetFontSize(DEFAULT_FONT_SIZE);    //フォントサイズを元に戻す
     };
     SetProc("UIDraw", draw_ui, ProcTiming::UI, static_cast<ProcPriority>(NONE));
 }
