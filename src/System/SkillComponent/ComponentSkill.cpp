@@ -4,6 +4,7 @@
 //! @auther 山﨑愛
 //---------------------------------------------------------------------------
 #include "ComponentSkill.h"
+#include <System/Component/ComponentStatus.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化関数
@@ -19,6 +20,14 @@ void ComponentSkill::Init()
 void ComponentSkill::Update()
 {    // 初期化処理
     __super::Update();
+    auto owner = GetOwner();
+    //ステータスコンポーネントを取得
+    if(auto status_comp = owner->GetComponent<ComponentStatus>()) {
+        //スキル使用条件を満たしたら
+        if(is_use_skill_() && status_comp->IsMagicPointFull()) {
+            UseSkill();    // スキルを使用する
+        }
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -56,6 +65,12 @@ std::shared_ptr<ComponentSkill> ComponentSkill::SetConditionsForUseSkill(const s
 //---------------------------------------------------------------------------
 std::shared_ptr<ComponentSkill> ComponentSkill::UseSkill()
 {
+    auto owner = GetOwner();
+    //ステータスコンポーネントを取得
+    if(auto status_comp = owner->GetComponent<ComponentStatus>()) {
+        //MPを消費する
+        status_comp->DepleteMagicPoint();
+    }
     return dynamic_pointer_cast<ComponentSkill>(shared_from_this());
 }
 

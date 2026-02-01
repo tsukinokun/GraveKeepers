@@ -24,6 +24,7 @@
 #include <Game/Scene/Character/CharacterFactory.h>
 #include <algorithm>
 #include <random>
+#include <Game/Scene/UIObject/UIGauge.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -141,7 +142,8 @@ bool ScenePlay::Init()
         label_ui->SetColor(GetColor(255, 255, 255));    // 名前は白
 
         // HPの数値UIから少し上に配置
-        label_ui->SetTranslate(float3(HP_POS_X[i], HP_POS_Y - 30.0f, 0.0f));
+        float y_offset = -30.0f;
+        label_ui->SetTranslate(float3(HP_POS_X[i], HP_POS_Y + y_offset, 0.0f));
 
         // 最初の名前をセット（0番目はPlayer、それ以外はNPC）
         if(i == 0) {
@@ -154,6 +156,36 @@ bool ScenePlay::Init()
         // Alignmentを中央にする
         if(auto trans = label_ui->GetComponent<ComponentTransformUI>()) {
             trans->SetAlignment(static_cast<ComponentTransformUI::Alignment>(4));
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // mpゲージUIオブジェクト
+    //---------------------------------------------------------------------------------
+    {
+        //とりあえず、キャラクターを取得する
+        for(int i = 0; i < CHARACTER_ALL; i++) {
+            //ゲージオブジェクトの生成
+            auto mp_gauge = Scene::Object::Create<UIGauge>(u8"MPゲージ" + std::to_string(i));
+            mp_gauge->SetGaugeColor(GetColor(0, 85, 255), GetColor(0, 102, 204));
+            int width  = 100;
+            int height = 15;
+            mp_gauge->SetGaugeSize(int2(width, height));                                //ゲージの大きさ
+            mp_gauge->SetTranslate(float3(MP_GAUGE_POS_X[i], MP_GAUGE_POS_Y, 0.0f));    //位置調整
+            //---------------------------------------------------------------------------------
+            // mpゲージを更新するラムダ関数を登録
+            //---------------------------------------------------------------------------------
+            if(auto chara = characters_.at(i).lock()) {
+                auto update_mp_gauge = [chara, mp_gauge]() {
+                    if(auto status_comp = chara->GetComponent<ComponentStatus>()) {
+                        float current_mp    = static_cast<float>(status_comp->GetMagicPoints());
+                        float max_mp        = static_cast<float>(status_comp->GetMaxMagicPoints());
+                        float mp_percentage = current_mp / max_mp;
+                        mp_gauge->SetGaugeRate(mp_percentage);
+                    }
+                };
+                mp_gauge->SetProc("update_mp_gauge", update_mp_gauge, ProcTiming::Update, ProcPriority::NORMAL);
+            }
         }
     }
 
@@ -206,7 +238,7 @@ void ScenePlay::Update()
     //	タイマー処理
     //---------------------------------------------------------------------------------
     // タイマーを減算（カウントダウン）
-    TIMER_COUNT_ -= std::chrono::duration<float>(delta_time).count();
+    timer_count_ -= std::chrono::duration<float>(delta_time).count();
 
     //---------------------------------------------------------------------------------
     // 	ゲーム終了判定
@@ -222,7 +254,7 @@ void ScenePlay::Update()
         GameRepository::Instance().SetResultDatas(result_datas_);    //結果データをGameRepositoryに設定
         Scene::Change(Scene::GetScene<GameResult>());                //シーンの変更を行う処理
     }
-    else if(TIMER_COUNT_ < 0.0f) {
+    else if(timer_count_ < 0.0f) {
         // 生存しているキャラクターを、HPの多い順に順位付け
 
         std::vector<std::pair<int, int>> hp_ranks;    //キャラクターのインデックスとHPのペア配列
@@ -251,8 +283,8 @@ void ScenePlay::Update()
         Scene::Change(Scene::GetScene<GameResult>());                //シーンの変更を行う処理
     }
     // 分と秒に変換（ゼロ埋め付き表示）
-    int minutes = static_cast<int>(TIMER_COUNT_) / 60;
-    int seconds = static_cast<int>(TIMER_COUNT_) % 60;
+    int minutes = static_cast<int>(timer_count_) / 60;
+    int seconds = static_cast<int>(timer_count_) % 60;
     //タイマーUIの更新
     if(auto timer_ui = Scene::Object::Get<UIText>(u8"タイマーUI")) {
         timer_ui->SetText(std::to_string(minutes) + ":" + std::to_string(seconds));

@@ -22,10 +22,6 @@ void ComponentComboAttack::Init()
 void ComponentComboAttack::Update()
 {    // 初期化処理
     __super::Update();
-    //スキル使用条件を満たしたら
-    if(is_use_skill_()) {
-        UseSkill();    // スキルを使用する
-    }
 }
 
 //---------------------------------------------------------------------------
