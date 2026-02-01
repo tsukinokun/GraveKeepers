@@ -30,7 +30,7 @@ public:
 
 private:
     std::weak_ptr<ComponentCollisionSphere> collision_component_;    //!< 衝突判定用カプセルコンポーネント
-    const int                               ATTACK_DAMAGE_ = 10;     //!< 攻撃力
+    const int                               ATTACK_DAMAGE_ = 30;     //!< 攻撃力
     const float                             RADUIS_        = 2.0f;
 
     bool  is_hit_ = false;    //!< 当たったかどうかのフラグ
