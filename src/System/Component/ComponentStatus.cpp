@@ -39,6 +39,22 @@ void ComponentStatus::Update()
             // 無敵終了処理
         }
     }
+
+    //---------------------------------------------------------------------------
+    //mpはすこしずつ回復する
+    //---------------------------------------------------------------------------
+    if(!IsMagicPointFull()) {
+        //1秒に5ポイント回復する
+        mp_cure_timer_ += delta_time;
+        if(mp_cure_timer_ >= 1.0f) {
+            mp_cure_timer_            -= 1.0f;
+            constexpr int cure_amount  = 5;
+            CureMagicPoint(cure_amount);
+            if(mp_ > max_mp_) {
+                mp_ = max_mp_;
+            }
+        }
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -178,5 +194,47 @@ void ComponentStatus::SetInvincibilityTime(float time)
 {
     INVINCIBILITY_TIME_ = time;
 }
+
+//--------------------------------------------------------------------
+//! @brief mpのゲッタ
+//--------------------------------------------------------------------
+int ComponentStatus::GetMagicPoints() const
+{
+    return mp_;
+}
+
+//--------------------------------------------------------------------
+//! @brief 最大mpのゲッタ
+//--------------------------------------------------------------------
+int ComponentStatus::GetMaxMagicPoints() const
+{
+    return max_mp_;
+}
+
+//--------------------------------------------------------------------
+//! @brief mpを回復する関数
+//--------------------------------------------------------------------
+void ComponentStatus::CureMagicPoint(int amount)
+{
+    mp_ += amount;
+}
+
+//--------------------------------------------------------------------
+//! @brief mpを空にする関数
+//--------------------------------------------------------------------
+void ComponentStatus::DepleteMagicPoint()
+{
+    mp_ = 0;
+}
+
+//--------------------------------------------------------------------
+//! @brief mpが最大か否かを返す関数
+//--------------------------------------------------------------------
+bool ComponentStatus::IsMagicPointFull() const
+{
+    // mpが最大値と等しいかを返す
+    return mp_ >= max_mp_;
+}
+
 CEREAL_REGISTER_TYPE(ComponentStatus)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentStatus)
