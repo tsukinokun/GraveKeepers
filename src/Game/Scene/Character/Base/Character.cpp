@@ -167,8 +167,21 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
                     rb->AddImpulse(impulse);
                 }
 
-                // ダメージ計算（当たったオブジェクトの質量に比例）
-                int damage = static_cast<int>(hit_rb->GetMass());
+                // ダメージ計算
+                int damage = 0;
+
+                // キャンディー爆弾の場合は専用のダメージ値を使用
+                if(hit_owner->GetName() == u8"キャンディー爆弾") {
+                    damage = static_cast<int>(hit_rb->GetMass());    // 質量ベースのダメージ
+                }
+                else {
+                    // それ以外は投げたキャラクターの攻撃力に基づく
+                    if(auto lift_chara = hit_liftable->GetLiftCharacter()) {
+                        if(auto lift_status = lift_chara->GetComponent<ComponentStatus>()) {
+                            damage = lift_status->GetAttackPoints();
+                        }
+                    }
+                }
 
                 // --- 自分がダメージを受ける ---
                 if(auto status_comp = status_component_.lock()) {

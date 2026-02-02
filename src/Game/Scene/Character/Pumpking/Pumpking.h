@@ -20,6 +20,6 @@ public:
 
 private:
     const int   HP_MAX_       = 400;     //HPの最大値
-    const int   ATTACK_POWER_ = 25;      //攻撃力
+    const int   ATTACK_POWER_ = 10;      //攻撃力
     const float MOVE_SPEED_   = 0.4f;    //移動スピード
 };
