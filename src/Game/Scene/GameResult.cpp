@@ -37,6 +37,9 @@ bool GameResult::Init()
     }
     std::vector<std::weak_ptr<Object>> characters;    // キャラクターオブジェクト格納用
 
+    //リザルトデータをソート
+    std::sort(result_datas.begin(), result_datas.end(), [](const ResultInfo& a, const ResultInfo& b) { return a.rank_ < b.rank_; });
+
     //---------------------------------------------------------------------------------
     // キャラクターを表示(前から順に呼び出す)
     //---------------------------------------------------------------------------------
