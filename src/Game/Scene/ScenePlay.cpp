@@ -180,12 +180,13 @@ void ScenePlay::Update()
             }
         }
     }
-    //---------------------------------------------------------------------------------
-    //	HPのUIオブジェクト
-    //---------------------------------------------------------------------------------
+
     for(int i = 0; i < CHARACTER_ALL; i++) {
         if(auto chara = characters_[i].lock()) {
             if(auto status_comp = chara->GetComponent<ComponentStatus>()) {
+                //---------------------------------------------------------------------------------
+                // 順位
+                //---------------------------------------------------------------------------------
                 if(result_datas_[i].rank_ == -1) {
                     //順位が未設定の場合、生存しているキャラクターの数+1を順位として設定
                     if(status_comp->IsDead()) {
@@ -194,6 +195,9 @@ void ScenePlay::Update()
                     }
                 }
 
+                //---------------------------------------------------------------------------------
+                //	HPのUIオブジェクト
+                //---------------------------------------------------------------------------------
                 std::string name  = "HP";                 //HPテキストオブジェクトの名前
                 name             += std::to_string(i);    //オブジェクト名をHP0、HP1、HP2、HP3とする
                 if(auto hp_ui = Scene::Object::Get<UIText>(name)) {
@@ -217,6 +221,17 @@ void ScenePlay::Update()
             //順位が未設定のキャラクターに1位を設定
             if(result_datas_[i].rank_ == -1) {
                 result_datas_[i].rank_ = 1;    //順位を設定
+                //キャラクターを捜査
+                for(int c = 0; c < CHARACTER_ALL; c++) {
+                    if(auto chara = characters_[c].lock()) {
+                        if(auto status_comp = chara->GetComponent<ComponentStatus>()) {
+                            //生存しているキャラクターを探して名前を設定
+                            if(!status_comp->IsDead()) {
+                                result_datas_[i].chara_name_ = chara->GetNameDefault();    //キャラの名前を設定
+                            }
+                        }
+                    }
+                }
             }
         }
         GameRepository::Instance().SetResultDatas(result_datas_);    //結果データをGameRepositoryに設定
