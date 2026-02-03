@@ -266,6 +266,8 @@ void ScenePlay::Update()
                 }
             }
         }
+        //リザルトデータをソート
+        std::sort(result_datas_.begin(), result_datas_.end(), [](const ResultInfo& a, const ResultInfo& b) { return a.rank_ < b.rank_; });
         GameRepository::Instance().SetResultDatas(result_datas_);    //結果データをGameRepositoryに設定
         Scene::Change(Scene::GetScene<GameResult>());                //シーンの変更を行う処理
     }
@@ -281,8 +283,8 @@ void ScenePlay::Update()
             }
         }
         // HPの多い順にソート
-        std::sort(hp_ranks.begin(), hp_ranks.end(), [](const std::pair<int, int>& a, const std::pair<int, int>& b) { return a.second < b.second; });
-        int current_rank = 4;    //4位から順位を設定
+        std::sort(hp_ranks.begin(), hp_ranks.end(), [](const std::pair<int, int>& a, const std::pair<int, int>& b) { return a.second > b.second; });
+        int current_rank = 1;    //4位から順位を設定
         for(auto hp_rank : hp_ranks) {
             int idx = hp_rank.first;
             //順位が未設定のキャラクターに順位を設定
@@ -291,7 +293,7 @@ void ScenePlay::Update()
                 if(auto chara = characters_[idx].lock()) {
                     result_datas_[idx].chara_name_ = chara->GetNameDefault();    //キャラの名前を設定
                 }
-                current_rank--;
+                current_rank++;
             }
         }
         GameRepository::Instance().SetResultDatas(result_datas_);    //結果データをGameRepositoryに設定
