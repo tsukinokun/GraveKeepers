@@ -19,7 +19,7 @@ public:
     void Exit() override;    //!< 終了
 
 private:
-    const int   HP_MAX_       = 400;     //HPの最大値
-    const int   ATTACK_POWER_ = 25;      //攻撃力
-    const float MOVE_SPEED_   = 0.4f;    //移動スピード
+    const int   HP_MAX_       = 240;     //HPの最大値
+    const int   ATTACK_POWER_ = 20;      //攻撃力
+    const float MOVE_SPEED_   = 0.2f;    //移動スピード
 };
