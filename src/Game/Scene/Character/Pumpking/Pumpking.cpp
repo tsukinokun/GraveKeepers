@@ -23,17 +23,17 @@ bool Pumpking::Init()
         model_comp->Load("data/PoyPoy/Model/Character/Pumpking/Pumpking.mv1");
 
         model_comp->SetAnimation({
-            {          "idle",           "data/PoyPoy/Model/Character/Pumpking/Anims/Idle.mv1", 1, 1.0f}, //待機
-            {          "walk",           "data/PoyPoy/Model/Character/Pumpking/Anims/Walk.mv1", 1, 1.0f}, //歩き
-            {           "run",            "data/PoyPoy/Model/Character/Pumpking/Anims/Run.mv1", 1, 1.0f}, //走り
-            {         "death", "data/PoyPoy/Model/Character/Pumpking/Anims/DeathMotionLay.mv1", 1, 1.0f}, //死亡
-            {          "jump",           "data/PoyPoy/Model/Character/Pumpking/Anims/Jump.mv1", 1, 0.7f}, //ジャンプ
-            {"crouching_idle",  "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingIdle.mv1", 1, 1.0f}, //しゃがみ待機
-            {"crouching_walk",  "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingWalk.mv1", 1, 1.0f}, //しゃがみ歩き
-            { "crouching_run",   "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingRun.mv1", 1, 1.0f}, //しゃがみ走り
-            {     "low_crawl",       "data/PoyPoy/Model/Character/Pumpking/Anims/LowCrawl.mv1", 1, 1.0f}, //這いずり移動
-            {      "liftable",       "data/PoyPoy/Model/Character/Pumpking/Anims/Liftable.mv1", 1, 1.0f}, //持ち上げられ
-            {     "knockback",      "data/PoyPoy/Model/Character/Pumpking/Anims/Knockback.mv1", 1, 0.7f}, //ノックバック
+            {          "idle",          "data/PoyPoy/Model/Character/Pumpking/Anims/Idle.mv1", 1, 1.0f}, //待機
+            {          "walk",          "data/PoyPoy/Model/Character/Pumpking/Anims/Walk.mv1", 1, 1.0f}, //歩き
+            {           "run",           "data/PoyPoy/Model/Character/Pumpking/Anims/Run.mv1", 1, 1.0f}, //走り
+            {         "death",         "data/PoyPoy/Model/Character/Pumpking/Anims/Death.mv1", 1, 1.0f}, //死亡
+            {          "jump",          "data/PoyPoy/Model/Character/Pumpking/Anims/Jump.mv1", 1, 0.7f}, //ジャンプ
+            {"crouching_idle", "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingIdle.mv1", 1, 1.0f}, //しゃがみ待機
+            {"crouching_walk", "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingWalk.mv1", 1, 1.0f}, //しゃがみ歩き
+            { "crouching_run",  "data/PoyPoy/Model/Character/Pumpking/Anims/CrouchingRun.mv1", 1, 1.0f}, //しゃがみ走り
+            {     "low_crawl",      "data/PoyPoy/Model/Character/Pumpking/Anims/LowCrawl.mv1", 1, 1.0f}, //這いずり移動
+            {      "liftable",      "data/PoyPoy/Model/Character/Pumpking/Anims/Liftable.mv1", 1, 1.0f}, //持ち上げられ
+            {     "knockback",     "data/PoyPoy/Model/Character/Pumpking/Anims/Knockback.mv1", 1, 0.7f}, //ノックバック
         });
     }
     if(auto status_comp = status_component_.lock()) {
