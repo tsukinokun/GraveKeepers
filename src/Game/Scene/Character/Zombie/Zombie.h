@@ -21,7 +21,7 @@ public:
     void GUI() override;       //!< GUI表示
 
 private:
-    const int   HP_MAX_       = 200;     //HPの最大値
+    const int   HP_MAX_       = 250;     //HPの最大値
     const int   ATTACK_POWER_ = 20;      //攻撃力
     const float MOVE_SPEED_   = 0.3f;    //移動スピード
 };
