@@ -26,5 +26,5 @@ public:
 
 private:
     std::weak_ptr<ComponentCollisionSphere> collision_component_;    //!< 衝突判定用カプセルコンポーネント
-    const int                               ATTACK_DAMAGE_ = 20;     //!< 攻撃力
+    const int                               ATTACK_DAMAGE_ = 50;     //!< 攻撃力
 };
