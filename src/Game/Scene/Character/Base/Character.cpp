@@ -140,8 +140,12 @@ void Character::OnHit(const ComponentCollision::HitInfo& hit_info)
     //-------------------------------------------------------------------------
     if(auto hit_liftable = hit_owner->GetComponent<ComponentLiftable>()) {
         // 投げられた状態（空中・飛行中）でなければ早期リターン
-        // ※IsLiftedをIsThrownに変更するとより正確です
         if(!hit_liftable->IsThrown()) {
+            return;
+        }
+
+        //投げられた対象が持ち上げられる状態であれば、早期リターン(持ち上げられる状態は一度地面に当たっている)
+        if(hit_liftable->CanBeLifted()) {
             return;
         }
 
