@@ -188,6 +188,22 @@ void ComponentLift::Update()
                     lift_col->SetEnableFlag(false);
                     lift_col->UseGravity(false);
                 }
+                //--------------------------------------------------------------------
+                // 持ち上げられ機能コンポーネントを取得して、持ち上げ中フラグを立てる
+                //--------------------------------------------------------------------
+                if(auto liftable_comp = obj->GetComponent<ComponentLiftable>()) {
+                    liftable_comp->SetLiftedFlag(true);
+                    liftable_comp->SetThrownFlag(true);
+                }
+                //--------------------------------------------------------------------
+                //オーナーのコリジョンを取得
+                //--------------------------------------------------------------------
+                if(auto owner_col = owner->GetComponent<ComponentCollisionCapsule>()) {
+                    float3 end  = owner->GetTranslate();              //高さ
+                    end.y      += (owner_col->GetHeight() + 4.0f);    //終点座標は頭なので、高さの半分を足す。
+                    //持ち上げ対象を持ち上げる
+                    obj->SetTranslate(end);
+                }
             }
             return;
         }
