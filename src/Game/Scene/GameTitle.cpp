@@ -10,6 +10,7 @@
 #include <Game/Scene/UIObject/UIImage.h>
 #include <System/Component/ComponentModel.h>
 #include <Game/System/ImageBuffer.h>
+#include <Game/System/SoundBuffer.h>
 
 //---------------------------------------------------------------------------------
 //! 初期化
@@ -26,6 +27,7 @@ bool GameTitle::Init()
     GameRepository::Instance().Clear();
     CharacterFactory::Instance();
     ImageBuffer::Init();    // 画像バッファの初期化
+    SoundBuffer::Init();    // サウンドバッファの初期化
     //---------------------------------------------------------------------------------
     // カメラを作成
     //---------------------------------------------------------------------------------
@@ -132,6 +134,14 @@ void GameTitle::Update()
 {
     __super::Update();
 
+    //TitleBGMの再生
+    static bool is_played = false;
+    if(!is_played) {
+        int title_bgm = SoundBuffer::GetBGMHandle("title");
+        PlaySoundMem(title_bgm, DX_PLAYTYPE_LOOP);
+        is_played = true;
+    }
+
     //SPACEキーが押されたらゲーム画面に移行
     if(IsKeyOn(KEY_INPUT_SPACE)) {
         Scene::Change(Scene::GetScene<SceneCharaSelect>());    //シーンの変更を行う処理
@@ -160,6 +170,8 @@ void GameTitle::Draw()
 void GameTitle::Exit()
 {
     __super::Exit();
+
+    SoundBuffer::Exit();    // サウンドバッファの終了処理
 }
 
 //!GUI表示
