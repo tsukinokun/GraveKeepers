@@ -23,10 +23,9 @@ void SoundBuffer::Init()
     sound_buffer_["poison"]      = DxLib::LoadSoundMem("data/PoyPoy/Sound/poison.mp3");         // 毒音声
     sound_buffer_["rush"]        = DxLib::LoadSoundMem("data/PoyPoy/Sound/rush.mp3");           // ラッシュ音声
 
-    sound_buffer_["title"] = DxLib::LoadSoundMem("data/PoyPoy/Sound/title.mp3");
-    　　                                                                                          // タイトル音声
-        sound_buffer_["game_scene"] = DxLib::LoadSoundMem("data/PoyPoy/Sound/game_scene.mp3");    // ゲームシーン音声
-    sound_buffer_["result"]         = DxLib::LoadSoundMem("data/PoyPoy/Sound/result.mp3");        // リザルト音声
+    sound_buffer_["title"]      = DxLib::LoadSoundMem("data/PoyPoy/Sound/title.mp3");         // タイトル音声
+    sound_buffer_["game_scene"] = DxLib::LoadSoundMem("data/PoyPoy/Sound/game_scene.mp3");    // ゲームシーン音声
+    sound_buffer_["result"]     = DxLib::LoadSoundMem("data/PoyPoy/Sound/result.mp3");        // リザルト音声
 }
 
 //---------------------------------------------------------------------------------

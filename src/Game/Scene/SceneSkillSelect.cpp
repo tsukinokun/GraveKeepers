@@ -12,6 +12,7 @@
 #include <Game/Scene/UIObject/UIImage.h>
 #include <Game/Scene/UIObject/UIText.h>
 #include <Game/System/ImageBuffer.h>
+#include <Game/System/SoundBuffer.h>
 #include <Game/System/GameRepository.h>
 
 //---------------------------------------------------------------------------------
@@ -255,6 +256,11 @@ void SceneSkillSelect::Update()
 
     //SPACEキーが押されたらゲーム画面に移行
     if(IsKeyOn(KEY_INPUT_SPACE)) {
+        int handle = SoundBuffer::GetSoundHandle("mouse_click");
+        if(handle != -1) {
+            DxLib::PlaySoundMem(handle, DX_PLAYTYPE_BACK);
+        }
+
         if(auto skill = manage_skills_[selected_skill_index_].lock()) {
             // 選択されたスキルをセーブデータに保存
             GameRepository::Instance().SetSelectedSkillName(skill->GetName().data());

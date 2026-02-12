@@ -124,6 +124,14 @@ bool GameTitle::Init()
         characters.push_back(witch);
     }
 
+    //----------------------------------------------------------------------------------
+    // BGMの再生
+    //----------------------------------------------------------------------------------
+    int title_bgm = SoundBuffer::GetSoundHandle("title");
+    if(title_bgm != -1) {
+        PlaySoundMem(title_bgm, DX_PLAYTYPE_LOOP);
+    }
+
     return true;
 }
 
@@ -133,14 +141,6 @@ bool GameTitle::Init()
 void GameTitle::Update()
 {
     __super::Update();
-
-    //TitleBGMの再生
-    static bool is_played = false;
-    if(!is_played) {
-        int title_bgm = SoundBuffer::GetBGMHandle("title");
-        PlaySoundMem(title_bgm, DX_PLAYTYPE_LOOP);
-        is_played = true;
-    }
 
     //SPACEキーが押されたらゲーム画面に移行
     if(IsKeyOn(KEY_INPUT_SPACE)) {

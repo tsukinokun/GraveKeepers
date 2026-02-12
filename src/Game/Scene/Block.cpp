@@ -8,6 +8,7 @@
 #include <System/Component/ComponentCollisionCapsule.h>
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
+#include <Game/System/SoundBuffer.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -119,4 +120,25 @@ void Block::Exit()
 void Block::GUI()
 {
     __super::GUI();
+}
+
+//---------------------------------------------------------------------------------
+//!	ヒットした際に呼ばれるコールバック関数
+//---------------------------------------------------------------------------------
+void Block::OnHit(const ComponentCollision::HitInfo& hit_info)
+{
+    __super::OnHit(hit_info);
+
+    // 持ち上げコンポーネントを取得
+    auto liftable = GetComponent<ComponentLiftable>();
+
+    // 投げられた状態なら音を鳴らす
+    if(liftable && liftable->IsThrown()) {
+        // 音声を再生
+        int handle = SoundBuffer::GetSoundHandle("grave_hit");
+        if(handle != -1) {
+            PlaySoundMem(handle, DX_PLAYTYPE_BACK);
+        }
+    }
+    liftable->SetThrownFlag(false);
 }

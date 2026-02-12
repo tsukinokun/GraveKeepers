@@ -27,6 +27,14 @@ bool GameResult::Init()
     SoundBuffer::Init();    // 音バッファの初期化
 
     //---------------------------------------------------------------------------------
+    // BGM再生
+    //---------------------------------------------------------------------------------
+    int result_bgm = SoundBuffer::GetSoundHandle("result");
+    if(result_bgm != -1) {
+        PlaySoundMem(result_bgm, DX_PLAYTYPE_LOOP);
+    }
+
+    //---------------------------------------------------------------------------------
     // カメラを作成
     //---------------------------------------------------------------------------------
     {
@@ -121,22 +129,9 @@ void GameResult::Update()
 {
     __super::Update();
 
-    //  リザルト音声の再生
-    static bool is_played = false;
-    if(!is_played) {
-        int result_sound = SoundBuffer::GetBGMHandle("result");
-        PlaySoundMem(result_sound, DX_PLAYTYPE_LOOP);
-        is_played = true;
-    }
-
     //SPACEキーが押されたらタイトル画面に移行
     if(IsKeyOn(KEY_INPUT_SPACE)) {
         Scene::Change(Scene::GetScene<GameTitle>());    //シーンの変更を行う処理
-
-        //音楽が流れていたら停止
-        int result_sound = SoundBuffer::GetBGMHandle("result");
-        StopSoundMem(result_sound);
-        is_played = false;
     }
 }
 
@@ -164,6 +159,8 @@ void GameResult::Draw()
 void GameResult::Exit()
 {
     __super::Exit();
+
+    SoundBuffer::Exit();    // 音バッファの終了処理
 }
 
 //!GUI表示
