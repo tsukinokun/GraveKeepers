@@ -9,6 +9,7 @@
 #include <System/Component/ComponentStatus.h>
 #include <System/Component/ComponentHitInfo.h>
 #include <cmath>
+#include <Game/System/SoundBuffer.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化関数
@@ -53,6 +54,13 @@ void ComponentDash::GUI()
 std::shared_ptr<ComponentSkill> ComponentDash::UseSkill()
 {
     __super::UseSkill();
+
+    //サウンドの再生
+    int handle = SoundBuffer::GetSoundHandle("rush");
+    if(handle != -1) {
+        PlaySoundMem(handle, DX_PLAYTYPE_BACK);
+    }
+
     auto owner = GetOwner();
 
     //---------------------------------------------------------------------------

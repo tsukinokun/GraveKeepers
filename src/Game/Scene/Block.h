@@ -19,6 +19,10 @@ public:
     void Exit() override;      //!< 終了
     void GUI() override;       //!< GUI表示
 
+    //当たり判定のコールバック関数
+    //! @param hit_info[in] ヒットした相手側の情報
+    void OnHit(const ComponentCollision::HitInfo& hit_info) override;
+
 private:
     const float RADUIS_ = 2.0f;     //コリジョンの半径
     const float HEIGHT_ = 10.0f;    //コリジョンの高さ

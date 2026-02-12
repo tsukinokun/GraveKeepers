@@ -7,6 +7,7 @@
 #include <System/Component/ComponentEffect.h>
 #include <Game/Scene/SkillObject/ComboAttack.h>
 #include <System/Component/ComponentStatus.h>
+#include <Game/System/SoundBuffer.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化関数
@@ -51,6 +52,13 @@ void ComponentComboAttack::GUI()
 std::shared_ptr<ComponentSkill> ComponentComboAttack::UseSkill()
 {
     __super::UseSkill();
+
+    //サウンドの再生
+    int handle = SoundBuffer::GetSoundHandle("combo");
+    if(handle != -1) {
+        PlaySoundMem(handle, DX_PLAYTYPE_BACK);
+    }
+
     auto owner = GetOwner();
 
     //---------------------------------------------------------------------------

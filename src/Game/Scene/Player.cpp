@@ -24,6 +24,7 @@
 #include <Game/Scene/UIObject/UIImage.h>
 #include "../../src/Game/system/HlslppUseful.h"
 #include <Game/System/ImageBuffer.h>
+#include < Game/System/SoundBuffer.h>
 #include <Game/Scene/SkillObject/SkillFactory.h>
 
 //---------------------------------------------------------------------------------

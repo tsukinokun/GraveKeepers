@@ -9,6 +9,7 @@
 #include <Game/Scene/UIObject/UIText.h>
 #include <Game/Scene/SceneSkillSelect.h>
 #include <Game/System/GameRepository.h>
+#include <Game/System/SoundBuffer.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -180,6 +181,11 @@ void SceneCharaSelect::Update()
     // エンターキーで決定してゲーム開始
     //---------------------------------------------------------------------------------
     if(IsKeyOn(KEY_INPUT_SPACE)) {
+        int handle = SoundBuffer::GetSoundHandle("mouse_click");
+        if(handle != -1) {
+            DxLib::PlaySoundMem(handle, DX_PLAYTYPE_BACK);
+        }
+
         // 選択されたキャラクター名をリポジトリに保存
         if(auto selected_chara = manage_characters_[selected_character_index_].lock()) {
             GameRepository::Instance().SetSelectedCharacterName(selected_chara->GetNameDefault().data());

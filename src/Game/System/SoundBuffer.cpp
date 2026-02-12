@@ -3,9 +3,9 @@
 //! @brief	音のバッファクラス
 //---------------------------------------------------------------------------
 #include "SoundBuffer.h"
+#include <DxLib.h>
 
 std::unordered_map<std::string, int> SoundBuffer::sound_buffer_ = {};    // 音ハンドルのバッファを初期化
-std::unordered_map<std::string, int> SoundBuffer::bgm_buffer_   = {};    // 音ハンドルのバッファを初期化
 
 //---------------------------------------------------------------------------------
 
@@ -13,9 +13,19 @@ std::unordered_map<std::string, int> SoundBuffer::bgm_buffer_   = {};    // 音�
 //---------------------------------------------------------------------------------
 void SoundBuffer::Init()
 {
-    sound_buffer_.clear();                                                          // 音ハンドルのバッファをクリア
-    bgm_buffer_.clear();                                                            // 音ハンドルのバッファをクリア
-    bgm_buffer_["result"] = DxLib::LoadSoundMem("data/PoyPoy/Sound/result.mp3");    // リザルト音声
+    sound_buffer_.clear();    // 音ハンドルのバッファをクリア
+
+    sound_buffer_["mouse_click"] = DxLib::LoadSoundMem("data/PoyPoy/Sound/mouse_click.mp3");    // マウスクリック音声
+    sound_buffer_["combo"]       = DxLib::LoadSoundMem("data/PoyPoy/Sound/combo.mp3");          // コンボ音声
+    sound_buffer_["explosion"]   = DxLib::LoadSoundMem("data/PoyPoy/Sound/explosion.mp3");      // 爆発音声
+    sound_buffer_["fire_ball"]   = DxLib::LoadSoundMem("data/PoyPoy/Sound/fireball.mp3");       // ファイアボール音声
+    sound_buffer_["grave_hit"]   = DxLib::LoadSoundMem("data/PoyPoy/Sound/grave_hit.mp3");      // 墓石ヒット音声
+    sound_buffer_["poison"]      = DxLib::LoadSoundMem("data/PoyPoy/Sound/poison.mp3");         // 毒音声
+    sound_buffer_["rush"]        = DxLib::LoadSoundMem("data/PoyPoy/Sound/rush.mp3");           // ラッシュ音声
+
+    sound_buffer_["title"]      = DxLib::LoadSoundMem("data/PoyPoy/Sound/title.mp3");         // タイトル音声
+    sound_buffer_["game_scene"] = DxLib::LoadSoundMem("data/PoyPoy/Sound/game_scene.mp3");    // ゲームシーン音声
+    sound_buffer_["result"]     = DxLib::LoadSoundMem("data/PoyPoy/Sound/result.mp3");        // リザルト音声
 }
 
 //---------------------------------------------------------------------------------
@@ -37,21 +47,9 @@ void SoundBuffer::Exit()
 //---------------------------------------------------------------------------------
 int SoundBuffer::GetSoundHandle(const std::string& sound_key)
 {
-    // 音ハンドルを取得
-    //音が存在しない場合はエラーになる可能性ありから-1を返す
-    if(sound_buffer_.find(sound_key) == sound_buffer_.end()) {
-        return -1;
+    if(sound_key.empty()) {
+        return -1;    // キーが空の場合は無効なハンドルを返す
     }
 
     return sound_buffer_[sound_key];    // 音ハンドルを返す
-}
-
-int SoundBuffer::GetBGMHandle(const std::string& sound_key)
-{
-    //音が存在しない場合はエラーになる可能性ありから-1を返す
-    if(bgm_buffer_.find(sound_key) == bgm_buffer_.end()) {
-        return -1;
-    }
-
-    return bgm_buffer_[sound_key];    // 音ハンドルを返す
 }

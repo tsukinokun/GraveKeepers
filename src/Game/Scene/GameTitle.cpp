@@ -10,6 +10,7 @@
 #include <Game/Scene/UIObject/UIImage.h>
 #include <System/Component/ComponentModel.h>
 #include <Game/System/ImageBuffer.h>
+#include <Game/System/SoundBuffer.h>
 
 //---------------------------------------------------------------------------------
 //! 初期化
@@ -26,6 +27,7 @@ bool GameTitle::Init()
     GameRepository::Instance().Clear();
     CharacterFactory::Instance();
     ImageBuffer::Init();    // 画像バッファの初期化
+    SoundBuffer::Init();    // サウンドバッファの初期化
     //---------------------------------------------------------------------------------
     // カメラを作成
     //---------------------------------------------------------------------------------
@@ -122,6 +124,14 @@ bool GameTitle::Init()
         characters.push_back(witch);
     }
 
+    //----------------------------------------------------------------------------------
+    // BGMの再生
+    //----------------------------------------------------------------------------------
+    int title_bgm = SoundBuffer::GetSoundHandle("title");
+    if(title_bgm != -1) {
+        PlaySoundMem(title_bgm, DX_PLAYTYPE_LOOP);
+    }
+
     return true;
 }
 
@@ -160,6 +170,8 @@ void GameTitle::Draw()
 void GameTitle::Exit()
 {
     __super::Exit();
+
+    SoundBuffer::Exit();    // サウンドバッファの終了処理
 }
 
 //!GUI表示

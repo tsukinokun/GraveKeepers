@@ -9,6 +9,7 @@
 #include <System/Component/ComponentRigidbody.h>
 #include <System/Component/ComponentLiftable.h>
 #include <System/Component/ComponentEffect.h>
+#include <Game/System/SoundBuffer.h>
 
 //---------------------------------------------------------------------------------
 //!	初期化
@@ -109,6 +110,11 @@ void CandyBomb::OnHit(const ComponentCollision::HitInfo& hit_info)
             const std::string eff_name = "data/PoyPoy/Effect/CandyBomb/Simple_Sprite_BillBoard.efkefc";
             const float3      pos      = GetTranslate();
             auto              effect   = ComponentEffect::Object::Create(eff_name, pos);
+
+            int handle = SoundBuffer::GetSoundHandle("explosion");
+            if(handle != -1) {
+                PlaySoundMem(handle, DX_PLAYTYPE_BACK);
+            }
         }
         else {
             //なければ自身を削除(1フレームだけ爆発判定をつける)

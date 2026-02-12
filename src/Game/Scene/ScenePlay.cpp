@@ -11,6 +11,7 @@
 #include <Game/Scene/UIObject/UIImage.h>
 #include <System/Component/ComponentStatus.h>
 #include <Game/System/ImageBuffer.h>
+#include <Game/System/SoundBuffer.h>
 #include <Game/System/common.h>
 #include "Enemy.h"
 #include "Camera.h"
@@ -189,6 +190,15 @@ bool ScenePlay::Init()
         }
     }
 
+    //---------------------------------------------------------------------------------
+    // BGM再生
+    //---------------------------------------------------------------------------------
+    SoundBuffer::Init();
+    int game_scene_bgm = SoundBuffer::GetSoundHandle("game_scene");
+    if(game_scene_bgm != -1) {
+        PlaySoundMem(game_scene_bgm, DX_PLAYTYPE_LOOP);
+    }
+
     return true;
 }
 
@@ -324,6 +334,7 @@ void ScenePlay::Exit()
     __super::Exit();
     // ここにゲームの終了処理を追加
     ImageBuffer::Exit();    // 画像バッファの終了処理
+    SoundBuffer::Exit();    // サウンドバッファの終了処理
 }
 
 //!GUI表示
