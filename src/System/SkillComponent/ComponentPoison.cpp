@@ -6,6 +6,7 @@
 #include "ComponentPoison.h"
 #include <Game/Scene/SkillObject/Poison.h>
 #include <System/Component/ComponentEffect.h>
+#include <Game/System/SoundBuffer.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化関数
@@ -50,6 +51,13 @@ void ComponentPoison::GUI()
 std::shared_ptr<ComponentSkill> ComponentPoison::UseSkill()
 {
     __super::UseSkill();
+
+    //サウンドの再生
+    int handle = SoundBuffer::GetSoundHandle("poison");
+    if(handle != -1) {
+        PlaySoundMem(handle, DX_PLAYTYPE_BACK);
+    }
+
     auto owner = GetOwner();
     //---------------------------------------------------------------------------
     // スキルオブジェクトの生成
@@ -65,6 +73,5 @@ std::shared_ptr<ComponentSkill> ComponentPoison::UseSkill()
     //自身のポインタを変換
     return dynamic_pointer_cast<ComponentSkill>(shared_from_this());
 }
-
 CEREAL_REGISTER_TYPE(ComponentPoison)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Component, ComponentPoison)

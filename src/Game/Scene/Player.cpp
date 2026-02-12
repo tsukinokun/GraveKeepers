@@ -93,29 +93,8 @@ bool Player::Init()
     //共通のスキル発動条件設定
     skill_component->SetConditionsForUseSkill(
         //ラムダ式を代入、Pキーを押すとスキル発動と割り当てる。
-        [skill_name]() {
+        []() {
             if(IsKeyOn(KEY_INPUT_P)) {
-                //サウンドキーを設定
-                std::string sound_key = "";
-
-                //スキル名によってサウンドを変える
-                if(skill_name == "FireBall")
-                    sound_key = "fire_ball";
-                else if(skill_name == "Dash")
-                    sound_key = "rush";
-                else if(skill_name == "Poison")
-                    sound_key = "poison";
-                else if(skill_name == "ComboAttack")
-                    sound_key = "combo";
-
-                //サウンド再生
-                if(!sound_key.empty()) {
-                    int handle = SoundBuffer::GetSoundHandle(sound_key);
-                    if(handle != -1) {
-                        PlaySoundMem(handle, DX_PLAYTYPE_BACK);
-                    }
-                }
-
                 return true;
             }
             return false;

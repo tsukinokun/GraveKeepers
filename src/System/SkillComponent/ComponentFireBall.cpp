@@ -6,6 +6,7 @@
 #include "ComponentFireBall.h"
 #include <Game/Scene/SkillObject/FireBall.h>
 #include <System/Component/ComponentEffect.h>
+#include <Game/System/SoundBuffer.h>
 
 //---------------------------------------------------------------------------
 //! @brief	初期化関数
@@ -50,6 +51,13 @@ void ComponentFireBall::GUI()
 std::shared_ptr<ComponentSkill> ComponentFireBall::UseSkill()
 {
     __super::UseSkill();
+
+    //サウンドの再生
+    int handle = SoundBuffer::GetSoundHandle("fire_ball");
+    if(handle != -1) {
+        PlaySoundMem(handle, DX_PLAYTYPE_BACK);
+    }
+
     auto owner = GetOwner();
     //---------------------------------------------------------------------------
     // スキルオブジェクトの生成
