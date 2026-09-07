@@ -1,49 +1,24 @@
-# BaseProject2025
-## 概要
-### BaseProjectとは？
-DXライブラリを使用して3Dゲーム開発をするためのプロジェクトです。<br />
+# GraveKeepers
 
-## 使用環境
-- OS: Windows10, Windows11
-- IDE: VisualStudio2022
+<p align="center">
+  <img src="img/GraveKeepersImage.png" width="300">
+</p>
 
-## 使い方
-### プロジェクトの起動方法:
+授業の一環としてチームで制作したアクションゲームです。
 
-「＠open.cmd」ファイルをダブルクリックしてください。<br />
-自動的にVisualStudio2022でプロジェクトが開きます。<br />
-<b>注意事項: 2バイト文字が含まれているドライブまたはフォルダ上では正常にバッチが動作しません</b>
+## 技術スタック
 
-### プロジェクトの終了方法
+- **言語:** C++
+- **ライブラリ:** DxLib,HLSL
 
-「＠cleanup.cmd」をダブルクリックしてください。<br />
-自動的に不要なファイルが削除されます。<br />
+## プレイ動画
 
-### コードの評価
+[![Watch the video](https://img.youtube.com/vi/sCpV6jvoFks/hqdefault.jpg)](https://youtu.be/sCpV6jvoFks?si=NNOYnI376wLm6fFV)
 
-「＠code_metrics.cmd」をダブルクリックしてください。<br />
-自動的に「src」フォルダ内のソースファイル全てが「cccc」によって評価されます。<br />
 
-### Doxygenの作成／修正
+## 作者
 
-「＠doxygen.cmd」をダブルクリックしてください。<br />
-自動的に「src」フォルダ内のソースファイル全てを解析してドキュメントを作成します。<br />
-<b>注意事項: Doxygen形式でのコメントの書き方をしていないとドキュメントに反映されません</b>
+**つきの**（山﨑 愛）
 
-### コード整形
-
-「src/.clang-format-reference」を「.clang-format」にリネームすることで自分好みのソースコードに整形が可能です。<br />
-また「＠open.cmd」を使用することで自動的にこのファイルを読み込み、コードを自分好みに整形してくれます。<br />
-<b>注意事項: 「＠code_format.cmd」を使うと元のコード整形に戻ります</b>
-
-###命名規則
-グローバル変数：スネークケース(snake_case)
-ローカル変数：スネークケース(snake_case)
-グローバル関数：パスカルケース(PascalCase)
-グローバル定数：アッパースネークケース(UPPER_SNAKE_CASE)
-列挙体(enum)：アッパースネークケース(UPPER_SNAKE_CASE)
-クラス名/構造体名：パスカルケース(PascalCase)
-メンバ変数名：末尾にアンダースコア付きのスネークケース(snake_case_)
-メンバ定数名：末尾にアンダースコア付きのアッパースネークケース(UPPER_SNAKE_CASE_)
-メンバ関数名：パスカルケース(PascalCase)
- 
+- GitHub: [@tsukinokun](https://github.com/tsukinokun)
+- Qiita: [@tsukino_](https://qiita.com/tsukino_)
